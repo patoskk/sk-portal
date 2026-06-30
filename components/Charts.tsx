@@ -1,0 +1,115 @@
+"use client";
+import {
+  Bar,
+  BarChart,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { BRAND, FUNNEL_COLORS, USAGE_COLORS } from "@/lib/brand";
+
+const axis = { fontSize: 11, fill: BRAND.inkSoft };
+
+export function FunnelChart({ labels, values }: { labels: string[]; values: number[] }) {
+  const data = labels.map((label, i) => ({ label, value: values[i] ?? 0 }));
+  return (
+    <ResponsiveContainer width="100%" height={Math.max(140, data.length * 56)}>
+      <BarChart layout="vertical" data={data} margin={{ left: 8, right: 36 }}>
+        <XAxis type="number" hide />
+        <YAxis type="category" dataKey="label" width={130} tick={axis} axisLine={false} tickLine={false} />
+        <Bar dataKey="value" radius={[0, 6, 6, 0]} label={{ position: "right", fill: BRAND.ink, fontSize: 12 }}>
+          {data.map((_, i) => (
+            <Cell key={i} fill={FUNNEL_COLORS[i] ?? BRAND.accent} />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+export function HBarChart({
+  data,
+  color = BRAND.accent,
+}: {
+  data: { label: string; value: number }[];
+  color?: string;
+}) {
+  if (!data.length) return <Empty />;
+  return (
+    <ResponsiveContainer width="100%" height={Math.max(120, data.length * 34)}>
+      <BarChart layout="vertical" data={data} margin={{ left: 8, right: 36 }}>
+        <XAxis type="number" hide />
+        <YAxis type="category" dataKey="label" width={150} tick={axis} axisLine={false} tickLine={false} />
+        <Bar dataKey="value" fill={color} radius={[0, 6, 6, 0]} label={{ position: "right", fill: BRAND.ink, fontSize: 12 }} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+export function UsageDonut({ data }: { data: { label: string; value: number }[] }) {
+  const filtered = data.filter((d) => d.value > 0);
+  if (!filtered.length) return <Empty />;
+  const total = filtered.reduce((s, d) => s + d.value, 0);
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <PieChart>
+        <Pie data={filtered} dataKey="value" nameKey="label" innerRadius={64} outerRadius={96} paddingAngle={2}>
+          {filtered.map((_, i) => (
+            <Cell key={i} fill={USAGE_COLORS[i % USAGE_COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip formatter={(v: number) => [`${v} (${Math.round((100 * v) / total)}%)`, ""]} />
+        <Legend
+          verticalAlign="bottom"
+          iconType="circle"
+          formatter={(value, entry) => {
+            const v = (entry?.payload as { value?: number })?.value ?? 0;
+            return (
+              <span style={{ color: BRAND.ink, fontSize: 12 }}>
+                {value} · {v} ({Math.round((100 * v) / total)}%)
+              </span>
+            );
+          }}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  );
+}
+
+export function ActivityLine({ data }: { data: { date: string; value: number }[] }) {
+  if (!data.length) return <Empty />;
+  return (
+    <ResponsiveContainer width="100%" height={220}>
+      <LineChart data={data} margin={{ left: -16, right: 12, top: 8 }}>
+        <XAxis dataKey="date" tick={axis} axisLine={false} tickLine={false} minTickGap={24} />
+        <YAxis tick={axis} axisLine={false} tickLine={false} width={36} />
+        <Tooltip />
+        <Line type="monotone" dataKey="value" stroke={BRAND.accent} strokeWidth={2.5} dot={false} />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}
+
+export function ActivityBars({ data }: { data: { hour: string; value: number }[] }) {
+  return (
+    <ResponsiveContainer width="100%" height={200}>
+      <BarChart data={data} margin={{ left: -16, right: 12, top: 8 }}>
+        <XAxis dataKey="hour" tick={{ ...axis, fontSize: 9 }} axisLine={false} tickLine={false} interval={1} />
+        <YAxis tick={axis} axisLine={false} tickLine={false} width={36} />
+        <Tooltip />
+        <Bar dataKey="value" fill={BRAND.accentSoft} radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+function Empty() {
+  return <p style={{ color: "var(--ink-soft)", fontSize: 13 }}>Sin datos en este período.</p>;
+}
