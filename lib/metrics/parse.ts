@@ -7,6 +7,21 @@ export const ERR_RE = /(There was an error|authorization grant|did not return a 
 export const NO_RESULT_RE =
   /(no se encontr|no se hallar|sin resultados?|no hay resultados?|no encontr[eé]|not found|no results|sin coincidencias)/i;
 
+// "Evento clave" / conversión, detectado en el MENSAJE del agente (genérico, declarativo
+// para no contar preguntas ni "agregar al pedido"). Cubre pedido/compra/turno/reserva.
+export const CONVERSION_RE = new RegExp(
+  "(" +
+    "(pedido|compra|orden)\\s+(ha sido|fue|qued[oó]|est[aá])\\s+(tomad|confirmad|registrad|realizad|complet|hech)" +
+    "|(tu|su|el)\\s+(pedido|compra|orden)\\s+(qued[oó]|est[aá]|fue|ha sido)\\s+(tomad|confirmad|registrad|realizad|listo|hech)" +
+    "|(compra|venta|orden)\\s+(realizad|confirmad|registrad|completad)" +
+    "|(turno|reserva|cita)\\s+(confirmad|agendad|reservad|registrad)" +
+    "|(qued[oó]|est[aá])\\s+(confirmad|agendad|reservad)\\s+(tu|su|el|la)\\s+(turno|reserva|cita)" +
+  ")",
+  "i",
+);
+// Nombre de tool que sugiere un cierre/evento clave (cualquier rubro).
+export const CONVERSION_TOOL_RE = /(pedido|order|compra|venta|checkout|reserva|turno|booking|appointment)/i;
+
 // (nombre, patrón) — orden importa: gana la primera coincidencia, como en Python.
 export const INTENTS: ReadonlyArray<readonly [string, RegExp]> = [
   ["saludo", /\b(hola|buen[ao]s?|buen d[ií]a|buenas|hey)\b/],

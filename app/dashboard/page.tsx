@@ -28,7 +28,7 @@ export default async function DashboardPage({
   const kpis = [
     { value: d.kpis.conversations, label: "Conversaciones" },
     { value: d.kpis.messagesHuman, label: "Mensajes de clientes" },
-    { value: d.kpis.toolCalls, label: "Acciones del agente" },
+    { value: d.kpis.conversions, label: d.conversionLabel },
     { value: d.kpis.avgResponse, label: "Tiempo de respuesta" },
   ];
 
@@ -62,8 +62,9 @@ export default async function DashboardPage({
         <Panel title="Uso de herramientas" insight={d.insight?.usage}>
           <UsageDonut data={d.tools} />
         </Panel>
-        <Panel title="Calidad de las respuestas" insight={d.insight?.misses}>
-          <div style={{ display: "flex", gap: 28, padding: "20px 4px" }}>
+        <Panel title="Indicadores" insight={d.insight?.misses}>
+          <div style={{ display: "flex", gap: 24, padding: "20px 4px", flexWrap: "wrap" }}>
+            <Stat value={`${d.conversionRate}%`} label={`Conversaciones con ${d.conversionLabel.toLowerCase()}`} />
             <Stat value={d.quality.errors} label="Errores de herramientas" />
             <Stat value={d.quality.noResult} label="Consultas sin resultado" />
           </div>
@@ -102,7 +103,7 @@ function Grid({ children }: { children: React.ReactNode }) {
   return <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>{children}</section>;
 }
 
-function Stat({ value, label }: { value: number; label: string }) {
+function Stat({ value, label }: { value: number | string; label: string }) {
   return (
     <div>
       <div style={{ fontSize: 28, fontWeight: 800, color: "var(--accent-dark)" }}>{value}</div>

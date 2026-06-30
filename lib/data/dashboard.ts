@@ -8,12 +8,14 @@ export interface DashboardRange {
 }
 
 export interface DashboardData {
+  conversionLabel: string; // "Pedidos" / "Turnos" / "Conversiones"
   kpis: {
     conversations: number;
     messagesHuman: number;
-    toolCalls: number;
+    conversions: number; // ≈ pedidos (sesiones con evento clave)
     avgResponse: string; // "12s" / "1m 5s" / "—"
   };
+  conversionRate: number; // % de conversaciones que llegan al evento
   tools: { label: string; value: number }[];
   activityDay: { date: string; value: number }[];
   activityHour: { hour: string; value: number }[];
@@ -40,7 +42,7 @@ export async function getDashboardData(range: DashboardRange): Promise<Dashboard
   const sb = await createClient();
   const { from, to } = range;
 
-  const [metrics, tools, hourly, insightRow] = await Promise.all([
+  const [metrics, tools, hourly, insightRow, clientRow] = await Promise.all([
     sb.from("metrics_daily").select("*").gte("date", from).lte("date", to),
     sb.from("tool_usage_daily").select("*").gte("date", from).lte("date", to),
     sb.from("activity_hourly").select("*").gte("date", from).lte("date", to),
@@ -51,7 +53,10 @@ export async function getDashboardData(range: DashboardRange): Promise<Dashboard
       .order("generated_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
+    sb.from("clients").select("conversion_label").maybeSingle(),
   ]);
+
+  const conversionLabel = (clientRow.data?.conversion_label as string) || "Conversiones";
 
   const md = metrics.data ?? [];
   const sum = (k: string) => md.reduce((s, r) => s + (Number(r[k]) || 0), 0);
@@ -65,14 +70,18 @@ export async function getDashboardData(range: DashboardRange): Promise<Dashboard
   for (const r of hourly.data ?? []) byHour[Number(r.hour)] += Number(r.count) || 0;
 
   const ins = insightRow.data;
+  const conversations = sum("conversations");
+  const convSessions = sum("conversion_sessions");
 
   return {
+    conversionLabel,
     kpis: {
-      conversations: sum("conversations"),
+      conversations,
       messagesHuman: sum("messages_human"),
-      toolCalls: sum("tool_calls"),
+      conversions: convSessions,
       avgResponse: fmtSecs(sum("response_sum_sec"), sum("response_count")),
     },
+    conversionRate: conversations ? Math.round((100 * convSessions) / conversations) : 0,
     tools: [...byTool.entries()].sort((a, b) => b[1] - a[1]).map(([label, value]) => ({ label, value })),
     activityDay: [...byDay.entries()].sort().map(([date, value]) => ({ date, value })),
     activityHour: byHour.map((value, h) => ({ hour: `${String(h).padStart(2, "0")}h`, value })),

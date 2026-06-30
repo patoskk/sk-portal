@@ -8,6 +8,8 @@ export interface MetricsDailyRow {
   messages_agent: number; // mensajes del agente (ai)
   messages_total: number;
   tool_calls: number; // acciones del agente (todas las herramientas, cualquier nombre)
+  conversions: number; // eventos clave detectados (mensajes de cierre + tools de cierre)
+  conversion_sessions: number; // sesiones distintas con al menos un evento clave (≈ pedidos)
   no_result: number; // consultas del agente que no devolvieron resultado (genérico)
   errors: number; // fallos de herramientas
   tool_results: number; // denominador de la tasa de error

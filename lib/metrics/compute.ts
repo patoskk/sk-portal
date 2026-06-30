@@ -2,7 +2,17 @@
 // (esquema LangChain: session_id, message jsonb, fecha). No depende de nombres de
 // herramientas: cuenta lo que haya. La interpretación por rubro la hace Claude (insights).
 
-import { RawRow, col, getMessage, parseFechaLocal, classify, ERR_RE, NO_RESULT_RE } from "./parse";
+import {
+  RawRow,
+  col,
+  getMessage,
+  parseFechaLocal,
+  classify,
+  ERR_RE,
+  NO_RESULT_RE,
+  CONVERSION_RE,
+  CONVERSION_TOOL_RE,
+} from "./parse";
 import type {
   ComputeResult,
   MetricsDailyRow,
@@ -17,6 +27,8 @@ interface DayBucket {
   messagesAgent: number;
   messagesTotal: number;
   toolCalls: number;
+  conversions: number;
+  conversionSessions: Set<string>;
   noResult: number;
   errors: number;
   toolResults: number;
@@ -34,6 +46,8 @@ function newBucket(): DayBucket {
     messagesAgent: 0,
     messagesTotal: 0,
     toolCalls: 0,
+    conversions: 0,
+    conversionSessions: new Set(),
     noResult: 0,
     errors: 0,
     toolResults: 0,
@@ -93,11 +107,22 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
         }
         lastHumanMs.delete(sid);
       }
+      // evento clave por mensaje del agente (cierre declarativo)
+      const aiText = typeof msg.content === "string" ? msg.content : "";
+      if (b && aiText && CONVERSION_RE.test(aiText)) {
+        b.conversions += 1;
+        if (sid) b.conversionSessions.add(sid);
+      }
       for (const tc of msg.tool_calls ?? []) {
         const name = (tc.name ?? "").trim() || "(sin nombre)";
         if (b) {
           b.toolCalls += 1;
           inc(b.tools, name);
+          // evento clave por nombre de tool (pedido/order/reserva/turno…)
+          if (CONVERSION_TOOL_RE.test(name)) {
+            b.conversions += 1;
+            if (sid) b.conversionSessions.add(sid);
+          }
         }
       }
     } else if (mtype === "tool") {
@@ -124,6 +149,8 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
       messages_agent: b.messagesAgent,
       messages_total: b.messagesTotal,
       tool_calls: b.toolCalls,
+      conversions: b.conversions,
+      conversion_sessions: b.conversionSessions.size,
       no_result: b.noResult,
       errors: b.errors,
       tool_results: b.toolResults,

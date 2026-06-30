@@ -21,7 +21,8 @@ const SYSTEM =
   "para un dueño de negocio no técnico. El agente puede ser de CUALQUIER rubro: inferí qué hace por los " +
   "NOMBRES de las herramientas que usa y por los volúmenes (no asumas que es un almacén). " +
   "Regla de oro: el valor son las OPORTUNIDADES, rankeadas por impacto: lo que hace perder clientes/ventas " +
-  "o degrada el servicio va primero — típicamente consultas sin resultado, errores de herramientas, " +
+  "o degrada el servicio va primero — típicamente baja tasa de CONVERSIÓN (conversations vs conversion_sessions, " +
+  "el evento clave: pedido/turno/reserva), consultas sin resultado, errores de herramientas, " +
   "tiempos de respuesta altos, o caídas de uso.\n\n" +
   "SÉ MUY CONCISO. Prohibido el texto largo. Reglas estrictas:\n" +
   "- title: 3 a 6 palabras, sin emojis, sin dos puntos.\n" +

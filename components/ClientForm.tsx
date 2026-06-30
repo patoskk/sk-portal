@@ -18,6 +18,7 @@ export function ClientForm() {
       rubro: String(fd.get("rubro") ?? ""),
       table: String(fd.get("table") ?? ""),
       email: String(fd.get("email") ?? ""),
+      label: String(fd.get("label") ?? ""),
       utc: Number(fd.get("utc") || -3),
     };
     const res = await fetch("/api/admin/clients", {
@@ -66,6 +67,9 @@ export function ClientForm() {
 
       <label style={label}>Email del dueño (para su acceso)</label>
       <input name="email" type="email" placeholder="dueño@correo.com" style={field} />
+
+      <label style={label}>Etiqueta del evento clave (ej. Pedidos, Turnos, Reservas)</label>
+      <input name="label" placeholder="Conversiones" style={field} />
 
       <label style={label}>Huso horario (UTC offset)</label>
       <input name="utc" type="number" step="1" defaultValue={-3} style={field} />

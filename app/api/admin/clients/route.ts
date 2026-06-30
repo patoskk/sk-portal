@@ -20,11 +20,12 @@ export async function POST(req: NextRequest) {
   if (me?.role !== "admin") return new NextResponse("requiere rol admin", { status: 403 });
 
   const b = (await req.json()) as {
-    name?: string; rubro?: string; table?: string; email?: string; utc?: number;
+    name?: string; rubro?: string; table?: string; email?: string; label?: string; utc?: number;
   };
   const name = (b.name ?? "").trim();
   const table = (b.table ?? "").trim();
   const email = (b.email ?? "").trim().toLowerCase();
+  const conversionLabel = (b.label ?? "").trim() || null;
   if (!name || !table) return new NextResponse("faltan nombre o tabla", { status: 400 });
 
   const sourceUrl = process.env.SOURCE_DEFAULT_URL?.trim();
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
   const clientId = randomUUID();
   const utc = typeof b.utc === "number" ? b.utc : -3;
 
-  const c = await admin.from("clients").insert({ id: clientId, name, rubro: b.rubro ?? "", utc_offset: utc });
+  const c = await admin.from("clients").insert({ id: clientId, name, rubro: b.rubro ?? "", utc_offset: utc, conversion_label: conversionLabel });
   if (c.error) return new NextResponse("creando cliente: " + c.error.message, { status: 500 });
   const s = await admin.from("client_sources").insert({ client_id: clientId, supabase_url: sourceUrl, table_name: table });
   if (s.error) return new NextResponse("creando fuente: " + s.error.message, { status: 500 });
