@@ -83,6 +83,7 @@ export function LessonForm() {
       <button
         type="submit"
         disabled={busy}
+        className="btn-primary"
         style={{
           background: "var(--accent)",
           color: "#fff",

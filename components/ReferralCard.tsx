@@ -22,17 +22,22 @@ export function ReferralCard() {
         RECOMENDÁ Y GANÁ
       </div>
       <h2 style={{ margin: "8px 0 10px", fontSize: 24, lineHeight: 1.15 }}>
-        Recomendá SK Optimal y ahorrá los dos.
+        Recomendá SK Optimal y obtené beneficios.
       </h2>
-      <p style={{ margin: "0 0 18px", fontSize: 15, lineHeight: 1.6, maxWidth: 640, opacity: 0.95 }}>
+      <p style={{ margin: "0 0 10px", fontSize: 15, lineHeight: 1.6, maxWidth: 640, opacity: 0.95 }}>
         Si recomendás a alguien y contrata el servicio:{" "}
         <strong>vos te llevás 50% de descuento en tu fee mensual durante 2 meses</strong> y tu
         referido arranca con <strong>20% off en su instalación inicial</strong>.
+      </p>
+      <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.5, maxWidth: 640, opacity: 0.9 }}>
+        Sin límite: <strong>cada vez</strong> que conseguís un referido y contrata, volvés a sumar el
+        beneficio. Recomendá a todos los que quieras.
       </p>
       <a
         href={waLink}
         target="_blank"
         rel="noopener noreferrer"
+        className="referral-cta"
         style={{
           display: "inline-block",
           background: "#fff",
