@@ -13,6 +13,7 @@ import {
   CONVERSION_RE,
   CONVERSION_TOOL_RE,
   PII_RE,
+  QUERY_KEYS,
 } from "./parse";
 import type {
   ComputeResult,
@@ -65,6 +66,25 @@ function newBucket(): DayBucket {
 
 function inc<K>(m: Map<K, number>, k: K, by = 1): void {
   m.set(k, (m.get(k) ?? 0) + by);
+}
+
+// Recorre los args de una tool y junta valores bajo claves de producto/consulta,
+// en cualquier nivel (ej. items[].producto). Descarta PII y strings largos.
+function collectQueries(node: unknown, out: Map<string, number>, keyMatched = false): void {
+  if (typeof node === "string") {
+    if (keyMatched) {
+      const q = node.trim();
+      if (q && q.length <= 50 && !PII_RE.test(q)) inc(out, q.toLowerCase());
+    }
+    return;
+  }
+  if (Array.isArray(node)) {
+    for (const v of node) collectQueries(v, out, keyMatched);
+    return;
+  }
+  if (node && typeof node === "object") {
+    for (const [k, v] of Object.entries(node)) collectQueries(v, out, QUERY_KEYS.test(k));
+  }
 }
 
 export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult {
@@ -127,13 +147,8 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
             b.conversions += 1;
             if (sid) b.conversionSessions.add(sid);
           } else {
-            // "lo más consultado": valores de los args de tools de búsqueda/info (sin PII, cortos)
-            for (const v of Object.values(tc.args ?? {})) {
-              if (typeof v === "string") {
-                const q = v.trim();
-                if (q && q.length <= 50 && !PII_RE.test(q)) inc(b.queries, q.toLowerCase());
-              }
-            }
+            // "lo más consultado": valores bajo claves de producto/consulta (anidados, sin PII)
+            collectQueries(tc.args ?? {}, b.queries);
           }
         }
       }

@@ -24,6 +24,10 @@ export const CONVERSION_TOOL_RE = /(pedido|order|compra|venta|checkout|reserva|t
 
 // Para "lo más consultado": descarta valores con datos personales (teléfono/email) o muy largos.
 export const PII_RE = /(@|\+?\d[\d\s().-]{6,})/;
+// Claves de args que representan un producto/consulta (genérico, en cualquier nivel del JSON).
+// Captura "query" (STOCK) y "producto" anidado en items[] (PRECIOS), y descarta id/modalidad/metodo_pago.
+export const QUERY_KEYS =
+  /^(producto|productos|product|item|items|query|consulta|consultas|search|busqueda|b[uú]squeda|nombre|q|sku|art[ií]culo|articulo|servicio|service|termino|t[eé]rmino)$/i;
 
 // (nombre, patrón) — orden importa: gana la primera coincidencia, como en Python.
 export const INTENTS: ReadonlyArray<readonly [string, RegExp]> = [
