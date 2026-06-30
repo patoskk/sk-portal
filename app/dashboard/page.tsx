@@ -4,7 +4,7 @@ import { DateRangePicker } from "@/components/DateRangePicker";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { Nav } from "@/components/Nav";
 import { ReferralCard } from "@/components/ReferralCard";
-import { ActivityBars, ActivityLine, UsageDonut } from "@/components/Charts";
+import { ActivityBars, ActivityLine, HBarChart, UsageDonut } from "@/components/Charts";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +29,7 @@ export default async function DashboardPage({
     { value: d.kpis.conversations, label: "Conversaciones" },
     { value: d.kpis.messagesHuman, label: "Mensajes de clientes" },
     { value: d.kpis.conversions, label: d.conversionLabel },
-    { value: d.kpis.avgResponse, label: "Tiempo de respuesta" },
+    { value: d.kpis.toolCalls, label: "Acciones del agente" },
   ];
 
   return (
@@ -62,12 +62,35 @@ export default async function DashboardPage({
         <Panel title="Uso de herramientas" insight={d.insight?.usage}>
           <UsageDonut data={d.tools} />
         </Panel>
-        <Panel title="Indicadores" insight={d.insight?.misses}>
-          <div style={{ display: "flex", gap: 24, padding: "20px 4px", flexWrap: "wrap" }}>
-            <Stat value={`${d.conversionRate}%`} label={`Conversaciones con ${d.conversionLabel.toLowerCase()}`} />
-            <Stat value={d.quality.errors} label="Errores de herramientas" />
-            <Stat value={d.quality.noResult} label="Consultas sin resultado" />
+
+        <div className="card">
+          <h3 style={{ margin: "0 0 14px", fontSize: 15 }}>Indicadores</h3>
+          {/* tasa de conversión con barra */}
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+              <span style={{ fontSize: 34, fontWeight: 800, color: "var(--accent-dark)" }}>{d.conversionRate}%</span>
+              <span style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>
+                de conversaciones llegan a {d.conversionLabel.toLowerCase()}
+              </span>
+            </div>
+            <div style={{ height: 8, borderRadius: 99, background: "var(--line)", marginTop: 8, overflow: "hidden" }}>
+              <div style={{ width: `${Math.min(d.conversionRate, 100)}%`, height: "100%", background: "var(--accent)", borderRadius: 99 }} />
+            </div>
           </div>
+          {/* mini-stats 2x2 */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <MiniStat value={d.kpis.toolCalls} label="Acciones del agente" />
+            <MiniStat value={d.msgsPerConv} label="Mensajes por charla" />
+            <MiniStat value={d.quality.errors} label="Errores" warn={d.quality.errors > 0} />
+            <MiniStat value={d.quality.noResult} label="Consultas sin resultado" warn={d.quality.noResult > 0} />
+          </div>
+          {d.insight?.misses ? (
+            <p style={{ color: "var(--ink-soft)", fontSize: 13, margin: "14px 0 0" }}>{d.insight.misses}</p>
+          ) : null}
+        </div>
+
+        <Panel title={`Lo más consultado por tus clientes`} insight={d.insight?.products} wide>
+          <HBarChart data={d.topQueries} />
         </Panel>
         <Panel title="Actividad por día" insight={d.insight?.activity} wide>
           <ActivityLine data={d.activityDay} />
@@ -103,11 +126,11 @@ function Grid({ children }: { children: React.ReactNode }) {
   return <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>{children}</section>;
 }
 
-function Stat({ value, label }: { value: number | string; label: string }) {
+function MiniStat({ value, label, warn }: { value: number | string; label: string; warn?: boolean }) {
   return (
     <div>
-      <div style={{ fontSize: 28, fontWeight: 800, color: "var(--accent-dark)" }}>{value}</div>
-      <div style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>{label}</div>
+      <div style={{ fontSize: 22, fontWeight: 800, color: warn ? "var(--warn)" : "var(--ink)" }}>{value}</div>
+      <div style={{ fontSize: 12, color: "var(--ink-soft)" }}>{label}</div>
     </div>
   );
 }

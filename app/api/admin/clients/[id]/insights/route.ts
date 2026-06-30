@@ -26,12 +26,13 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   const fromS = range.data[0].date;
   const toS = range.data[range.data.length - 1].date;
 
-  const [metrics, tools, intents] = await Promise.all([
+  const [metrics, tools, queries, intents] = await Promise.all([
     admin.from("metrics_daily").select("*").eq("client_id", id).gte("date", fromS).lte("date", toS),
     admin.from("tool_usage_daily").select("*").eq("client_id", id).gte("date", fromS).lte("date", toS),
+    admin.from("tool_queries_daily").select("query,count").eq("client_id", id).gte("date", fromS).lte("date", toS),
     admin.from("intent_daily").select("*").eq("client_id", id).gte("date", fromS).lte("date", toS),
   ]);
-  const summary = { client: cli.data, period: { from: fromS, to: toS }, metrics: metrics.data, tools: tools.data, intents: intents.data };
+  const summary = { client: cli.data, period: { from: fromS, to: toS }, metrics: metrics.data, tools: tools.data, top_consultas: queries.data, intents: intents.data };
 
   let insight;
   try {

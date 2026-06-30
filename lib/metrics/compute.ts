@@ -12,11 +12,13 @@ import {
   NO_RESULT_RE,
   CONVERSION_RE,
   CONVERSION_TOOL_RE,
+  PII_RE,
 } from "./parse";
 import type {
   ComputeResult,
   MetricsDailyRow,
   ToolUsageDailyRow,
+  ToolQueryDailyRow,
   ActivityHourlyRow,
   IntentDailyRow,
 } from "./types";
@@ -36,6 +38,7 @@ interface DayBucket {
   responseCount: number;
   byHour: Map<number, number>;
   tools: Map<string, number>;
+  queries: Map<string, number>; // "lo más consultado" (args de tools de búsqueda, sin PII)
   intents: Map<string, number>;
 }
 
@@ -55,6 +58,7 @@ function newBucket(): DayBucket {
     responseCount: 0,
     byHour: new Map(),
     tools: new Map(),
+    queries: new Map(),
     intents: new Map(),
   };
 }
@@ -118,10 +122,18 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
         if (b) {
           b.toolCalls += 1;
           inc(b.tools, name);
-          // evento clave por nombre de tool (pedido/order/reserva/turno…)
           if (CONVERSION_TOOL_RE.test(name)) {
+            // evento clave por nombre de tool (pedido/order/reserva/turno…)
             b.conversions += 1;
             if (sid) b.conversionSessions.add(sid);
+          } else {
+            // "lo más consultado": valores de los args de tools de búsqueda/info (sin PII, cortos)
+            for (const v of Object.values(tc.args ?? {})) {
+              if (typeof v === "string") {
+                const q = v.trim();
+                if (q && q.length <= 50 && !PII_RE.test(q)) inc(b.queries, q.toLowerCase());
+              }
+            }
           }
         }
       }
@@ -138,6 +150,7 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
 
   const metricsDaily: MetricsDailyRow[] = [];
   const toolUsage: ToolUsageDailyRow[] = [];
+  const toolQueries: ToolQueryDailyRow[] = [];
   const activityHourly: ActivityHourlyRow[] = [];
   const intentDaily: IntentDailyRow[] = [];
 
@@ -158,10 +171,11 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
       response_count: b.responseCount,
     });
     for (const [tool, count] of b.tools) toolUsage.push({ date, tool, count });
+    for (const [query, count] of b.queries) toolQueries.push({ date, query, count });
     for (const [hour, count] of [...b.byHour.entries()].sort((x, y) => x[0] - y[0]))
       activityHourly.push({ date, hour, count });
     for (const [intent, count] of b.intents) intentDaily.push({ date, intent, count });
   }
 
-  return { metricsDaily, toolUsage, activityHourly, intentDaily };
+  return { metricsDaily, toolUsage, toolQueries, activityHourly, intentDaily };
 }

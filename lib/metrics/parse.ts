@@ -22,6 +22,9 @@ export const CONVERSION_RE = new RegExp(
 // Nombre de tool que sugiere un cierre/evento clave (cualquier rubro).
 export const CONVERSION_TOOL_RE = /(pedido|order|compra|venta|checkout|reserva|turno|booking|appointment)/i;
 
+// Para "lo más consultado": descarta valores con datos personales (teléfono/email) o muy largos.
+export const PII_RE = /(@|\+?\d[\d\s().-]{6,})/;
+
 // (nombre, patrón) — orden importa: gana la primera coincidencia, como en Python.
 export const INTENTS: ReadonlyArray<readonly [string, RegExp]> = [
   ["saludo", /\b(hola|buen[ao]s?|buen d[ií]a|buenas|hey)\b/],

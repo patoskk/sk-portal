@@ -23,6 +23,12 @@ export interface ToolUsageDailyRow {
   count: number;
 }
 
+export interface ToolQueryDailyRow {
+  date: string;
+  query: string; // "lo más consultado": valores que el agente pasó a tools de búsqueda (sin PII)
+  count: number;
+}
+
 export interface ActivityHourlyRow {
   date: string;
   hour: number; // 0-23, hora local
@@ -38,6 +44,7 @@ export interface IntentDailyRow {
 export interface ComputeResult {
   metricsDaily: MetricsDailyRow[];
   toolUsage: ToolUsageDailyRow[];
+  toolQueries: ToolQueryDailyRow[];
   activityHourly: ActivityHourlyRow[];
   intentDaily: IntentDailyRow[];
 }

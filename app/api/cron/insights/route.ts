@@ -24,13 +24,14 @@ export async function GET(req: NextRequest) {
 
   for (const c of clients ?? []) {
     try {
-      const [metrics, tools, intents] = await Promise.all([
+      const [metrics, tools, queries, intents] = await Promise.all([
         admin.from("metrics_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
         admin.from("tool_usage_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
+        admin.from("tool_queries_daily").select("query,count").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
         admin.from("intent_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
       ]);
       const summary = { client: { name: c.name, rubro: c.rubro }, period: { from: fromS, to: toS },
-        metrics: metrics.data, tools: tools.data, intents: intents.data };
+        metrics: metrics.data, tools: tools.data, top_consultas: queries.data, intents: intents.data };
 
       const insight = await generateInsight(summary);
       await admin.from("insights").insert({

@@ -29,8 +29,9 @@ const SYSTEM =
   "- text de cada oportunidad: UNA o DOS frases cortas (máx ~25 palabras). Dato clave + acción.\n" +
   "- cada *_insight: UNA frase corta (máx ~20 palabras) sobre ese aspecto; si no aplica, dejá string vacío.\n" +
   "Devolvé SOLO JSON válido con las claves: opportunities (array de {title,text}, 3 a 5), " +
-  "usage_insight (sobre el uso de herramientas), activity_insight (días/horas), misses_insight (sin " +
-  "resultado/errores), proxima_etapa. (funnel_insight y products_insight: dejalos vacíos.)";
+  "usage_insight (uso de herramientas), products_insight (lo más consultado por los clientes), " +
+  "activity_insight (días/horas), misses_insight (sin resultado/errores y tasa de conversión), " +
+  "proxima_etapa. (funnel_insight: dejalo vacío.)";
 
 export async function generateInsight(
   summary: unknown,

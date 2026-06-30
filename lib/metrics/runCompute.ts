@@ -29,6 +29,7 @@ export async function computeClient(admin: SupabaseClient, src: SourceDescriptor
   await Promise.all([
     admin.from("metrics_daily").upsert(withId(out.metricsDaily), { onConflict: "client_id,date" }),
     admin.from("tool_usage_daily").upsert(withId(out.toolUsage), { onConflict: "client_id,date,tool" }),
+    admin.from("tool_queries_daily").upsert(withId(out.toolQueries), { onConflict: "client_id,date,query" }),
     admin.from("activity_hourly").upsert(withId(out.activityHourly), { onConflict: "client_id,date,hour" }),
     admin.from("intent_daily").upsert(withId(out.intentDaily), { onConflict: "client_id,date,intent" }),
   ]);
