@@ -1,6 +1,6 @@
 // Sección "Recomendá y ganá" — programa de referidos (estático, al final del dashboard).
 // Cambiá CONTACT_WHATSAPP por el número real (formato internacional sin +, ej. 549351...).
-const CONTACT_WHATSAPP = "5490000000000";
+const CONTACT_WHATSAPP = "5493816417933";
 
 export function ReferralCard() {
   const waLink =
