@@ -1,6 +1,8 @@
 import { getDashboardData } from "@/lib/data/dashboard";
 import { DateRangePicker } from "@/components/DateRangePicker";
 import { SettingsMenu } from "@/components/SettingsMenu";
+import { Nav } from "@/components/Nav";
+import { ReferralCard } from "@/components/ReferralCard";
 import {
   ActivityBars,
   ActivityLine,
@@ -38,8 +40,11 @@ export default async function DashboardPage({
   return (
     <main style={{ maxWidth: "var(--maxw)", margin: "0 auto", padding: "0 24px 60px" }}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "28px 0" }}>
-        <div className="wordmark">
-          <span className="sk">SK</span> <span className="op">OPTIMAL</span>
+        <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
+          <div className="wordmark">
+            <span className="sk">SK</span> <span className="op">OPTIMAL</span>
+          </div>
+          <Nav />
         </div>
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
           <DateRangePicker from={from} to={to} />
@@ -97,6 +102,8 @@ export default async function DashboardPage({
       {d.insight?.proximaEtapa ? (
         <p style={{ color: "var(--ink-soft)", marginTop: 16, fontSize: 13 }}>{d.insight.proximaEtapa}</p>
       ) : null}
+
+      <ReferralCard />
     </main>
   );
 }
