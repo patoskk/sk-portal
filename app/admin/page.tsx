@@ -4,6 +4,7 @@ import { getLessons } from "@/lib/data/lessons";
 import { Nav } from "@/components/Nav";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { LessonForm } from "@/components/LessonForm";
+import { LessonsAdminList } from "@/components/LessonsAdminList";
 
 export const dynamic = "force-dynamic";
 
@@ -33,20 +34,7 @@ export default async function AdminPage() {
         <LessonForm />
         <div className="card">
           <h3 style={{ marginTop: 0, fontSize: 15 }}>Publicadas ({lessons.length})</h3>
-          {lessons.length === 0 ? (
-            <p style={{ color: "var(--ink-soft)", fontSize: 13 }}>Todavía ninguna.</p>
-          ) : (
-            <ul style={{ margin: 0, paddingLeft: 16 }}>
-              {lessons.map((l) => (
-                <li key={l.id} style={{ marginBottom: 6, fontSize: 13.5 }}>
-                  {l.title}
-                  <a href={`/api/lessons/${l.id}/view`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-dark)", marginLeft: 6 }}>
-                    ↗
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
+          <LessonsAdminList lessons={lessons} />
         </div>
       </div>
     </main>
