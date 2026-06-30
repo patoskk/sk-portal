@@ -13,7 +13,7 @@ export const maxDuration = 60;
 export async function GET(req: NextRequest) {
   // Vercel Cron manda Authorization: Bearer <CRON_SECRET>
   const auth = req.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (auth !== `Bearer ${process.env.CRON_SECRET?.trim()}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
@@ -72,7 +72,7 @@ async function resolveSourceKey(
   vaultSecretId: string | null,
 ): Promise<string> {
   const envKey = process.env[`SOURCE_KEY_${clientId.replace(/-/g, "_").toUpperCase()}`];
-  if (envKey) return envKey;
+  if (envKey) return envKey.trim();
   if (vaultSecretId) {
     const { data, error } = await admin
       .schema("vault")

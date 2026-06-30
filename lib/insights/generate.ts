@@ -32,7 +32,7 @@ export async function generateInsight(
   summary: unknown,
   model: string = INSIGHTS_MODEL,
 ): Promise<InsightOut> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
   if (!apiKey) throw new Error("falta ANTHROPIC_API_KEY");
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
