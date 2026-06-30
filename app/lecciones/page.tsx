@@ -1,4 +1,5 @@
 import { getLessons } from "@/lib/data/lessons";
+import { isAdmin } from "@/lib/data/role";
 import { Nav } from "@/components/Nav";
 import { SettingsMenu } from "@/components/SettingsMenu";
 
@@ -11,6 +12,7 @@ function formatDate(iso: string) {
 
 export default async function LeccionesPage() {
   const lessons = await getLessons();
+  const admin = await isAdmin();
 
   return (
     <main style={{ maxWidth: "var(--maxw)", margin: "0 auto", padding: "0 24px 60px" }}>
@@ -19,7 +21,7 @@ export default async function LeccionesPage() {
           <div className="wordmark">
             <span className="sk">SK</span> <span className="op">OPTIMAL</span>
           </div>
-          <Nav />
+          <Nav isAdmin={admin} />
         </div>
         <SettingsMenu />
       </header>

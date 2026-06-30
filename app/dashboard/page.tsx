@@ -3,6 +3,7 @@ import { DateRangePicker } from "@/components/DateRangePicker";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { Nav } from "@/components/Nav";
 import { ReferralCard } from "@/components/ReferralCard";
+import { isAdmin } from "@/lib/data/role";
 import {
   ActivityBars,
   ActivityLine,
@@ -29,6 +30,7 @@ export default async function DashboardPage({
   const from = sp.from ?? isoDaysAgo(30);
   const to = sp.to ?? isoDaysAgo(0);
   const d = await getDashboardData({ from, to });
+  const admin = await isAdmin();
 
   const kpis = [
     { value: d.kpis.conversations, label: "Conversaciones" },
@@ -44,7 +46,7 @@ export default async function DashboardPage({
           <div className="wordmark">
             <span className="sk">SK</span> <span className="op">OPTIMAL</span>
           </div>
-          <Nav />
+          <Nav isAdmin={admin} />
         </div>
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
           <DateRangePicker from={from} to={to} />

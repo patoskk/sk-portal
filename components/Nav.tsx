@@ -2,16 +2,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const LINKS = [
+const BASE = [
   { href: "/dashboard", label: "Panel" },
   { href: "/lecciones", label: "Lecciones" },
 ];
 
-export function Nav() {
+export function Nav({ isAdmin = false }: { isAdmin?: boolean }) {
   const path = usePathname();
+  const links = isAdmin ? [...BASE, { href: "/admin", label: "Admin" }] : BASE;
   return (
     <nav style={{ display: "flex", gap: 4 }}>
-      {LINKS.map((l) => {
+      {links.map((l) => {
         const active = path === l.href;
         return (
           <Link
