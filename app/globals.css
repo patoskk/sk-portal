@@ -19,6 +19,25 @@
   --maxw: 1200px; /* pantalla, no A4 */
 }
 
+/* Tema oscuro — mantiene el acento teal, invierte fondo/texto */
+:root[data-theme="dark"] {
+  --paper: #0F1715;
+  --card: #172420;
+  --accent: #46B49C;
+  --accent-dark: #6FCBB6;
+  --accent-soft: #2C7C6C;
+  --tint: #1A2A25;
+  --ink: #E9F1ED;
+  --ink-soft: #9FB2AC;
+  --line: #26332E;
+  --gold: #C2A36B;
+  --grey: #6B756F;
+  --warn: #CC7E71;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 24px rgba(0, 0, 0, .35);
+  --shadow-hi: 0 2px 6px rgba(0, 0, 0, .35), 0 14px 40px rgba(0, 0, 0, .5);
+}
+html { background: var(--paper); }
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {

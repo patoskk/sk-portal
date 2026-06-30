@@ -1,5 +1,6 @@
 import { getDashboardData } from "@/lib/data/dashboard";
 import { DateRangePicker } from "@/components/DateRangePicker";
+import { SettingsMenu } from "@/components/SettingsMenu";
 import {
   ActivityBars,
   ActivityLine,
@@ -40,7 +41,10 @@ export default async function DashboardPage({
         <div className="wordmark">
           <span className="sk">SK</span> <span className="op">OPTIMAL</span>
         </div>
-        <DateRangePicker from={from} to={to} />
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <DateRangePicker from={from} to={to} />
+          <SettingsMenu />
+        </div>
       </header>
 
       <h1 style={{ fontSize: 34, margin: "0 0 24px", letterSpacing: "-.4px" }}>Tu agente de IA, en números</h1>
@@ -49,7 +53,7 @@ export default async function DashboardPage({
       <section style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 22 }}>
         {kpis.map((k) => (
           <div key={k.label} className="card">
-            <div style={{ fontSize: 30, fontWeight: 800, color: BRAND.accentDark }}>{k.value}</div>
+            <div style={{ fontSize: 30, fontWeight: 800, color: "var(--accent-dark)" }}>{k.value}</div>
             <div style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>{k.label}</div>
           </div>
         ))}

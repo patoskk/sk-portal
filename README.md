@@ -35,27 +35,47 @@ Next.js en Vercel  ← cada cliente ve SOLO sus filas
 | `app/api/cron/insights/` | genera oportunidades con Claude (semanal) |
 | `supabase/migrations/0001_init.sql` | tablas + RLS + auth hook |
 
-## Setup
+## Producción
+
+- **App:** https://sk-clientportal.vercel.app · repo `patoskk/sk-portal` · Vercel `sk-clientportal` (Hobby).
+- **Cron (límite Hobby = 1×/día):** `compute` 0 11 * * * · `insights` lunes 12 UTC. Para más frecuencia: Vercel Pro o un workflow n8n que pegue al endpoint con el `CRON_SECRET`.
+- **Env vars** (en Vercel y `.env.local`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET`, `ANTHROPIC_API_KEY`, y un `SOURCE_KEY_<CLIENT_ID>` por cliente.
+
+## Setup (entorno nuevo)
 
 ```bash
 npm install
-
-# 1. Crear el Supabase CENTRAL del portal y correr la migración:
-#    supabase/migrations/0001_init.sql (SQL Editor o supabase db push)
+# 1. Crear el Supabase CENTRAL y correr supabase/migrations/0001_init.sql y 0002_auth_hook_rls.sql (SQL Editor)
 # 2. Authentication → Hooks → habilitar "Custom Access Token" = public.custom_access_token_hook
-# 3. Copiar variables:
-cp .env.example .env.local   # completar URL/keys/CRON_SECRET
-
+# 3. cp .env.example .env.local   # completar URL/keys/CRON_SECRET
 npm run dev   # http://localhost:3000
 ```
 
-### Alta de un cliente (piloto)
-1. `insert into clients (name, rubro, utc_offset) ...`
-2. `insert into client_sources (client_id, supabase_url, table_name) ...`
-   y la key de lectura en `SOURCE_KEY_<CLIENT_ID>` (env) o en Supabase Vault.
-3. Crear el usuario en Auth y mapearlo: `insert into user_clients (user_id, client_id, role)`.
-4. Disparar el cómputo una vez:
-   `curl -H "Authorization: Bearer $CRON_SECRET" https://<app>/api/cron/compute`
+## Alta de un cliente nuevo
+
+Cada cliente tiene su **propio** Supabase (la fuente). Pasos:
+
+```bash
+# 1) Alta del cliente + fuente + usuario. Editá CLIENT_ID/URL/tabla en el script
+#    (o adaptá setup-pilot.ts). client_id es un uuid que vos generás.
+npx tsx scripts/setup-pilot.ts            # da de alta cliente, fuente y un usuario de prueba
+npx tsx scripts/add-user.ts <email>       # crea el usuario real del cliente (devuelve contraseña)
+
+# 2) Key de LECTURA de la fuente: usar la SECRET del proyecto del cliente
+#    (la publishable NO sirve si la tabla tiene RLS). Cargar como:
+#    SOURCE_KEY_<CLIENT_ID_EN_MAYUS_CON_GUION_BAJO>=sb_secret_...   (en .env.local y en Vercel)
+
+# 3) Activar RLS en la tabla de conversaciones del cliente (SQL Editor de SU proyecto):
+#    alter table public.<tabla> enable row level security;
+#    (sin policies = solo service/secret accede; la publishable deja de leer)
+
+# 4) Primer cómputo + insights:
+curl -H "Authorization: Bearer $CRON_SECRET" https://sk-clientportal.vercel.app/api/cron/compute
+npx tsx scripts/gen-insights.ts <client_id>      # genera oportunidades (reviewed=false)
+npx tsx scripts/publish-insights.ts <client_id>  # publica al cliente (reviewed=true)
+```
+
+**Verificación:** `npx tsx scripts/verify.ts` chequea que el usuario vea sus filas y que no haya fugas de otros clientes (RLS).
 
 ## Seguridad (no negociable)
 - **RLS activado en todas las tablas**; cada usuario ve solo su `client_id` (vía claim del JWT).
