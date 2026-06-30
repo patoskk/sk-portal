@@ -24,14 +24,13 @@ export async function GET(req: NextRequest) {
 
   for (const c of clients ?? []) {
     try {
-      const [metrics, products, tools, intents] = await Promise.all([
+      const [metrics, tools, intents] = await Promise.all([
         admin.from("metrics_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
-        admin.from("product_queries_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
         admin.from("tool_usage_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
         admin.from("intent_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
       ]);
       const summary = { client: { name: c.name, rubro: c.rubro }, period: { from: fromS, to: toS },
-        metrics: metrics.data, products: products.data, tools: tools.data, intents: intents.data };
+        metrics: metrics.data, tools: tools.data, intents: intents.data };
 
       const insight = await generateInsight(summary);
       await admin.from("insights").insert({
@@ -45,7 +44,7 @@ export async function GET(req: NextRequest) {
         activity_insight: insight.activity_insight,
         misses_insight: insight.misses_insight,
         proxima_etapa: insight.proxima_etapa,
-        reviewed: false,
+        reviewed: true, // automático semanal: se publica solo
       });
       results[c.id] = { ok: true, opportunities: insight.opportunities?.length ?? 0 };
     } catch (e) {

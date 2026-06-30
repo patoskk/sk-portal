@@ -1,9 +1,11 @@
 // Port fiel de los parsers de metrics-pdf-report/scripts/analyze.py
 // Esquema LangChain-memory de Supabase: id, session_id, message (blob JSON), Texto, fecha.
 
-export const MISS_RE = /No se encontraron productos/i;
 export const ERR_RE = /(There was an error|authorization grant|did not return a response)/i;
-export const QBUSC_RE = /"query_buscada"\s*:\s*"([^"]+)"/;
+// "Sin resultado" genérico: una búsqueda/consulta del agente que no devolvió nada.
+// Aplica a cualquier rubro (no solo "No se encontraron productos").
+export const NO_RESULT_RE =
+  /(no se encontr|no se hallar|sin resultados?|no hay resultados?|no encontr[eé]|not found|no results|sin coincidencias)/i;
 
 // (nombre, patrón) — orden importa: gana la primera coincidencia, como en Python.
 export const INTENTS: ReadonlyArray<readonly [string, RegExp]> = [

@@ -29,9 +29,8 @@ async function main() {
   const fromS = range.data[0].date;
   const toS = range.data[range.data.length - 1].date;
 
-  const [metrics, products, tools, intents] = await Promise.all([
+  const [metrics, tools, intents] = await Promise.all([
     admin.from("metrics_daily").select("*").eq("client_id", CLIENT_ID).gte("date", fromS).lte("date", toS),
-    admin.from("product_queries_daily").select("*").eq("client_id", CLIENT_ID).gte("date", fromS).lte("date", toS),
     admin.from("tool_usage_daily").select("*").eq("client_id", CLIENT_ID).gte("date", fromS).lte("date", toS),
     admin.from("intent_daily").select("*").eq("client_id", CLIENT_ID).gte("date", fromS).lte("date", toS),
   ]);
@@ -40,7 +39,6 @@ async function main() {
     client: c.data,
     period: { from: fromS, to: toS },
     metrics: metrics.data,
-    products: products.data,
     tools: tools.data,
     intents: intents.data,
   };

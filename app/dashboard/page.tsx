@@ -1,17 +1,10 @@
 import { getDashboardData } from "@/lib/data/dashboard";
+import { isAdmin } from "@/lib/data/role";
 import { DateRangePicker } from "@/components/DateRangePicker";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { Nav } from "@/components/Nav";
 import { ReferralCard } from "@/components/ReferralCard";
-import { isAdmin } from "@/lib/data/role";
-import {
-  ActivityBars,
-  ActivityLine,
-  FunnelChart,
-  HBarChart,
-  UsageDonut,
-} from "@/components/Charts";
-import { BRAND } from "@/lib/brand";
+import { ActivityBars, ActivityLine, UsageDonut } from "@/components/Charts";
 
 export const dynamic = "force-dynamic";
 
@@ -35,8 +28,8 @@ export default async function DashboardPage({
   const kpis = [
     { value: d.kpis.conversations, label: "Conversaciones" },
     { value: d.kpis.messagesHuman, label: "Mensajes de clientes" },
-    { value: `${d.kpis.conversionPct}%`, label: "Llegan a pedido" },
-    { value: d.kpis.stockQueries, label: "Búsquedas de productos" },
+    { value: d.kpis.toolCalls, label: "Acciones del agente" },
+    { value: d.kpis.avgResponse, label: "Tiempo de respuesta" },
   ];
 
   return (
@@ -56,7 +49,6 @@ export default async function DashboardPage({
 
       <h1 style={{ fontSize: 34, margin: "0 0 24px", letterSpacing: "-.4px" }}>Tu agente de IA, en números</h1>
 
-      {/* KPIs */}
       <section style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 22 }}>
         {kpis.map((k) => (
           <div key={k.label} className="card">
@@ -67,17 +59,14 @@ export default async function DashboardPage({
       </section>
 
       <Grid>
-        <Panel title="Embudo de conversación" insight={d.insight?.funnel}>
-          <FunnelChart labels={d.funnel.labels} values={d.funnel.values} />
+        <Panel title="Uso de herramientas" insight={d.insight?.usage}>
+          <UsageDonut data={d.tools} />
         </Panel>
-        <Panel title="Uso del agente" insight={d.insight?.usage}>
-          <UsageDonut data={d.usage} />
-        </Panel>
-        <Panel title="Productos más buscados" insight={d.insight?.products}>
-          <HBarChart data={d.topProducts} />
-        </Panel>
-        <Panel title="Búsquedas sin resultado (ventas perdidas)" insight={d.insight?.misses}>
-          <HBarChart data={d.stockMisses} color={BRAND.warn} />
+        <Panel title="Calidad de las respuestas" insight={d.insight?.misses}>
+          <div style={{ display: "flex", gap: 28, padding: "20px 4px" }}>
+            <Stat value={d.quality.errors} label="Errores de herramientas" />
+            <Stat value={d.quality.noResult} label="Consultas sin resultado" />
+          </div>
         </Panel>
         <Panel title="Actividad por día" insight={d.insight?.activity} wide>
           <ActivityLine data={d.activityDay} />
@@ -87,7 +76,6 @@ export default async function DashboardPage({
         </Panel>
       </Grid>
 
-      {/* Oportunidades al final: la conclusión accionable (la regla de oro) */}
       {d.insight?.opportunities?.length ? (
         <section className="card" style={{ marginTop: 22, background: "var(--tint)", border: 0 }}>
           <h2 style={{ marginTop: 0, fontSize: 18 }}>Oportunidades de mejora</h2>
@@ -112,6 +100,15 @@ export default async function DashboardPage({
 
 function Grid({ children }: { children: React.ReactNode }) {
   return <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>{children}</section>;
+}
+
+function Stat({ value, label }: { value: number; label: string }) {
+  return (
+    <div>
+      <div style={{ fontSize: 28, fontWeight: 800, color: "var(--accent-dark)" }}>{value}</div>
+      <div style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>{label}</div>
+    </div>
+  );
 }
 
 function Panel({
