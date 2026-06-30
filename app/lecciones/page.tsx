@@ -44,16 +44,14 @@ export default async function LeccionesPage() {
               {l.summary ? (
                 <p style={{ margin: 0, color: "var(--ink-soft)", fontSize: 14, flex: 1 }}>{l.summary}</p>
               ) : null}
-              {l.url ? (
-                <a
-                  href={l.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: "var(--accent-dark)", fontWeight: 700, fontSize: 14, textDecoration: "none", marginTop: 4 }}
-                >
-                  Leer →
-                </a>
-              ) : null}
+              <a
+                href={`/api/lessons/${l.id}/view`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "var(--accent-dark)", fontWeight: 700, fontSize: 14, textDecoration: "none", marginTop: 4 }}
+              >
+                Leer →
+              </a>
             </article>
           ))}
         </section>

@@ -40,11 +40,9 @@ export default async function AdminPage() {
               {lessons.map((l) => (
                 <li key={l.id} style={{ marginBottom: 6, fontSize: 13.5 }}>
                   {l.title}
-                  {l.url ? (
-                    <a href={l.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-dark)", marginLeft: 6 }}>
-                      ↗
-                    </a>
-                  ) : null}
+                  <a href={`/api/lessons/${l.id}/view`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-dark)", marginLeft: 6 }}>
+                    ↗
+                  </a>
                 </li>
               ))}
             </ul>

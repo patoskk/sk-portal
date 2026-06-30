@@ -28,25 +28,31 @@ export async function POST(req: NextRequest) {
   if (!title) return new NextResponse("falta el título", { status: 400 });
 
   let url = String(fd.get("url") ?? "").trim() || null;
+  let body: string | null = null;
 
-  // 4. archivo -> Storage
+  // 4. archivo: HTML -> lo guardamos como texto y lo servimos desde la app
+  //    (Storage fuerza text/plain en HTML). PDF -> Storage (renderiza bien).
   const file = fd.get("file");
   if (file && file instanceof File && file.size > 0) {
-    const ext = file.name.split(".").pop() || "bin";
-    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const buf = Buffer.from(await file.arrayBuffer());
-    const up = await admin.storage.from("lessons").upload(path, buf, {
-      contentType: file.type || "application/octet-stream",
-      upsert: false,
-    });
-    if (up.error) return new NextResponse("subiendo archivo: " + up.error.message, { status: 500 });
-    url = admin.storage.from("lessons").getPublicUrl(path).data.publicUrl;
+    const ext = (file.name.split(".").pop() || "bin").toLowerCase();
+    if (ext === "html" || ext === "htm") {
+      body = await file.text();
+    } else {
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const buf = Buffer.from(await file.arrayBuffer());
+      const up = await admin.storage.from("lessons").upload(path, buf, {
+        contentType: ext === "pdf" ? "application/pdf" : file.type || "application/octet-stream",
+        upsert: false,
+      });
+      if (up.error) return new NextResponse("subiendo archivo: " + up.error.message, { status: 500 });
+      url = admin.storage.from("lessons").getPublicUrl(path).data.publicUrl;
+    }
   }
 
-  if (!url) return new NextResponse("falta archivo o link", { status: 400 });
+  if (!url && !body) return new NextResponse("falta archivo o link", { status: 400 });
 
   // 5. insertar
-  const ins = await admin.from("lessons").insert({ title, summary, url, client_id: clientId });
+  const ins = await admin.from("lessons").insert({ title, summary, url, body, client_id: clientId });
   if (ins.error) return new NextResponse("guardando: " + ins.error.message, { status: 500 });
 
   return NextResponse.json({ ok: true });
