@@ -54,6 +54,32 @@ body {
 .wordmark .sk { color: var(--ink); }
 .wordmark .op { color: var(--accent); }
 
+/* ---- Layout responsivo ---- */
+.page { max-width: var(--maxw); margin: 0 auto; padding: 0 24px 60px; }
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; padding: 28px 0; flex-wrap: wrap;
+}
+.topbar-brand { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.topbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.page-title { font-size: 34px; margin: 0 0 24px; letter-spacing: -.4px; }
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+.panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.lessons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.admin-grid { display: grid; grid-template-columns: 620px 1fr; gap: 24px; align-items: start; }
+
+@media (max-width: 760px) {
+  .page { padding: 0 16px 48px; }
+  .topbar { padding: 18px 0; gap: 10px; }
+  .topbar-actions { width: 100%; }
+  .page-title { font-size: 25px; margin: 0 0 18px; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .panel-grid { grid-template-columns: 1fr; }
+  .lessons-grid { grid-template-columns: 1fr; }
+  .admin-grid { grid-template-columns: 1fr; gap: 16px; }
+  .card { padding: 16px 16px; }
+}
+
 .card {
   background: var(--card);
   border: 1px solid var(--line);

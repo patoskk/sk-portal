@@ -18,9 +18,9 @@ export default async function AdminPage() {
   const clients = await getClients();
 
   return (
-    <main style={{ maxWidth: "var(--maxw)", margin: "0 auto", padding: "0 24px 60px" }}>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "28px 0" }}>
-        <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
+    <main className="page">
+      <header className="topbar">
+        <div className="topbar-brand">
           <div className="wordmark">
             <span className="sk">SK</span> <span className="op">OPTIMAL</span>
           </div>
@@ -35,7 +35,7 @@ export default async function AdminPage() {
       <p style={{ color: "var(--ink-soft)", marginTop: 0, marginBottom: 16 }}>
         Agregá un cliente (su tabla vive en tu proyecto de Supabase). Se crea, se calcula y queda listo.
       </p>
-      <div style={{ display: "grid", gridTemplateColumns: "620px 1fr", gap: 24, alignItems: "start", marginBottom: 40 }}>
+      <div className="admin-grid" style={{ marginBottom: 40 }}>
         <ClientForm />
         <div className="card">
           <h3 style={{ marginTop: 0, fontSize: 15 }}>Clientes ({clients.length})</h3>
@@ -47,7 +47,7 @@ export default async function AdminPage() {
       <p style={{ color: "var(--ink-soft)", marginTop: 0, marginBottom: 16 }}>
         Publicá material de IA. Las globales las ven todos los clientes.
       </p>
-      <div style={{ display: "grid", gridTemplateColumns: "620px 1fr", gap: 24, alignItems: "start" }}>
+      <div className="admin-grid">
         <LessonForm />
         <div className="card">
           <h3 style={{ marginTop: 0, fontSize: 15 }}>Publicadas ({lessons.length})</h3>

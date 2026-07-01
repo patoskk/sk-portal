@@ -15,9 +15,9 @@ export default async function LeccionesPage() {
   const admin = await isAdmin();
 
   return (
-    <main style={{ maxWidth: "var(--maxw)", margin: "0 auto", padding: "0 24px 60px" }}>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "28px 0" }}>
-        <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
+    <main className="page">
+      <header className="topbar">
+        <div className="topbar-brand">
           <div className="wordmark">
             <span className="sk">SK</span> <span className="op">OPTIMAL</span>
           </div>
@@ -26,7 +26,7 @@ export default async function LeccionesPage() {
         <SettingsMenu />
       </header>
 
-      <h1 style={{ fontSize: 34, margin: "0 0 6px", letterSpacing: "-.4px" }}>Lecciones de IA</h1>
+      <h1 className="page-title" style={{ marginBottom: 6 }}>Lecciones de IA</h1>
       <p style={{ color: "var(--ink-soft)", marginTop: 0, marginBottom: 24 }}>
         Material que preparamos para que aproveches al máximo la inteligencia artificial en tu negocio.
       </p>
@@ -36,7 +36,7 @@ export default async function LeccionesPage() {
           Todavía no hay lecciones publicadas. Pronto vas a ver acá las lecturas que te vayamos enviando.
         </div>
       ) : (
-        <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <section className="lessons-grid">
           {lessons.map((l) => (
             <article key={l.id} className="card" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <div style={{ fontSize: 11.5, color: "var(--ink-soft)" }}>{formatDate(l.published_at)}</div>

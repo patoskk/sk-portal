@@ -33,23 +33,23 @@ export default async function DashboardPage({
   ];
 
   return (
-    <main style={{ maxWidth: "var(--maxw)", margin: "0 auto", padding: "0 24px 60px" }}>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "28px 0" }}>
-        <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
+    <main className="page">
+      <header className="topbar">
+        <div className="topbar-brand">
           <div className="wordmark">
             <span className="sk">SK</span> <span className="op">OPTIMAL</span>
           </div>
           <Nav isAdmin={admin} />
         </div>
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+        <div className="topbar-actions">
           <DateRangePicker from={from} to={to} />
           <SettingsMenu />
         </div>
       </header>
 
-      <h1 style={{ fontSize: 34, margin: "0 0 24px", letterSpacing: "-.4px" }}>Tu agente de IA, en números</h1>
+      <h1 className="page-title">Tu agente de IA, en números</h1>
 
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 22 }}>
+      <section className="kpi-grid">
         {kpis.map((k) => (
           <div key={k.label} className="card">
             <div style={{ fontSize: 30, fontWeight: 800, color: "var(--accent-dark)" }}>{k.value}</div>
@@ -123,7 +123,7 @@ export default async function DashboardPage({
 }
 
 function Grid({ children }: { children: React.ReactNode }) {
-  return <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>{children}</section>;
+  return <section className="panel-grid">{children}</section>;
 }
 
 function MiniStat({ value, label, warn }: { value: number | string; label: string; warn?: boolean }) {
