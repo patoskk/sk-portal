@@ -15,6 +15,7 @@ export async function getLessons(): Promise<Lesson[]> {
   const { data } = await sb
     .from("lessons")
     .select("id,title,summary,url,published_at")
-    .order("published_at", { ascending: false });
+    .order("published_at", { ascending: true })
+    .order("created_at", { ascending: true });
   return (data ?? []) as Lesson[];
 }

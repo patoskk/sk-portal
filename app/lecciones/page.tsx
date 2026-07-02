@@ -31,18 +31,19 @@ export default async function LeccionesPage() {
           Todavía no hay lecciones publicadas. Pronto vas a ver acá las lecturas que te vayamos enviando.
         </div>
       ) : (
-        <section className="lessons-grid">
-          {lessons.map((l) => (
-            <article key={l.id} className="card" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <h3 style={{ margin: 0, fontSize: 17 }}>{l.title}</h3>
-              {l.summary ? (
-                <p style={{ margin: 0, color: "var(--ink-soft)", fontSize: 14, flex: 1 }}>{l.summary}</p>
-              ) : null}
+        <section className="lessons-list">
+          {lessons.map((l, i) => (
+            <article key={l.id} className="lesson-row">
+              <span className="lesson-num">{String(i + 1).padStart(2, "0")}</span>
+              <div className="lesson-body">
+                <h3 className="lesson-title">{l.title}</h3>
+                {l.summary ? <p className="lesson-summary">{l.summary}</p> : null}
+              </div>
               <a
+                className="lesson-cta"
                 href={`/api/lessons/${l.id}/view`}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: "var(--accent-dark)", fontWeight: 700, fontSize: 14, textDecoration: "none", marginTop: 4 }}
               >
                 Leer →
               </a>
