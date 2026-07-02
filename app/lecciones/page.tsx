@@ -33,21 +33,20 @@ export default async function LeccionesPage() {
       ) : (
         <section className="lessons-list">
           {lessons.map((l, i) => (
-            <article key={l.id} className="lesson-row">
+            <a
+              key={l.id}
+              className="lesson-row"
+              href={`/api/lessons/${l.id}/view`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <span className="lesson-num">{String(i + 1).padStart(2, "0")}</span>
               <div className="lesson-body">
                 <h3 className="lesson-title">{l.title}</h3>
                 {l.summary ? <p className="lesson-summary">{l.summary}</p> : null}
               </div>
-              <a
-                className="lesson-cta"
-                href={`/api/lessons/${l.id}/view`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Leer →
-              </a>
-            </article>
+              <span className="lesson-cta">Leer →</span>
+            </a>
           ))}
         </section>
       )}
