@@ -5,11 +5,6 @@ import { SettingsMenu } from "@/components/SettingsMenu";
 
 export const dynamic = "force-dynamic";
 
-function formatDate(iso: string) {
-  const [y, m, d] = iso.split("-");
-  return `${d}/${m}/${y}`;
-}
-
 export default async function LeccionesPage() {
   const lessons = await getLessons();
   const admin = await isAdmin();
@@ -39,7 +34,6 @@ export default async function LeccionesPage() {
         <section className="lessons-grid">
           {lessons.map((l) => (
             <article key={l.id} className="card" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <div style={{ fontSize: 11.5, color: "var(--ink-soft)" }}>{formatDate(l.published_at)}</div>
               <h3 style={{ margin: 0, fontSize: 17 }}>{l.title}</h3>
               {l.summary ? (
                 <p style={{ margin: 0, color: "var(--ink-soft)", fontSize: 14, flex: 1 }}>{l.summary}</p>
