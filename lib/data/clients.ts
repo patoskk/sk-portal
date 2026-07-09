@@ -16,7 +16,13 @@ export async function getClients(): Promise<ClientRow[]> {
     .select("id,name,rubro,client_sources(table_name,last_synced_at)")
     .order("created_at");
   return (data ?? []).map((c) => {
-    const src = (c.client_sources as { table_name?: string; last_synced_at?: string }[] | null)?.[0];
+    // client_sources es 1-a-1 (client_id es PK): PostgREST devuelve un OBJETO,
+    // no un array — indexar [0] daba siempre undefined ("tabla: ?" en el panel).
+    const rel = c.client_sources as
+      | { table_name?: string; last_synced_at?: string }
+      | { table_name?: string; last_synced_at?: string }[]
+      | null;
+    const src = Array.isArray(rel) ? rel[0] : rel;
     return {
       id: c.id,
       name: c.name,
