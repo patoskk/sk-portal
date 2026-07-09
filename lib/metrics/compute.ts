@@ -30,8 +30,10 @@ interface DayBucket {
   messagesAgent: number;
   messagesTotal: number;
   toolCalls: number;
-  conversions: number;
-  conversionSessions: Set<string>;
+  // conversiones por sesión, separadas por señal: el MISMO pedido suele disparar
+  // el mensaje declarativo Y la tool de pedido; contar max() evita el doble conteo.
+  convByMsg: Map<string, number>;
+  convByTool: Map<string, number>;
   noResult: number;
   errors: number;
   toolResults: number;
@@ -50,8 +52,8 @@ function newBucket(): DayBucket {
     messagesAgent: 0,
     messagesTotal: 0,
     toolCalls: 0,
-    conversions: 0,
-    conversionSessions: new Set(),
+    convByMsg: new Map(),
+    convByTool: new Map(),
     noResult: 0,
     errors: 0,
     toolResults: 0,
@@ -134,8 +136,7 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
       // evento clave por mensaje del agente (cierre declarativo)
       const aiText = typeof msg.content === "string" ? msg.content : "";
       if (b && aiText && CONVERSION_RE.test(aiText)) {
-        b.conversions += 1;
-        if (sid) b.conversionSessions.add(sid);
+        inc(b.convByMsg, sid || "(sin sesión)");
       }
       for (const tc of msg.tool_calls ?? []) {
         const name = (tc.name ?? "").trim() || "(sin nombre)";
@@ -144,8 +145,7 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
           inc(b.tools, name);
           if (CONVERSION_TOOL_RE.test(name)) {
             // evento clave por nombre de tool (pedido/order/reserva/turno…)
-            b.conversions += 1;
-            if (sid) b.conversionSessions.add(sid);
+            inc(b.convByTool, sid || "(sin sesión)");
           } else {
             // "lo más consultado": valores bajo claves de producto/consulta (anidados, sin PII)
             collectQueries(tc.args ?? {}, b.queries);
@@ -170,6 +170,12 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
   const intentDaily: IntentDailyRow[] = [];
 
   for (const [date, b] of [...days.entries()].sort()) {
+    // por sesión-día: max(señal mensaje, señal tool) — un pedido dispara ambas
+    const convSessions = new Set([...b.convByMsg.keys(), ...b.convByTool.keys()]);
+    let conversions = 0;
+    for (const s of convSessions) {
+      conversions += Math.max(b.convByMsg.get(s) ?? 0, b.convByTool.get(s) ?? 0);
+    }
     metricsDaily.push({
       date,
       conversations: b.sessions.size,
@@ -177,8 +183,8 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
       messages_agent: b.messagesAgent,
       messages_total: b.messagesTotal,
       tool_calls: b.toolCalls,
-      conversions: b.conversions,
-      conversion_sessions: b.conversionSessions.size,
+      conversions,
+      conversion_sessions: convSessions.size,
       no_result: b.noResult,
       errors: b.errors,
       tool_results: b.toolResults,

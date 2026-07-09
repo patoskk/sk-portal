@@ -5,8 +5,13 @@ import { loadEnv } from "./loadEnv.ts";
 loadEnv();
 import { createClient } from "@supabase/supabase-js";
 
-const TEST_EMAIL = "piloto.elbuho@skoptimal.test";
-const TEST_PASSWORD = "ElBuho-Piloto-2026!";
+// Credenciales del usuario de prueba: SIEMPRE por env (.env.local), nunca en el repo.
+const TEST_EMAIL = process.env.TEST_USER_EMAIL ?? "";
+const TEST_PASSWORD = process.env.TEST_USER_PASSWORD ?? "";
+if (!TEST_EMAIL || !TEST_PASSWORD) {
+  console.error("Faltan TEST_USER_EMAIL / TEST_USER_PASSWORD en .env.local");
+  process.exit(1);
+}
 
 function jwtClaims(token: string): Record<string, unknown> {
   return JSON.parse(Buffer.from(token.split(".")[1], "base64").toString("utf8"));

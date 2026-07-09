@@ -2,9 +2,23 @@
 // y corre el primer cómputo. Todas las tablas viven en el mismo proyecto (SOURCE_DEFAULT_*).
 import { NextResponse, type NextRequest } from "next/server";
 import { randomUUID, randomBytes } from "node:crypto";
+import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeClient } from "@/lib/metrics/runCompute";
+
+// listUsers pagina de a 50 por default: buscar por email recorriendo páginas,
+// si no con >50 usuarios el alta intenta recrear usuarios existentes y falla.
+async function findUserByEmail(admin: SupabaseClient, email: string): Promise<User | null> {
+  for (let page = 1; page <= 50; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 200 });
+    if (error) throw error;
+    const hit = data.users.find((u) => u.email === email);
+    if (hit) return hit;
+    if (data.users.length < 200) return null;
+  }
+  return null;
+}
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -43,10 +57,9 @@ export async function POST(req: NextRequest) {
   // usuario del dueño (opcional)
   let password: string | null = null;
   if (email) {
-    const list = await admin.auth.admin.listUsers();
-    let owner = list.data.users.find((u) => u.email === email);
+    let owner = await findUserByEmail(admin, email);
     if (!owner) {
-      password = `Cliente-${randomBytes(4).toString("hex")}!`;
+      password = randomBytes(12).toString("base64url"); // 16 chars aleatorios
       const created = await admin.auth.admin.createUser({ email, password, email_confirm: true });
       if (created.error) return new NextResponse("creando usuario: " + created.error.message, { status: 500 });
       owner = created.data.user;

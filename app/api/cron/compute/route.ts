@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   const admin = createAdminClient();
   const { data: sources, error } = await admin
     .from("client_sources")
-    .select("client_id, supabase_url, table_name, clients(utc_offset)");
+    .select("client_id, supabase_url, table_name, last_synced_at, clients(utc_offset)");
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   const results: Record<string, unknown> = {};
@@ -31,9 +31,12 @@ export async function GET(req: NextRequest) {
         table_name: src.table_name,
         utc_offset,
         key,
+        last_synced_at: src.last_synced_at,
       });
     } catch (e) {
-      results[src.client_id] = { error: e instanceof Error ? e.message : String(e) };
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error(`[cron/compute] cliente ${src.client_id}: ${msg}`);
+      results[src.client_id] = { error: msg };
     }
   }
 

@@ -14,7 +14,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const admin = createAdminClient();
-  const to = new Date();
+  // semana cerrada: corre el lunes → analiza de lunes a DOMINGO (ayer), sin el día parcial
+  const to = new Date(Date.now() - 86400000);
   const from = new Date(to.getTime() - 6 * 86400000);
   const fromS = from.toISOString().slice(0, 10);
   const toS = to.toISOString().slice(0, 10);
@@ -30,6 +31,11 @@ export async function GET(req: NextRequest) {
         admin.from("tool_queries_daily").select("query,count").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
         admin.from("intent_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
       ]);
+      // sin datos en la semana => no gastar tokens en un insight sin fundamento
+      if (!metrics.data?.length) {
+        results[c.id] = { skipped: "sin datos en el período" };
+        continue;
+      }
       const summary = { client: { name: c.name, rubro: c.rubro }, period: { from: fromS, to: toS },
         metrics: metrics.data, tools: tools.data, top_consultas: queries.data, intents: intents.data };
 

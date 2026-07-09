@@ -1,6 +1,10 @@
 // Capa de datos del dashboard (rubro-agnóstica). Lee las tablas resumen del rango
 // y arma métricas que valen para cualquier agente. RLS filtra por client_id.
+// Un admin puede ver el dashboard de un cliente puntual (asClientId): en ese caso
+// se lee con service role + filtro explícito — la página gatea el rol antes.
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { toolLabel } from "@/lib/toolLabels";
 
 export interface DashboardRange {
   from: string;
@@ -16,14 +20,17 @@ export interface DashboardData {
     toolCalls: number; // acciones del agente
   };
   conversionRate: number; // % de conversaciones que llegan al evento
-  msgsPerConv: number; // mensajes por conversación
+  msgsPerConv: number; // mensajes por conversación (personas + agente)
   tools: { label: string; value: number }[];
   topQueries: { label: string; value: number }[]; // lo más consultado
   activityDay: { date: string; value: number }[];
   activityHour: { hour: string; value: number }[];
   quality: { errors: number; noResult: number };
+  lastSyncedAt: string | null; // última corrida OK del cómputo
   insight: {
     opportunities: { title: string; text: string }[];
+    periodStart: string;
+    periodEnd: string;
     funnel?: string;
     products?: string;
     usage?: string;
@@ -34,23 +41,34 @@ export interface DashboardData {
   period: DashboardRange;
 }
 
-export async function getDashboardData(range: DashboardRange): Promise<DashboardData> {
-  const sb = await createClient();
+export async function getDashboardData(
+  range: DashboardRange,
+  opts?: { asClientId?: string },
+): Promise<DashboardData> {
   const { from, to } = range;
+  const asClientId = opts?.asClientId;
+  const sb = asClientId ? createAdminClient() : await createClient();
+  // con service role, RLS no filtra: el filtro por cliente es explícito
+  const daily = (table: string) => {
+    const q = sb.from(table).select("*").gte("date", from).lte("date", to);
+    return asClientId ? q.eq("client_id", asClientId) : q;
+  };
+  // solo insights cuyo período SOLAPA el rango elegido: nada de prosa vieja
+  // contradiciendo los gráficos de otro período.
+  const insightQ = sb.from("insights").select("*").lte("period_start", to).gte("period_end", from);
 
   const [metrics, tools, queries, hourly, insightRow, clientRow] = await Promise.all([
-    sb.from("metrics_daily").select("*").gte("date", from).lte("date", to),
-    sb.from("tool_usage_daily").select("*").gte("date", from).lte("date", to),
-    sb.from("tool_queries_daily").select("*").gte("date", from).lte("date", to),
-    sb.from("activity_hourly").select("*").gte("date", from).lte("date", to),
-    sb
-      .from("insights")
-      .select("*")
-      .lte("period_end", to)
+    daily("metrics_daily"),
+    daily("tool_usage_daily"),
+    daily("tool_queries_daily"),
+    daily("activity_hourly"),
+    (asClientId ? insightQ.eq("client_id", asClientId) : insightQ)
       .order("generated_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    sb.from("clients").select("conversion_label").maybeSingle(),
+    asClientId
+      ? sb.from("clients").select("conversion_label").eq("id", asClientId).maybeSingle()
+      : sb.from("clients").select("conversion_label").maybeSingle(),
   ]);
 
   const conversionLabel = (clientRow.data?.conversion_label as string) || "Conversiones";
@@ -72,6 +90,10 @@ export async function getDashboardData(range: DashboardRange): Promise<Dashboard
   const ins = insightRow.data;
   const conversations = sum("conversations");
   const convSessions = sum("conversion_sessions");
+  // mensajes reales de la charla (personas + agente), sin los resultados de tools
+  const msgsConv = sum("messages_human") + sum("messages_agent");
+
+  const lastSyncedAt = await getLastSyncedAt(asClientId);
 
   return {
     conversionLabel,
@@ -82,15 +104,20 @@ export async function getDashboardData(range: DashboardRange): Promise<Dashboard
       toolCalls: sum("tool_calls"),
     },
     conversionRate: conversations ? Math.round((100 * convSessions) / conversations) : 0,
-    msgsPerConv: conversations ? Math.round((10 * sum("messages_total")) / conversations) / 10 : 0,
-    tools: [...byTool.entries()].sort((a, b) => b[1] - a[1]).map(([label, value]) => ({ label, value })),
+    msgsPerConv: conversations ? Math.round((10 * msgsConv) / conversations) / 10 : 0,
+    tools: [...byTool.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, value]) => ({ label: toolLabel(name), value })),
     topQueries: [...byQuery.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([label, value]) => ({ label, value })),
     activityDay: [...byDay.entries()].sort().map(([date, value]) => ({ date, value })),
     activityHour: byHour.map((value, h) => ({ hour: `${String(h).padStart(2, "0")}h`, value })),
     quality: { errors: sum("errors"), noResult: sum("no_result") },
+    lastSyncedAt,
     insight: ins
       ? {
           opportunities: (ins.opportunities as { title: string; text: string }[]) ?? [],
+          periodStart: ins.period_start,
+          periodEnd: ins.period_end,
           funnel: ins.funnel_insight ?? undefined,
           products: ins.products_insight ?? undefined,
           usage: ins.usage_insight ?? undefined,
@@ -101,4 +128,26 @@ export async function getDashboardData(range: DashboardRange): Promise<Dashboard
       : null,
     period: range,
   };
+}
+
+// client_sources no tiene policy para authenticated (deny total): la última
+// sincronización se lee con service role, acotada al client_id del usuario.
+async function getLastSyncedAt(asClientId?: string): Promise<string | null> {
+  let clientId = asClientId ?? null;
+  if (!clientId) {
+    const sb = await createClient();
+    const {
+      data: { user },
+    } = await sb.auth.getUser();
+    if (!user) return null;
+    const { data } = await sb.from("user_clients").select("client_id").eq("user_id", user.id).maybeSingle();
+    clientId = data?.client_id ?? null;
+  }
+  if (!clientId) return null;
+  const { data } = await createAdminClient()
+    .from("client_sources")
+    .select("last_synced_at")
+    .eq("client_id", clientId)
+    .maybeSingle();
+  return data?.last_synced_at ?? null;
 }

@@ -6,18 +6,23 @@ export interface ClientRow {
   name: string;
   rubro: string;
   table_name: string | null;
+  last_synced_at: string | null;
 }
 
 export async function getClients(): Promise<ClientRow[]> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("clients")
-    .select("id,name,rubro,client_sources(table_name)")
+    .select("id,name,rubro,client_sources(table_name,last_synced_at)")
     .order("created_at");
-  return (data ?? []).map((c) => ({
-    id: c.id,
-    name: c.name,
-    rubro: c.rubro,
-    table_name: (c.client_sources as { table_name?: string }[] | null)?.[0]?.table_name ?? null,
-  }));
+  return (data ?? []).map((c) => {
+    const src = (c.client_sources as { table_name?: string; last_synced_at?: string }[] | null)?.[0];
+    return {
+      id: c.id,
+      name: c.name,
+      rubro: c.rubro,
+      table_name: src?.table_name ?? null,
+      last_synced_at: src?.last_synced_at ?? null,
+    };
+  });
 }

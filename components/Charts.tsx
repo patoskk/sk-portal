@@ -123,6 +123,8 @@ export function ActivityLine({ data }: { data: { date: string; value: number }[]
 
 export function ActivityBars({ data }: { data: { hour: string; value: number }[] }) {
   const ink = useChartInk();
+  // el array siempre trae 24 horas; "sin datos" = todas en cero
+  if (!data.some((d) => d.value > 0)) return <Empty />;
   return (
     <ResponsiveContainer width="100%" height={200}>
       <BarChart data={data} margin={{ left: -16, right: 12, top: 8 }}>

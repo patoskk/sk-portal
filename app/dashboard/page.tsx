@@ -1,5 +1,7 @@
 import { getDashboardData } from "@/lib/data/dashboard";
+import { getClients } from "@/lib/data/clients";
 import { isAdmin } from "@/lib/data/role";
+import { ClientPicker } from "@/components/ClientPicker";
 import { DateRangePicker } from "@/components/DateRangePicker";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { Nav } from "@/components/Nav";
@@ -8,22 +10,34 @@ import { ActivityBars, ActivityLine, HBarChart, UsageDonut } from "@/components/
 
 export const dynamic = "force-dynamic";
 
+const UTC_OFFSET_H = -3; // huso de referencia del portal (Argentina, sin DST)
+
+// "hace n días" en hora LOCAL del cliente: con UTC, de 21 a 24 h el rango
+// por defecto apuntaría a un día que todavía no existe acá.
 function isoDaysAgo(n: number): string {
-  const d = new Date();
-  d.setUTCDate(d.getUTCDate() - n);
-  return d.toISOString().slice(0, 10);
+  const local = new Date(Date.now() + UTC_OFFSET_H * 3600 * 1000);
+  local.setUTCDate(local.getUTCDate() - n);
+  return local.toISOString().slice(0, 10);
+}
+
+function fmtDate(iso: string): string {
+  const [y, m, day] = iso.split("-");
+  return `${day}/${m}/${y}`;
 }
 
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ from?: string; to?: string }>;
+  searchParams: Promise<{ from?: string; to?: string; cliente?: string }>;
 }) {
   const sp = await searchParams;
   const from = sp.from ?? isoDaysAgo(30);
   const to = sp.to ?? isoDaysAgo(0);
-  const d = await getDashboardData({ from, to });
   const admin = await isAdmin();
+  // "ver como cliente" es solo para admins; para un viewer, RLS manda
+  const asClientId = admin && sp.cliente ? sp.cliente : undefined;
+  const d = await getDashboardData({ from, to }, { asClientId });
+  const clients = admin ? await getClients() : [];
 
   const kpis = [
     { value: d.kpis.conversations, label: "Conversaciones" },
@@ -42,12 +56,26 @@ export default async function DashboardPage({
           <Nav isAdmin={admin} />
         </div>
         <div className="topbar-actions">
+          {admin ? <ClientPicker clients={clients} current={asClientId} /> : null}
           <DateRangePicker from={from} to={to} />
           <SettingsMenu />
         </div>
       </header>
 
       <h1 className="page-title">Tu agente de IA, en números</h1>
+      {d.lastSyncedAt ? (
+        <p style={{ color: "var(--ink-soft)", fontSize: 12.5, margin: "-16px 0 20px" }}>
+          Última actualización de datos:{" "}
+          {new Date(d.lastSyncedAt).toLocaleString("es-AR", {
+            timeZone: "America/Argentina/Buenos_Aires",
+            day: "2-digit",
+            month: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}{" "}
+          hs
+        </p>
+      ) : null}
 
       <section className="kpi-grid">
         {kpis.map((k) => (
@@ -102,7 +130,10 @@ export default async function DashboardPage({
 
       {d.insight?.opportunities?.length ? (
         <section className="card" style={{ marginTop: 22, background: "var(--tint)", border: 0 }}>
-          <h2 style={{ marginTop: 0, fontSize: 18 }}>Oportunidades de mejora</h2>
+          <h2 style={{ margin: "0 0 2px", fontSize: 18 }}>Oportunidades de mejora</h2>
+          <p style={{ color: "var(--ink-soft)", fontSize: 12.5, margin: "0 0 12px" }}>
+            Análisis del {fmtDate(d.insight.periodStart)} al {fmtDate(d.insight.periodEnd)}
+          </p>
           <ol style={{ margin: 0, paddingLeft: 18 }}>
             {d.insight.opportunities.map((o, i) => (
               <li key={i} style={{ marginBottom: 8 }}>

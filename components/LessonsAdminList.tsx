@@ -14,21 +14,28 @@ export function LessonsAdminList({ lessons }: { lessons: L[] }) {
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [busy, setBusy] = useState(false);
+  const [errMsg, setErrMsg] = useState<string | null>(null);
 
   function startEdit(l: L) {
     setEditing(l.id);
     setTitle(l.title);
     setSummary(l.summary ?? "");
+    setErrMsg(null);
   }
 
   async function save(id: string) {
     setBusy(true);
-    await fetch(`/api/admin/lessons/${id}`, {
+    setErrMsg(null);
+    const res = await fetch(`/api/admin/lessons/${id}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ title, summary }),
     });
     setBusy(false);
+    if (!res.ok) {
+      setErrMsg("Error al guardar: " + (await res.text()));
+      return; // queda en modo edición para reintentar
+    }
     setEditing(null);
     router.refresh();
   }
@@ -36,8 +43,10 @@ export function LessonsAdminList({ lessons }: { lessons: L[] }) {
   async function remove(id: string) {
     if (!confirm("¿Eliminar esta lección? No se puede deshacer.")) return;
     setBusy(true);
-    await fetch(`/api/admin/lessons/${id}`, { method: "DELETE" });
+    setErrMsg(null);
+    const res = await fetch(`/api/admin/lessons/${id}`, { method: "DELETE" });
     setBusy(false);
+    if (!res.ok) setErrMsg("Error al eliminar: " + (await res.text()));
     router.refresh();
   }
 
@@ -56,6 +65,8 @@ export function LessonsAdminList({ lessons }: { lessons: L[] }) {
   if (!lessons.length) return <p style={{ color: "var(--ink-soft)", fontSize: 13 }}>Todavía ninguna.</p>;
 
   return (
+    <>
+    {errMsg ? <p style={{ color: "var(--warn)", fontSize: 12.5, marginTop: 0 }}>{errMsg}</p> : null}
     <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 12 }}>
       {lessons.map((l) => (
         <li key={l.id} style={{ borderBottom: "1px solid var(--line)", paddingBottom: 12 }}>
@@ -84,5 +95,6 @@ export function LessonsAdminList({ lessons }: { lessons: L[] }) {
         </li>
       ))}
     </ul>
+    </>
   );
 }

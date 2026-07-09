@@ -76,9 +76,10 @@ export function LessonForm() {
         <input name="url" type="url" required placeholder="https://..." style={field} />
       )}
 
-      <label style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13, marginBottom: 14 }}>
-        <input type="checkbox" name="global" defaultChecked /> Visible para todos los clientes
-      </label>
+      {/* targeting por cliente: a futuro; por ahora toda lección es global */}
+      <p style={{ fontSize: 12.5, color: "var(--ink-soft)", margin: "0 0 14px" }}>
+        La lección va a ser visible para todos tus clientes.
+      </p>
 
       <button
         type="submit"

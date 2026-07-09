@@ -23,8 +23,7 @@ export async function POST(req: NextRequest) {
   const fd = await req.formData();
   const title = String(fd.get("title") ?? "").trim();
   const summary = String(fd.get("summary") ?? "").trim() || null;
-  const global = fd.get("global") != null;
-  const clientId = global ? null : null; // (targeting por cliente: a futuro)
+  const clientId = null; // targeting por cliente: a futuro — hoy toda lección es global
   if (!title) return new NextResponse("falta el título", { status: 400 });
 
   let url = String(fd.get("url") ?? "").trim() || null;

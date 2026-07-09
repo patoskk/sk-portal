@@ -17,12 +17,14 @@ export const BRAND = {
 } as const;
 
 // Orden del donut de uso: [Precio/stock, Promos, Imágenes, Pedidos, ...]
+// 6 tonos de la marca antes de repetir (agentes con muchas tools).
 export const USAGE_COLORS = [
   BRAND.accent,
   BRAND.accentSoft,
   BRAND.gold,
   BRAND.grey,
   BRAND.accentDark,
+  BRAND.warn,
 ];
 
 // Embudo: del más claro (entraron) al más oscuro (pedido), como en el reporte.
