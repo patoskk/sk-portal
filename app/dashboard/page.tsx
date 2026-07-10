@@ -40,11 +40,14 @@ export default async function DashboardPage({
   const clients = admin ? await getClients() : [];
 
   const kpis = [
-    { value: d.kpis.conversations, label: "Conversaciones" },
-    { value: d.kpis.messagesHuman, label: "Mensajes de clientes" },
-    { value: d.kpis.conversions, label: d.conversionLabel },
-    { value: d.kpis.toolCalls, label: "Acciones del agente" },
+    { value: d.kpis.conversations, prev: d.kpisPrev?.conversations, label: "Conversaciones" },
+    { value: d.kpis.messagesHuman, prev: d.kpisPrev?.messagesHuman, label: "Mensajes de clientes" },
+    { value: d.kpis.conversions, prev: d.kpisPrev?.conversions, label: d.conversionLabel },
+    { value: d.kpis.toolCalls, prev: d.kpisPrev?.toolCalls, label: "Acciones del agente" },
   ];
+  const prevRangeLabel = d.prevPeriod
+    ? `vs. ${fmtDate(d.prevPeriod.from)} – ${fmtDate(d.prevPeriod.to)}`
+    : "";
 
   return (
     <main className="page">
@@ -62,7 +65,23 @@ export default async function DashboardPage({
         </div>
       </header>
 
-      <h1 className="page-title">Tu agente de IA, en números</h1>
+      {d.clientName ? (
+        <div
+          style={{
+            fontSize: 12,
+            fontWeight: 700,
+            letterSpacing: 1.6,
+            textTransform: "uppercase",
+            color: "var(--accent-dark)",
+            marginBottom: 4,
+          }}
+        >
+          {d.clientName}
+        </div>
+      ) : null}
+      <h1 className="page-title" style={d.clientName ? { marginTop: 0 } : undefined}>
+        Tu agente de IA, en números
+      </h1>
       {d.lastSyncedAt ? (
         <p style={{ color: "var(--ink-soft)", fontSize: 12.5, margin: "-16px 0 20px" }}>
           Última actualización de datos:{" "}
@@ -72,6 +91,7 @@ export default async function DashboardPage({
             month: "2-digit",
             hour: "2-digit",
             minute: "2-digit",
+            hour12: false,
           })}{" "}
           hs
         </p>
@@ -80,7 +100,10 @@ export default async function DashboardPage({
       <section className="kpi-grid">
         {kpis.map((k) => (
           <div key={k.label} className="card">
-            <div style={{ fontSize: 30, fontWeight: 800, color: "var(--accent-dark)" }}>{k.value}</div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 30, fontWeight: 800, color: "var(--accent-dark)" }}>{k.value}</span>
+              <Delta curr={k.value} prev={k.prev} title={prevRangeLabel} />
+            </div>
             <div style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>{k.label}</div>
           </div>
         ))}
@@ -155,6 +178,45 @@ export default async function DashboardPage({
 
 function Grid({ children }: { children: React.ReactNode }) {
   return <section className="panel-grid">{children}</section>;
+}
+
+// Variación vs. la ventana anterior del mismo largo. Sin período previo (cliente
+// nuevo) no se muestra nada: un delta inventado es peor que ninguno.
+function Delta({ curr, prev, title }: { curr: number; prev: number | undefined; title: string }) {
+  if (prev === undefined || (curr === 0 && prev === 0)) return null;
+  const base = {
+    fontSize: 12,
+    fontWeight: 700,
+    padding: "2px 8px",
+    borderRadius: 99,
+    whiteSpace: "nowrap" as const,
+  };
+  if (prev === 0)
+    return (
+      <span title={title} style={{ ...base, color: "var(--accent-dark)", background: "var(--tint)" }}>
+        nuevo
+      </span>
+    );
+  const pct = Math.round((100 * (curr - prev)) / prev);
+  if (pct === 0)
+    return (
+      <span title={title} style={{ ...base, color: "var(--ink-soft)", background: "var(--tint)" }}>
+        = igual
+      </span>
+    );
+  const up = pct > 0;
+  return (
+    <span
+      title={title}
+      style={{
+        ...base,
+        color: up ? "var(--accent-dark)" : "var(--warn)",
+        background: "var(--tint)",
+      }}
+    >
+      {up ? "▲" : "▼"} {Math.abs(pct)}%
+    </span>
+  );
 }
 
 function MiniStat({ value, label, warn }: { value: number | string; label: string; warn?: boolean }) {

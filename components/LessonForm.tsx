@@ -7,6 +7,7 @@ export function LessonForm() {
   const [mode, setMode] = useState<"file" | "link">("file");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -19,6 +20,7 @@ export function LessonForm() {
     if (res.ok) {
       setMsg({ ok: true, text: "Lección publicada ✓" });
       (e.target as HTMLFormElement).reset();
+      setFileName(null);
       router.refresh();
     } else {
       const t = await res.text();
@@ -71,7 +73,42 @@ export function LessonForm() {
       </div>
 
       {mode === "file" ? (
-        <input name="file" type="file" accept=".pdf,.html,.htm" required style={field} />
+        // input nativo escondido (el "Choose File" del browser rompe la estética);
+        // sigue siendo enfocable para que la validación required funcione
+        <label style={{ ...field, display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+          <span
+            style={{
+              background: "var(--tint)",
+              color: "var(--accent-dark)",
+              fontWeight: 700,
+              fontSize: 13,
+              padding: "6px 14px",
+              borderRadius: 7,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Elegir archivo
+          </span>
+          <span
+            style={{
+              fontSize: 13,
+              color: fileName ? "var(--ink)" : "var(--ink-soft)",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {fileName ?? "PDF o HTML"}
+          </span>
+          <input
+            name="file"
+            type="file"
+            accept=".pdf,.html,.htm"
+            required
+            style={{ position: "absolute", opacity: 0, width: 1, height: 1, pointerEvents: "none" }}
+            onChange={(e) => setFileName(e.target.files?.[0]?.name ?? null)}
+          />
+        </label>
       ) : (
         <input name="url" type="url" required placeholder="https://..." style={field} />
       )}

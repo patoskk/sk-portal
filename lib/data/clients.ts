@@ -7,6 +7,7 @@ export interface ClientRow {
   rubro: string;
   table_name: string | null;
   last_synced_at: string | null;
+  last_data_at: string | null; // último día con métricas: sync verde + dato viejo = fuente muerta
 }
 
 export async function getClients(): Promise<ClientRow[]> {
@@ -15,6 +16,19 @@ export async function getClients(): Promise<ClientRow[]> {
     .from("clients")
     .select("id,name,rubro,client_sources(table_name,last_synced_at)")
     .order("created_at");
+  const lastData = new Map<string, string>();
+  await Promise.all(
+    (data ?? []).map(async (c) => {
+      const { data: row } = await admin
+        .from("metrics_daily")
+        .select("date")
+        .eq("client_id", c.id)
+        .order("date", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (row?.date) lastData.set(c.id, row.date);
+    }),
+  );
   return (data ?? []).map((c) => {
     // client_sources es 1-a-1 (client_id es PK): PostgREST devuelve un OBJETO,
     // no un array — indexar [0] daba siempre undefined ("tabla: ?" en el panel).
@@ -29,6 +43,7 @@ export async function getClients(): Promise<ClientRow[]> {
       rubro: c.rubro,
       table_name: src?.table_name ?? null,
       last_synced_at: src?.last_synced_at ?? null,
+      last_data_at: lastData.get(c.id) ?? null,
     };
   });
 }

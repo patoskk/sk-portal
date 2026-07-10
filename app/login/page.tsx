@@ -80,9 +80,22 @@ export default function LoginPage() {
   } as const;
 
   return (
-    <main style={{ display: "grid", placeItems: "center", minHeight: "100dvh", padding: 24 }}>
+    <main
+      style={{
+        display: "grid",
+        placeItems: "center",
+        minHeight: "100dvh",
+        padding: 24,
+        // fondo con un respiro de marca, sin competir con la tarjeta
+        background:
+          "radial-gradient(900px 500px at 15% -10%, var(--tint), transparent 60%), radial-gradient(700px 420px at 110% 110%, var(--tint), transparent 55%)",
+      }}
+    >
       {/* width 100% + maxWidth: en un grid auto, maxWidth:"100%" no clampa y desborda en mobile */}
-      <div className="card" style={{ width: "100%", maxWidth: 380, minHeight: 320 }}>
+      <div
+        className="card"
+        style={{ width: "100%", maxWidth: 380, minHeight: 320, borderTop: "3px solid var(--accent)" }}
+      >
         <div className="wordmark" style={{ marginBottom: 18 }}>
           <span className="sk">SK</span> <span className="op">OPTIMAL</span>
         </div>
@@ -141,6 +154,18 @@ export default function LoginPage() {
             </button>
           </>
         )}
+        <p
+          style={{
+            margin: "22px 0 0",
+            paddingTop: 14,
+            borderTop: "1px solid var(--line)",
+            fontSize: 11.5,
+            color: "var(--ink-soft)",
+            textAlign: "center",
+          }}
+        >
+          Portal de clientes de SK Optimal · métricas de tu agente de IA
+        </p>
       </div>
     </main>
   );

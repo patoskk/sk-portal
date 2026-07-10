@@ -5,6 +5,15 @@ import { SettingsMenu } from "@/components/SettingsMenu";
 
 export const dynamic = "force-dynamic";
 
+const MES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+function fmtFecha(iso: string): string {
+  const [y, m, d] = iso.split("-");
+  return `${Number(d)} ${MES[Number(m) - 1]} ${y}`;
+}
+function esNueva(iso: string): boolean {
+  return Date.now() - Date.parse(iso) < 7 * 86400000;
+}
+
 export default async function LeccionesPage() {
   const lessons = await getLessons();
   const admin = await isAdmin();
@@ -42,8 +51,15 @@ export default async function LeccionesPage() {
             >
               <span className="lesson-num">{String(i + 1).padStart(2, "0")}</span>
               <div className="lesson-body">
-                <h3 className="lesson-title">{l.title}</h3>
+                <h3 className="lesson-title">
+                  {l.title}
+                  {esNueva(l.published_at) ? <span className="lesson-new">Nueva</span> : null}
+                </h3>
                 {l.summary ? <p className="lesson-summary">{l.summary}</p> : null}
+                <p className="lesson-meta">
+                  {fmtFecha(l.published_at)}
+                  {l.readMinutes ? ` · ${l.readMinutes} min de lectura` : ""}
+                </p>
               </div>
               <span className="lesson-cta">Leer →</span>
             </a>

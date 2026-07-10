@@ -11,14 +11,19 @@ export interface DashboardRange {
   to: string;
 }
 
+export interface KpiSet {
+  conversations: number;
+  messagesHuman: number;
+  conversions: number; // ≈ pedidos (sesiones con evento clave)
+  toolCalls: number; // acciones del agente
+}
+
 export interface DashboardData {
+  clientName: string | null; // nombre del negocio (personaliza el panel)
   conversionLabel: string; // "Pedidos" / "Turnos" / "Conversiones"
-  kpis: {
-    conversations: number;
-    messagesHuman: number;
-    conversions: number; // ≈ pedidos (sesiones con evento clave)
-    toolCalls: number; // acciones del agente
-  };
+  kpis: KpiSet;
+  kpisPrev: KpiSet | null; // mismo largo de ventana, inmediatamente anterior
+  prevPeriod: DashboardRange | null;
   conversionRate: number; // % de conversaciones que llegan al evento
   msgsPerConv: number; // mensajes por conversación (personas + agente)
   tools: { label: string; value: number }[];
@@ -49,16 +54,22 @@ export async function getDashboardData(
   const asClientId = opts?.asClientId;
   const sb = asClientId ? createAdminClient() : await createClient();
   // con service role, RLS no filtra: el filtro por cliente es explícito
-  const daily = (table: string) => {
-    const q = sb.from(table).select("*").gte("date", from).lte("date", to);
+  const daily = (table: string, f = from, t = to) => {
+    const q = sb.from(table).select("*").gte("date", f).lte("date", t);
     return asClientId ? q.eq("client_id", asClientId) : q;
   };
+  // ventana anterior del mismo largo, pegada al rango elegido (para los deltas)
+  const DAY = 86400000;
+  const days = Math.round((Date.parse(to) - Date.parse(from)) / DAY) + 1;
+  const prevTo = new Date(Date.parse(from) - DAY).toISOString().slice(0, 10);
+  const prevFrom = new Date(Date.parse(from) - days * DAY).toISOString().slice(0, 10);
   // solo insights cuyo período SOLAPA el rango elegido: nada de prosa vieja
   // contradiciendo los gráficos de otro período.
   const insightQ = sb.from("insights").select("*").lte("period_start", to).gte("period_end", from);
 
-  const [metrics, tools, queries, hourly, insightRow, clientRow] = await Promise.all([
+  const [metrics, metricsPrev, tools, queries, hourly, insightRow, clientRow] = await Promise.all([
     daily("metrics_daily"),
+    daily("metrics_daily", prevFrom, prevTo),
     daily("tool_usage_daily"),
     daily("tool_queries_daily"),
     daily("activity_hourly"),
@@ -67,14 +78,17 @@ export async function getDashboardData(
       .limit(1)
       .maybeSingle(),
     asClientId
-      ? sb.from("clients").select("conversion_label").eq("id", asClientId).maybeSingle()
-      : sb.from("clients").select("conversion_label").maybeSingle(),
+      ? sb.from("clients").select("name,conversion_label").eq("id", asClientId).maybeSingle()
+      : sb.from("clients").select("name,conversion_label").maybeSingle(),
   ]);
 
   const conversionLabel = (clientRow.data?.conversion_label as string) || "Conversiones";
+  const clientName = (clientRow.data?.name as string) || null;
 
   const md = metrics.data ?? [];
   const sum = (k: string) => md.reduce((s, r) => s + (Number(r[k]) || 0), 0);
+  const mdPrev = metricsPrev.data ?? [];
+  const sumPrev = (k: string) => mdPrev.reduce((s, r) => s + (Number(r[k]) || 0), 0);
 
   const byTool = new Map<string, number>();
   for (const r of tools.data ?? []) byTool.set(r.tool, (byTool.get(r.tool) ?? 0) + (Number(r.count) || 0));
@@ -95,7 +109,18 @@ export async function getDashboardData(
 
   const lastSyncedAt = await getLastSyncedAt(asClientId);
 
+  // sin datos previos no hay comparación honesta (cliente nuevo o rango muy viejo)
+  const kpisPrev: KpiSet | null = mdPrev.length
+    ? {
+        conversations: sumPrev("conversations"),
+        messagesHuman: sumPrev("messages_human"),
+        conversions: sumPrev("conversion_sessions"),
+        toolCalls: sumPrev("tool_calls"),
+      }
+    : null;
+
   return {
+    clientName,
     conversionLabel,
     kpis: {
       conversations,
@@ -103,6 +128,8 @@ export async function getDashboardData(
       conversions: convSessions,
       toolCalls: sum("tool_calls"),
     },
+    kpisPrev,
+    prevPeriod: kpisPrev ? { from: prevFrom, to: prevTo } : null,
     conversionRate: conversations ? Math.round((100 * convSessions) / conversations) : 0,
     msgsPerConv: conversations ? Math.round((10 * msgsConv) / conversations) / 10 : 0,
     tools: [...byTool.entries()]

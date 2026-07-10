@@ -8,6 +8,7 @@ interface C {
   rubro: string;
   table_name: string | null;
   last_synced_at: string | null;
+  last_data_at: string | null;
 }
 
 // hace cuánto sincronizó; > 26 h = el cron diario se salteó al menos una corrida
@@ -17,6 +18,15 @@ function syncBadge(iso: string | null): { text: string; stale: boolean } {
   if (h < 1) return { text: "sync hace menos de 1 h", stale: false };
   if (h < 26) return { text: `sync hace ${Math.round(h)} h`, stale: false };
   return { text: `⚠ sin sync hace ${Math.round(h / 24)} día(s)`, stale: true };
+}
+
+// el sync puede estar verde con la fuente muerta (tabla vaciada / workflow que
+// dejó de escribir): el dato que delata eso es la fecha del último día con métricas
+function dataBadge(iso: string | null): { text: string; dead: boolean } {
+  if (!iso) return { text: "sin datos aún", dead: true };
+  const d = Math.floor((Date.now() - Date.parse(iso)) / 86400000);
+  if (d <= 3) return { text: `último dato: ${iso.slice(8, 10)}/${iso.slice(5, 7)}`, dead: false };
+  return { text: `⚠ la fuente no trae datos desde ${iso.slice(8, 10)}/${iso.slice(5, 7)} (${d} días)`, dead: true };
 }
 
 export function ClientsAdminList({ clients }: { clients: C[] }) {
@@ -46,6 +56,10 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
             {c.rubro || "—"} · tabla: <code>{c.table_name ?? "?"}</code> ·{" "}
             <span style={{ color: syncBadge(c.last_synced_at).stale ? "var(--warn)" : "var(--ink-soft)" }}>
               {syncBadge(c.last_synced_at).text}
+            </span>{" "}
+            ·{" "}
+            <span style={{ color: dataBadge(c.last_data_at).dead ? "var(--warn)" : "var(--ink-soft)" }}>
+              {dataBadge(c.last_data_at).text}
             </span>
           </div>
           <div style={{ display: "flex", gap: 14, alignItems: "center", marginTop: 6 }}>
