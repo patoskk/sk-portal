@@ -154,6 +154,29 @@ select:focus-visible, textarea:focus-visible {
   border-radius: 6px;
 }
 
+/* ---- Skeletons de carga (loading.tsx): la navegación responde al instante ---- */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skel {
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--line) 25%, var(--tint) 50%, var(--line) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+.skel-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 20px 22px;
+}
+
+/* control que disparó una navegación pendiente (useTransition).
+   Solo atenúa — nada de pointer-events: un estado pegado jamás debe bloquear clicks. */
+.is-pending { opacity: .55; transition: opacity .15s ease; }
+
 /* puntos animados (login) */
 @keyframes ellipsis {
   0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; }

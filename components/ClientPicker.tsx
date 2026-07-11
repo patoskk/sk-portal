@@ -1,4 +1,5 @@
 "use client";
+import { useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 // Selector "ver como cliente" (solo admin): navega con ?cliente=<id> preservando el rango.
@@ -11,12 +12,13 @@ export function ClientPicker({
 }) {
   const router = useRouter();
   const params = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   function onChange(id: string) {
     const p = new URLSearchParams(params.toString());
     if (id) p.set("cliente", id);
     else p.delete("cliente");
-    router.push(`/dashboard?${p.toString()}`);
+    startTransition(() => router.push(`/dashboard?${p.toString()}`));
   }
 
   return (
@@ -24,6 +26,8 @@ export function ClientPicker({
       value={current ?? ""}
       onChange={(e) => onChange(e.target.value)}
       aria-label="Ver como cliente"
+      aria-busy={isPending}
+      className={isPending ? "is-pending" : undefined}
       style={{
         padding: "8px 10px",
         border: "1px solid var(--line)",

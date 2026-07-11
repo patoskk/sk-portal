@@ -15,8 +15,7 @@ function esNueva(iso: string): boolean {
 }
 
 export default async function LeccionesPage() {
-  const lessons = await getLessons();
-  const admin = await isAdmin();
+  const [lessons, admin] = await Promise.all([getLessons(), isAdmin()]);
 
   return (
     <main className="page">

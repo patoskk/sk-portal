@@ -33,10 +33,18 @@ export default async function DashboardPage({
   const sp = await searchParams;
   const from = sp.from ?? isoDaysAgo(30);
   const to = sp.to ?? isoDaysAgo(0);
-  const admin = await isAdmin();
-  // "ver como cliente" es solo para admins; para un viewer, RLS manda
+  // "ver como cliente" es solo para admins; para un viewer, RLS manda.
+  // Sin ?cliente, rol y datos se piden EN PARALELO (el rol no condiciona la query);
+  // con ?cliente hay que confirmar el rol antes de usar el service role.
+  let admin: boolean;
+  let d: Awaited<ReturnType<typeof getDashboardData>>;
+  if (sp.cliente) {
+    admin = await isAdmin();
+    d = await getDashboardData({ from, to }, { asClientId: admin ? sp.cliente : undefined });
+  } else {
+    [admin, d] = await Promise.all([isAdmin(), getDashboardData({ from, to })]);
+  }
   const asClientId = admin && sp.cliente ? sp.cliente : undefined;
-  const d = await getDashboardData({ from, to }, { asClientId });
   const clients = admin ? await getClients() : [];
 
   const kpis = [

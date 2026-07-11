@@ -12,10 +12,11 @@ import { ClientsAdminList } from "@/components/ClientsAdminList";
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const role = await getCurrentRole();
+  // el gate corre en paralelo con los datos: si no es admin, redirect y
+  // lo consultado se descarta (getClients usa service role, pero acá nunca
+  // llega a renderizarse para un no-admin)
+  const [role, lessons, clients] = await Promise.all([getCurrentRole(), getLessons(), getClients()]);
   if (role !== "admin") redirect("/dashboard");
-  const lessons = await getLessons();
-  const clients = await getClients();
 
   return (
     <main className="page">

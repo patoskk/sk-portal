@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const UTC_OFFSET_H = -3; // mismo huso de referencia que el dashboard
@@ -19,12 +20,27 @@ function firstOfMonth(): string {
 export function DateRangePicker({ from, to }: { from: string; to: string }) {
   const router = useRouter();
   const params = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  // rango optimista: el botón clickeado se marca activo AL INSTANTE,
+  // aunque el server tarde en devolver la página nueva
+  const [optimistic, setOptimistic] = useState<{ from: string; to: string } | null>(null);
+
+  useEffect(() => {
+    // el estado optimista cumple hasta que llegan props nuevas o termina la
+    // transición (lo que ocurra primero) — nunca puede quedar pegado
+    if (!isPending) setOptimistic(null);
+  }, [isPending, from, to]);
+
+  const shownFrom = optimistic?.from ?? from;
+  const shownTo = optimistic?.to ?? to;
 
   function setRange(f: string, t: string) {
+    if (f === shownFrom && t === shownTo) return; // click en el rango ya activo: no-op
+    setOptimistic({ from: f, to: t });
     const p = new URLSearchParams(params.toString());
     p.set("from", f);
     p.set("to", t);
-    router.push(`/dashboard?${p.toString()}`);
+    startTransition(() => router.push(`/dashboard?${p.toString()}`));
   }
 
   const presets: { label: string; from: string; to: string }[] = [
@@ -46,7 +62,11 @@ export function DateRangePicker({ from, to }: { from: string; to: string }) {
   } as const;
 
   return (
-    <div style={{ display: "flex", gap: 8, alignItems: "center", flex: "1 1 auto", minWidth: 0, flexWrap: "wrap" }}>
+    <div
+      style={{ display: "flex", gap: 8, alignItems: "center", flex: "1 1 auto", minWidth: 0, flexWrap: "wrap" }}
+      className={isPending ? "is-pending" : undefined}
+      aria-busy={isPending}
+    >
       <div
         role="group"
         aria-label="Rangos rápidos"
@@ -59,7 +79,7 @@ export function DateRangePicker({ from, to }: { from: string; to: string }) {
         }}
       >
         {presets.map((p) => {
-          const active = p.from === from && p.to === to;
+          const active = p.from === shownFrom && p.to === shownTo;
           return (
             <button
               key={p.label}
@@ -81,9 +101,21 @@ export function DateRangePicker({ from, to }: { from: string; to: string }) {
         })}
       </div>
       <div style={{ display: "flex", gap: 8, alignItems: "center", flex: "1 1 auto", minWidth: 0 }}>
-        <input type="date" value={from} max={to} style={input} onChange={(e) => setRange(e.target.value, to)} />
+        <input
+          type="date"
+          value={shownFrom}
+          max={shownTo}
+          style={input}
+          onChange={(e) => setRange(e.target.value, shownTo)}
+        />
         <span style={{ color: "var(--ink-soft)" }}>→</span>
-        <input type="date" value={to} min={from} style={input} onChange={(e) => setRange(from, e.target.value)} />
+        <input
+          type="date"
+          value={shownTo}
+          min={shownFrom}
+          style={input}
+          onChange={(e) => setRange(shownFrom, e.target.value)}
+        />
       </div>
     </div>
   );

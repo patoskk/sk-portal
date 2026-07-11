@@ -67,7 +67,7 @@ export async function getDashboardData(
   // contradiciendo los gráficos de otro período.
   const insightQ = sb.from("insights").select("*").lte("period_start", to).gte("period_end", from);
 
-  const [metrics, metricsPrev, tools, queries, hourly, insightRow, clientRow] = await Promise.all([
+  const [metrics, metricsPrev, tools, queries, hourly, insightRow, clientRow, lastSyncedAt] = await Promise.all([
     daily("metrics_daily"),
     daily("metrics_daily", prevFrom, prevTo),
     daily("tool_usage_daily"),
@@ -80,6 +80,7 @@ export async function getDashboardData(
     asClientId
       ? sb.from("clients").select("name,conversion_label").eq("id", asClientId).maybeSingle()
       : sb.from("clients").select("name,conversion_label").maybeSingle(),
+    getLastSyncedAt(asClientId), // su mini-cadena corre en paralelo con todo lo demás
   ]);
 
   const conversionLabel = (clientRow.data?.conversion_label as string) || "Conversiones";
@@ -106,8 +107,6 @@ export async function getDashboardData(
   const convSessions = sum("conversion_sessions");
   // mensajes reales de la charla (personas + agente), sin los resultados de tools
   const msgsConv = sum("messages_human") + sum("messages_agent");
-
-  const lastSyncedAt = await getLastSyncedAt(asClientId);
 
   // sin datos previos no hay comparación honesta (cliente nuevo o rango muy viejo)
   const kpisPrev: KpiSet | null = mdPrev.length
@@ -162,12 +161,9 @@ export async function getDashboardData(
 async function getLastSyncedAt(asClientId?: string): Promise<string | null> {
   let clientId = asClientId ?? null;
   if (!clientId) {
+    // sin auth.getUser() previo: la policy "own mapping" ya devuelve solo la fila propia
     const sb = await createClient();
-    const {
-      data: { user },
-    } = await sb.auth.getUser();
-    if (!user) return null;
-    const { data } = await sb.from("user_clients").select("client_id").eq("user_id", user.id).maybeSingle();
+    const { data } = await sb.from("user_clients").select("client_id").maybeSingle();
     clientId = data?.client_id ?? null;
   }
   if (!clientId) return null;
