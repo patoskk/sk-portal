@@ -33,17 +33,22 @@ const SYSTEM =
   "Si la lección es específica de un caso, que uno de los bullets diga para quién es.\n" +
   "- No repitas el título dentro de intro, summary ni why: el mail ya lo muestra aparte.";
 
+// OJO: structured outputs NO soporta restricciones de cantidad en arrays
+// (minItems distinto de 0/1 y maxItems dan 400 invalid_request_error).
+// La cantidad de bullets se pide en el prompt y se recorta acá abajo.
 const OUTPUT_SCHEMA = {
   type: "object",
   properties: {
     subject: { type: "string" },
     intro: { type: "string" },
     summary: { type: "string" },
-    why: { type: "array", items: { type: "string" }, minItems: 2, maxItems: 3 },
+    why: { type: "array", items: { type: "string" } },
   },
   required: ["subject", "intro", "summary", "why"],
   additionalProperties: false,
 } as const;
+
+const MAX_WHY = 3;
 
 const MAX_CHARS = 8000; // el cuerpo de la lección recortado: alcanza y sobra
 
@@ -107,8 +112,8 @@ export async function draftLessonEmail(input: {
   if (response.stop_reason === "max_tokens") throw new Error("Claude cortó por longitud");
   const text = response.content.find((b) => b.type === "text")?.text ?? "{}";
   const out = JSON.parse(text) as LessonDraft;
-  // cinturón: el asunto en minúscula es la regla que más pesa para Principal
   out.subject = out.subject.trim();
-  out.why = (out.why ?? []).map((w) => w.trim()).filter(Boolean);
+  // el schema no puede limitar la cantidad: se recorta acá
+  out.why = (out.why ?? []).map((w) => w.trim()).filter(Boolean).slice(0, MAX_WHY);
   return out;
 }

@@ -66,9 +66,11 @@ export function NotifyPanel({ lessonId, lessonTitle, yaAvisado, onClose }: Props
     void draft();
   }, [draft]);
 
-  // preview con debounce: el iframe muestra el mail tal cual sale
+  // Preview con debounce: el iframe muestra el mail tal cual sale.
+  // Corre SIEMPRE (aunque el copy esté vacío): esta misma llamada trae la
+  // cuenta de destinatarios, y si se salteaba, el panel quedaba clavado en
+  // "calculando destinatarios…" cuando la redacción con IA fallaba.
   useEffect(() => {
-    if (!intro && !summary) return;
     const t = setTimeout(async () => {
       const res = await fetch(`/api/admin/lessons/${lessonId}/preview`, {
         method: "POST",
@@ -81,7 +83,8 @@ export function NotifyPanel({ lessonId, lessonTitle, yaAvisado, onClose }: Props
         recipients: number;
         skipped: { clientName: string; reason: string }[];
       };
-      setHtml(d.html);
+      // sin copy todavía: mostramos los destinatarios pero no un mail vacío
+      if (intro || summary) setHtml(d.html);
       setDestinatarios(d.recipients);
       setSalteados(d.skipped ?? []);
     }, 500);

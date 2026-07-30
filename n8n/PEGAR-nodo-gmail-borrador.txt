@@ -1,0 +1,86 @@
+═══════════════════════════════════════════════════════════════════════
+NODO "Crear borrador (Gmail)" — CORREGIDO
+Workflow: SK — Aviso de lección nueva
+═══════════════════════════════════════════════════════════════════════
+
+EL ERROR: "The value 'draft' is not supported"
+
+En el nodo Gmail, crear un borrador NO es una operación de Message.
+Draft es un RESOURCE aparte. Por eso "draft" aparecía en rojo: no existe
+dentro de Message (ahí solo hay Send, Reply, Get, Delete, labels…).
+
+
+───────────────────────────────────────────────────────────────────────
+OPCIÓN A — a mano, 2 clics (RECOMENDADA)
+───────────────────────────────────────────────────────────────────────
+
+Abrí el nodo "Crear borrador (Gmail)" y cambiá:
+
+    Resource   →  Draft        (hoy dice "Message")
+    Operation  →  Create       (se pone solo al elegir Draft)
+
+Recién ahí aparecen los campos Subject / Email Type / Message. Completá:
+
+    Subject      ={{ $json.subject }}
+    Email Type   HTML                    ← IMPORTANTE, no Text
+    Message      ={{ $json.html }}
+
+    Options (Add option):
+      · Send To            ={{ $json.email }}
+      · Append n8n Attribution   →  OFF   ← OBLIGATORIO
+        (si queda prendido, cada mail termina con
+         "This email was sent automatically with n8n")
+
+Guardá. No toques las conexiones: quedan como están.
+
+
+───────────────────────────────────────────────────────────────────────
+OPCIÓN B — pegar el nodo
+───────────────────────────────────────────────────────────────────────
+
+Copiá el bloque de abajo y pegalo (Ctrl+V) en el canvas de n8n.
+Ojo: entra como nodo NUEVO y desconectado, así que después hay que
+borrar el viejo y rehacer 2 conexiones:
+
+    ¿Solo borrador?  (salida true) ──►  Crear borrador (Gmail)
+    Crear borrador (Gmail)         ──►  Esperar
+
+Y volver a elegir la credencial "Gmail OA" en el nodo.
+Por eso conviene más la Opción A.
+
+{
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "draft",
+        "operation": "create",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {
+          "sendTo": "={{ $json.email }}",
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [980, 300],
+      "id": "a7f1c2d4-3b6e-4f08-9c21-5d8e0a1b2c3d",
+      "name": "Crear borrador (Gmail)"
+    }
+  ],
+  "connections": {}
+}
+
+
+───────────────────────────────────────────────────────────────────────
+PARA QUÉ SIRVE ESTE NODO
+───────────────────────────────────────────────────────────────────────
+
+Es la rama de seguridad. Con DRY_RUN=true en el nodo Config, los avisos a
+clientes NO se envían: quedan como borradores en tu Gmail para que los
+revises. Las pruebas a tu propia casilla ("Enviarme una prueba" desde el
+portal) se mandan igual, porque si no, no podrías ver en qué pestaña de
+Gmail caen — que es el punto de la prueba.
+
+Cuando el mail te guste: Config → DRY_RUN = false.
