@@ -8,13 +8,18 @@ export interface ClientRow {
   table_name: string | null;
   last_synced_at: string | null;
   last_data_at: string | null; // último día con métricas: sync verde + dato viejo = fuente muerta
+  // contacto del DUEÑO: a dónde van los avisos de lecciones. Distinto del mail
+  // con el que se creó la cuenta del portal (ese suele ser el de la empresa).
+  contact_name: string | null;
+  contact_email: string | null;
+  notify_lessons: boolean;
 }
 
 export async function getClients(): Promise<ClientRow[]> {
   const admin = createAdminClient();
   const { data } = await admin
     .from("clients")
-    .select("id,name,rubro,client_sources(table_name,last_synced_at)")
+    .select("id,name,rubro,contact_name,contact_email,notify_lessons,client_sources(table_name,last_synced_at)")
     .order("created_at");
   const lastData = new Map<string, string>();
   await Promise.all(
@@ -44,6 +49,9 @@ export async function getClients(): Promise<ClientRow[]> {
       table_name: src?.table_name ?? null,
       last_synced_at: src?.last_synced_at ?? null,
       last_data_at: lastData.get(c.id) ?? null,
+      contact_name: (c.contact_name as string | null) ?? null,
+      contact_email: (c.contact_email as string | null) ?? null,
+      notify_lessons: (c.notify_lessons as boolean | null) ?? true,
     };
   });
 }

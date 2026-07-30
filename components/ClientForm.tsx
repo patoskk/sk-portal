@@ -18,6 +18,8 @@ export function ClientForm() {
       rubro: String(fd.get("rubro") ?? ""),
       table: String(fd.get("table") ?? ""),
       email: String(fd.get("email") ?? ""),
+      contactName: String(fd.get("contactName") ?? ""),
+      contactEmail: String(fd.get("contactEmail") ?? ""),
       label: String(fd.get("label") ?? ""),
       utc: Number(fd.get("utc") || -3),
     };
@@ -30,7 +32,12 @@ export function ClientForm() {
     if (res.ok) {
       const d = await res.json();
       const lines = [`Cliente creado ✓ (${d.days ?? 0} días de datos)`];
-      if (d.password) lines.push(`Acceso del dueño → ${body.email} / ${d.password}`);
+      if (d.password) lines.push(`Acceso al portal → ${body.email} / ${d.password}`);
+      lines.push(
+        body.contactEmail
+          ? `Avisos de lecciones → ${body.contactName || "(sin nombre)"} · ${body.contactEmail}`
+          : "⚠ Sin mail del dueño: este cliente NO va a recibir avisos de lecciones. Cargalo en la lista de la derecha.",
+      );
       if (d.warning) lines.push("⚠ " + d.warning);
       setResult({ ok: true, text: lines.join("\n") });
       f.reset();
@@ -65,8 +72,33 @@ export function ClientForm() {
       <label style={label}>Tabla de conversaciones (en tu Supabase)</label>
       <input name="table" required placeholder="nombre_exacto_de_la_tabla" style={field} />
 
-      <label style={label}>Email del dueño (para su acceso)</label>
-      <input name="email" type="email" placeholder="dueño@correo.com" style={field} />
+      <label style={label}>Email de la empresa — con este se crea la cuenta del portal</label>
+      <input name="email" type="email" placeholder="ventas@laempresa.com" style={field} />
+
+      {/* El contacto del dueño es OTRA cosa que la cuenta del portal: los avisos
+          de lecciones van al mail personal, no a la casilla de ventas/info. */}
+      <div
+        style={{
+          border: "1px solid var(--line)",
+          borderLeft: "3px solid var(--accent)",
+          borderRadius: 9,
+          padding: "14px 14px 4px",
+          margin: "2px 0 14px",
+          background: "var(--tint)",
+        }}
+      >
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>El dueño, en persona</div>
+        <p style={{ ...label, margin: "0 0 12px", lineHeight: 1.45 }}>
+          A esto le mandamos los avisos de lecciones nuevas. Si lo dejás vacío, ese cliente no recibe avisos
+          (no le escribimos a la casilla de la empresa).
+        </p>
+
+        <label style={label}>Nombre del dueño</label>
+        <input name="contactName" placeholder="Fernando" style={field} />
+
+        <label style={label}>Su mail personal</label>
+        <input name="contactEmail" type="email" placeholder="fernandogallo@gmail.com" style={field} />
+      </div>
 
       <label style={label}>Etiqueta del evento clave (ej. Pedidos, Turnos, Reservas)</label>
       <input name="label" placeholder="Conversiones" style={field} />

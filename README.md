@@ -33,13 +33,54 @@ Next.js en Vercel  ← cada cliente ve SOLO sus filas
 | `components/Charts.tsx` | gráficos Recharts con la paleta de marca |
 | `app/api/cron/compute/` | recalcula métricas por cliente (horario) |
 | `app/api/cron/insights/` | genera oportunidades con Claude (semanal) |
+| `lib/notify/` | aviso por mail de lecciones nuevas (render + destinatarios + despacho) |
+| `n8n/aviso-leccion-workflow.json` | workflow que manda esos mails por Gmail |
 | `supabase/migrations/0001_init.sql` | tablas + RLS + auth hook |
+
+## Aviso por mail de una lección nueva
+
+El portal **compone** (destinatarios, copy, HTML, log) y **n8n manda** (ahí vive la
+credencial de Gmail de SK Optimal). Nada sale sin que un humano lo apruebe.
+
+```
+/admin  ──publicar──►  POST /api/admin/lessons
+        ──"Redactar con IA"──►  .../[id]/draft    (Claude escribe, vos editás)
+        ──preview en iframe──►  .../[id]/preview  (el MISMO render que el envío)
+        ──"Enviar"──────────►  .../[id]/notify   ──webhook──► n8n ──Gmail──► cliente
+                                                  ◄── POST /api/notify/callback
+```
+
+- **Va al DUEÑO, no a la empresa.** `clients.contact_email` / `contact_name` son el
+  mail personal y el nombre de pila del dueño; la cuenta del portal se crea con el
+  mail de la empresa (`ventas@…`) y **no** se usa para avisos. Sin `contact_email`
+  ese cliente se saltea (aparece el motivo en `/admin`) — a propósito: mejor no
+  avisarle a nadie que escribirle a la casilla de ventas.
+- **Un mail por destinatario**, nunca BCC. `batchSize 1` + `Wait 10s` en n8n.
+- **Idempotente:** `unique(lesson_id, email)` en `lesson_notifications`. Apretar
+  "Avisar" dos veces no manda dos mails; el reenvío es explícito (`force`).
+- **El mail parece personal a propósito** (sin imágenes, 1 link, firma de persona):
+  un newsletter branded cae en Promociones. Ver los comentarios de
+  `lib/notify/lessonEmail.ts` antes de "mejorarlo" visualmente.
+- **`appendAttribution: false`** en el nodo Gmail es obligatorio (si no, n8n
+  agrega su pie y el mail se delata como automático).
+- Revisar el diseño sin mandar nada: `npx tsx scripts/preview-email.ts salida.html`.
+- El cliente puede apagar los avisos en ⚙ Configuración (`user_clients.notify_lessons`).
+- El link del mail es `PORTAL_URL/l/<id>`; sin sesión el middleware guarda el
+  destino en `?next` y el login lo respeta.
+
+**Setup una vez:** importar `n8n/aviso-leccion-workflow.json`, crear la credencial
+Header Auth (`x-portal-secret` = `NOTIFY_SECRET`), elegir la credencial de Gmail,
+copiar la URL de producción del Webhook a `N8N_NOTIFY_WEBHOOK_URL`, y pegar el
+`NOTIFY_SECRET` en el nodo `Config` (`CALLBACK_SECRET`). Primera vez: dejar
+`DRY_RUN=true` — crea borradores en Gmail en vez de enviar, **excepto** los lotes
+marcados como prueba ("Enviarme una prueba"), que se mandan igual: si no, no se
+puede ver en qué pestaña de Gmail cae, que es el punto de la prueba.
 
 ## Producción
 
 - **App:** https://sk-clientportal.vercel.app · repo `patoskk/sk-portal` · Vercel `sk-clientportal` (Hobby).
 - **Cron (límite Hobby = 1×/día):** `compute` 0 11 * * * · `insights` lunes 12 UTC. Para más frecuencia: Vercel Pro o un workflow n8n que pegue al endpoint con el `CRON_SECRET`.
-- **Env vars** (en Vercel y `.env.local`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET`, `ANTHROPIC_API_KEY`, y un `SOURCE_KEY_<CLIENT_ID>` por cliente.
+- **Env vars** (en Vercel y `.env.local`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET`, `ANTHROPIC_API_KEY`, y un `SOURCE_KEY_<CLIENT_ID>` por cliente. Para los avisos de lecciones: `N8N_NOTIFY_WEBHOOK_URL`, `NOTIFY_SECRET`, `PORTAL_URL`, `NOTIFY_FROM_NAME`.
 
 ## Setup (entorno nuevo)
 

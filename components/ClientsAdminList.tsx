@@ -9,6 +9,9 @@ interface C {
   table_name: string | null;
   last_synced_at: string | null;
   last_data_at: string | null;
+  contact_name: string | null;
+  contact_email: string | null;
+  notify_lessons: boolean;
 }
 
 // hace cuánto sincronizó; > 26 h = el cron diario se salteó al menos una corrida
@@ -33,6 +36,34 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<Record<string, string>>({});
+  // edición del contacto del dueño (los clientes viejos se dieron de alta sin él)
+  const [editing, setEditing] = useState<string | null>(null);
+  const [cName, setCName] = useState("");
+  const [cMail, setCMail] = useState("");
+
+  function startEdit(c: C) {
+    setEditing(c.id);
+    setCName(c.contact_name ?? "");
+    setCMail(c.contact_email ?? "");
+    setMsg((m) => ({ ...m, [c.id]: "" }));
+  }
+
+  async function saveContact(id: string) {
+    setBusy(id);
+    const res = await fetch(`/api/admin/clients/${id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ contact_name: cName, contact_email: cMail }),
+    });
+    setBusy(null);
+    if (!res.ok) {
+      const err = await res.text();
+      setMsg((m) => ({ ...m, [id]: "Error: " + err }));
+      return;
+    }
+    setEditing(null);
+    router.refresh();
+  }
 
   async function genInsights(id: string, name: string) {
     if (!confirm(`¿Generar y publicar insights para ${name}? Consume API y el cliente los ve al instante.`)) return;
@@ -44,6 +75,18 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
     setMsg((m) => ({ ...m, [id]: text }));
     router.refresh();
   }
+
+  const field = {
+    width: "100%",
+    padding: "8px 10px",
+    border: "1px solid var(--line)",
+    borderRadius: 8,
+    fontSize: 13.5,
+    marginBottom: 8,
+    background: "var(--card)",
+    color: "var(--ink)",
+  } as const;
+  const linkBtn = { fontSize: 12.5, fontWeight: 600, cursor: "pointer", background: "none", border: 0, padding: 0 } as const;
 
   if (!clients.length) return <p style={{ color: "var(--ink-soft)", fontSize: 13 }}>Todavía ningún cliente.</p>;
 
@@ -62,7 +105,40 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
               {dataBadge(c.last_data_at).text}
             </span>
           </div>
-          <div style={{ display: "flex", gap: 14, alignItems: "center", marginTop: 6 }}>
+          {/* contacto del dueño: a dónde van los avisos de lecciones */}
+          {editing === c.id ? (
+            <div style={{ marginTop: 8 }}>
+              <input
+                value={cName}
+                onChange={(e) => setCName(e.target.value)}
+                placeholder="Nombre del dueño (ej. Fernando)"
+                style={field}
+              />
+              <input
+                value={cMail}
+                onChange={(e) => setCMail(e.target.value)}
+                type="email"
+                placeholder="Su mail personal (ej. fernandogallo@gmail.com)"
+                style={field}
+              />
+              <div style={{ display: "flex", gap: 14 }}>
+                <button onClick={() => saveContact(c.id)} disabled={busy === c.id} style={{ ...linkBtn, color: "var(--accent-dark)" }}>
+                  {busy === c.id ? "Guardando…" : "Guardar"}
+                </button>
+                <button onClick={() => setEditing(null)} style={{ ...linkBtn, color: "var(--ink-soft)" }}>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ fontSize: 12.5, marginTop: 4, color: c.contact_email ? "var(--ink-soft)" : "var(--warn)" }}>
+              {c.contact_email
+                ? `Avisos → ${c.contact_name || "(sin nombre)"} · ${c.contact_email}${c.notify_lessons ? "" : " · avisos apagados"}`
+                : "⚠ Sin mail del dueño: no recibe avisos de lecciones"}
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: 14, alignItems: "center", marginTop: 6, flexWrap: "wrap" }}>
             <button
               onClick={() => genInsights(c.id, c.name)}
               disabled={busy === c.id}
@@ -70,7 +146,12 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
             >
               {busy === c.id ? "Generando…" : "Generar insights"}
             </button>
-            {msg[c.id] ? <span style={{ fontSize: 12, color: "var(--ink-soft)" }}>{msg[c.id]}</span> : null}
+            {editing === c.id ? null : (
+              <button onClick={() => startEdit(c)} style={{ ...linkBtn, color: "var(--accent-dark)" }}>
+                {c.contact_email ? "Editar contacto" : "Cargar mail del dueño"}
+              </button>
+            )}
+            {msg[c.id] ? <span style={{ fontSize: 12, color: "var(--warn)" }}>{msg[c.id]}</span> : null}
           </div>
         </li>
       ))}

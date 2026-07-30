@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { NotifyPanel } from "./NotifyPanel";
 
 export function LessonForm() {
   const router = useRouter();
@@ -8,19 +9,25 @@ export function LessonForm() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  // paso 2: recién publicada, lista para avisar por mail
+  const [publicada, setPublicada] = useState<{ id: string; title: string } | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
     setMsg(null);
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     fd.set("mode", mode);
+    const title = String(fd.get("title") ?? "");
     const res = await fetch("/api/admin/lessons", { method: "POST", body: fd });
     setBusy(false);
     if (res.ok) {
+      const d = (await res.json()) as { id?: string };
       setMsg({ ok: true, text: "Lección publicada ✓" });
-      (e.target as HTMLFormElement).reset();
+      form.reset();
       setFileName(null);
+      if (d.id) setPublicada({ id: d.id, title });
       router.refresh();
     } else {
       const t = await res.text();
@@ -40,6 +47,7 @@ export function LessonForm() {
   } as const;
 
   return (
+    <div>
     <form onSubmit={onSubmit} className="card" style={{ maxWidth: 620 }}>
       <h3 style={{ marginTop: 0, fontSize: 16 }}>Publicar una lección</h3>
 
@@ -139,5 +147,15 @@ export function LessonForm() {
         <p style={{ marginBottom: 0, color: msg.ok ? "var(--accent-dark)" : "var(--warn)" }}>{msg.text}</p>
       )}
     </form>
+
+    {/* recién publicada: el aviso por mail es un paso aparte y opcional */}
+    {publicada ? (
+      <NotifyPanel
+        lessonId={publicada.id}
+        lessonTitle={publicada.title}
+        onClose={() => setPublicada(null)}
+      />
+    ) : null}
+    </div>
   );
 }

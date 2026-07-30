@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentRole } from "@/lib/data/role";
-import { getLessons } from "@/lib/data/lessons";
+import { getLessonsForAdmin } from "@/lib/data/lessons";
 import { getClients } from "@/lib/data/clients";
 import { Nav } from "@/components/Nav";
 import { SettingsMenu } from "@/components/SettingsMenu";
@@ -15,7 +15,7 @@ export default async function AdminPage() {
   // el gate corre en paralelo con los datos: si no es admin, redirect y
   // lo consultado se descarta (getClients usa service role, pero acá nunca
   // llega a renderizarse para un no-admin)
-  const [role, lessons, clients] = await Promise.all([getCurrentRole(), getLessons(), getClients()]);
+  const [role, lessons, clients] = await Promise.all([getCurrentRole(), getLessonsForAdmin(), getClients()]);
   if (role !== "admin") redirect("/dashboard");
 
   return (

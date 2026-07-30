@@ -1,0 +1,308 @@
+{
+  "name": "SK — Aviso de lección nueva",
+  "nodes": [
+    {
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-140, 300],
+      "webhookId": "aviso-leccion",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "aviso-leccion",
+        "authentication": "headerAuth",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REEMPLAZAR",
+          "name": "Portal SK — x-portal-secret"
+        }
+      },
+      "notes": "Lo llama el portal al apretar \"Enviar\" en /admin. Credencial Header Auth: nombre del header 'x-portal-secret', valor = NOTIFY_SECRET (el mismo que está en Vercel)."
+    },
+    {
+      "id": "config",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [80, 300],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "FROM_NAME",
+              "value": "Pato de SK Optimal",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "REPLY_TO",
+              "value": "optimalaima@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "WAIT_SEC",
+              "value": 10,
+              "type": "number"
+            },
+            {
+              "id": "c4",
+              "name": "DRY_RUN",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "c5",
+              "name": "PORTAL_URL",
+              "value": "https://portal.skoptimal.com",
+              "type": "string"
+            },
+            {
+              "id": "c6",
+              "name": "CALLBACK_SECRET",
+              "value": "PEGAR-EL-NOTIFY_SECRET",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "notes": "Lo único que se toca acá. DRY_RUN=true crea BORRADORES en Gmail (no manda): dejalo en true para la primera prueba y pasalo a false cuando el mail te guste."
+    },
+    {
+      "id": "prep",
+      "name": "Preparar destinatarios",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [300, 300],
+      "parameters": {
+        "jsCode": "// El portal manda el lote YA RENDERIZADO (un HTML por persona, con el nombre\n// del negocio de cada uno). Acá solo validamos y abrimos un item por\n// destinatario: Gmail manda de a uno, nunca BCC a la lista.\n// Ojo: el payload del webhook vive en $json.body, no en $json.\nconst body = $('Webhook').first().json.body ?? {};\nconst lessonId = body.lesson_id;\nconst recipients = Array.isArray(body.recipients) ? body.recipients : [];\n\nif (!lessonId) throw new Error('el payload no trae lesson_id');\nif (!recipients.length) throw new Error('el payload no trae destinatarios');\n\nreturn recipients.map((r) => ({\n  json: {\n    lesson_id: lessonId,\n    lesson_title: body.lesson_title ?? '',\n    test: body.test === true,\n    email: r.email,\n    client_name: r.client_name ?? '',\n    subject: r.subject,\n    html: r.html,\n    text: r.text ?? '',\n  },\n}));"
+      },
+      "notes": "Valida el payload y emite 1 item por destinatario."
+    },
+    {
+      "id": "loop",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [520, 300],
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "notes": "batchSize 1 A PROPÓSITO: mandar de a uno y espaciado es una regla de entregabilidad, no una optimización. Salida 0 = terminó, salida 1 = cada mail."
+    },
+    {
+      "id": "fin",
+      "name": "Fin",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [740, 180],
+      "parameters": {},
+      "notes": "Salida 'done' del loop: ya se procesaron todos."
+    },
+    {
+      "id": "ifdry",
+      "name": "¿Solo borrador?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [740, 400],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "d1",
+              "leftValue": "={{ $('Config').first().json.DRY_RUN === true && $json.test !== true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "notes": "DRY_RUN deja borradores... EXCEPTO cuando el portal marca el lote como prueba (\"Enviarme una prueba\"): esos se mandan de verdad, si no no podrías ver en qué pestaña de Gmail caen, que es el punto de la prueba."
+    },
+    {
+      "id": "gmailDraft",
+      "name": "Crear borrador (Gmail)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [980, 300],
+      "parameters": {
+        "resource": "draft",
+        "operation": "create",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {
+          "sendTo": "={{ $json.email }}",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REEMPLAZAR",
+          "name": "Gmail SK Optimal (optimalaima@gmail.com)"
+        }
+      },
+      "notes": "OJO: el borrador es Resource=Draft + Operation=Create (NO Message+draft: esa combinación no existe en el nodo). DRY_RUN deja el mail como borrador para revisarlo en Gmail; no avisa al portal, así que las filas quedan 'en curso', que es la verdad."
+    },
+    {
+      "id": "gmailSend",
+      "name": "Enviar (Gmail)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [980, 480],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {
+          "senderName": "={{ $('Config').first().json.FROM_NAME }}",
+          "replyTo": "={{ $('Config').first().json.REPLY_TO }}",
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REEMPLAZAR",
+          "name": "Gmail SK Optimal (optimalaima@gmail.com)"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "notes": "appendAttribution: false es OBLIGATORIO — si no, n8n agrega 'sent automatically with n8n' al pie y el mail deja de parecer personal. Salida de error -> avisa el fallo al portal y sigue con el próximo."
+    },
+    {
+      "id": "cbOk",
+      "name": "Avisar al portal (ok)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1220, 420],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.PORTAL_URL }}/api/notify/callback",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Config').first().json.CALLBACK_SECRET }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ lesson_id: $('Loop Over Items').first().json.lesson_id, email: $('Loop Over Items').first().json.email, ok: true, provider_id: $json.id ?? null }) }}",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "notes": "Marca la fila como entregada. continueRegularOutput: si el log falla, el lote sigue."
+    },
+    {
+      "id": "cbErr",
+      "name": "Avisar al portal (error)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1220, 600],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.PORTAL_URL }}/api/notify/callback",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Config').first().json.CALLBACK_SECRET }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ lesson_id: $('Loop Over Items').first().json.lesson_id, email: $('Loop Over Items').first().json.email, ok: false, error: String($json.error?.message ?? $json.error ?? $json.message ?? 'error en Gmail').slice(0, 300) }) }}",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "notes": "El mail de este cliente falló: queda registrado con el motivo y el lote sigue con el próximo."
+    },
+    {
+      "id": "wait",
+      "name": "Esperar",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1460, 480],
+      "parameters": {
+        "amount": "={{ $('Config').first().json.WAIT_SEC }}",
+        "unit": "seconds"
+      },
+      "notes": "Espaciar los envíos: las ráfagas desde una casilla Gmail son la señal de spam más fácil de evitar."
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Config", "type": "main", "index": 0 }]]
+    },
+    "Config": {
+      "main": [[{ "node": "Preparar destinatarios", "type": "main", "index": 0 }]]
+    },
+    "Preparar destinatarios": {
+      "main": [[{ "node": "Loop Over Items", "type": "main", "index": 0 }]]
+    },
+    "Loop Over Items": {
+      "main": [
+        [{ "node": "Fin", "type": "main", "index": 0 }],
+        [{ "node": "¿Solo borrador?", "type": "main", "index": 0 }]
+      ]
+    },
+    "¿Solo borrador?": {
+      "main": [
+        [{ "node": "Crear borrador (Gmail)", "type": "main", "index": 0 }],
+        [{ "node": "Enviar (Gmail)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Crear borrador (Gmail)": {
+      "main": [[{ "node": "Esperar", "type": "main", "index": 0 }]]
+    },
+    "Enviar (Gmail)": {
+      "main": [
+        [{ "node": "Avisar al portal (ok)", "type": "main", "index": 0 }],
+        [{ "node": "Avisar al portal (error)", "type": "main", "index": 0 }]
+      ]
+    },
+    "Avisar al portal (ok)": {
+      "main": [[{ "node": "Esperar", "type": "main", "index": 0 }]]
+    },
+    "Avisar al portal (error)": {
+      "main": [[{ "node": "Esperar", "type": "main", "index": 0 }]]
+    },
+    "Esperar": {
+      "main": [[{ "node": "Loop Over Items", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

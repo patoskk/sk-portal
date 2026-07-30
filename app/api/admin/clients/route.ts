@@ -2,23 +2,10 @@
 // y corre el primer cómputo. Todas las tablas viven en el mismo proyecto (SOURCE_DEFAULT_*).
 import { NextResponse, type NextRequest } from "next/server";
 import { randomUUID, randomBytes } from "node:crypto";
-import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { findUserByEmail } from "@/lib/supabase/users";
 import { computeClient } from "@/lib/metrics/runCompute";
-
-// listUsers pagina de a 50 por default: buscar por email recorriendo páginas,
-// si no con >50 usuarios el alta intenta recrear usuarios existentes y falla.
-async function findUserByEmail(admin: SupabaseClient, email: string): Promise<User | null> {
-  for (let page = 1; page <= 50; page++) {
-    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 200 });
-    if (error) throw error;
-    const hit = data.users.find((u) => u.email === email);
-    if (hit) return hit;
-    if (data.users.length < 200) return null;
-  }
-  return null;
-}
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -35,10 +22,15 @@ export async function POST(req: NextRequest) {
 
   const b = (await req.json()) as {
     name?: string; rubro?: string; table?: string; email?: string; label?: string; utc?: number;
+    contactName?: string; contactEmail?: string;
   };
   const name = (b.name ?? "").trim();
   const table = (b.table ?? "").trim();
+  // email = con el que se CREA LA CUENTA del portal (suele ser el de la empresa)
   const email = (b.email ?? "").trim().toLowerCase();
+  // contacto = el DUEÑO en persona; es a quien le mandamos los avisos de lecciones
+  const contactName = (b.contactName ?? "").trim() || null;
+  const contactEmail = (b.contactEmail ?? "").trim().toLowerCase() || null;
   const conversionLabel = (b.label ?? "").trim() || null;
   if (!name || !table) return new NextResponse("faltan nombre o tabla", { status: 400 });
 
@@ -49,7 +41,15 @@ export async function POST(req: NextRequest) {
   const clientId = randomUUID();
   const utc = typeof b.utc === "number" ? b.utc : -3;
 
-  const c = await admin.from("clients").insert({ id: clientId, name, rubro: b.rubro ?? "", utc_offset: utc, conversion_label: conversionLabel });
+  const c = await admin.from("clients").insert({
+    id: clientId,
+    name,
+    rubro: b.rubro ?? "",
+    utc_offset: utc,
+    conversion_label: conversionLabel,
+    contact_name: contactName,
+    contact_email: contactEmail,
+  });
   if (c.error) return new NextResponse("creando cliente: " + c.error.message, { status: 500 });
   const s = await admin.from("client_sources").insert({ client_id: clientId, supabase_url: sourceUrl, table_name: table });
   if (s.error) return new NextResponse("creando fuente: " + s.error.message, { status: 500 });

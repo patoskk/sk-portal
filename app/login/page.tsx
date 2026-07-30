@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 // Mensajes de Supabase auth traducidos (el público es no técnico).
@@ -13,8 +12,17 @@ function traducirError(msg: string): string {
   return "No pudimos ingresar. Verificá tus datos e intentá de nuevo.";
 }
 
+// A dónde ir después de entrar. El middleware guarda el destino en ?next cuando
+// alguien llega sin sesión (típico: el link a una lección desde el mail de aviso).
+// Se lee de window.location (no con useSearchParams) para no necesitar un
+// Suspense boundary en el build. Guarda de open-redirect: solo rutas internas.
+function destinoDespuesDelLogin(): string {
+  const next = new URLSearchParams(window.location.search).get("next");
+  if (!next || !next.startsWith("/") || next.startsWith("//")) return "/dashboard";
+  return next;
+}
+
 export default function LoginPage() {
-  const router = useRouter();
   const [mode, setMode] = useState<"login" | "reset" | "reset-sent">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,8 +40,9 @@ export default function LoginPage() {
       setLoading(false);
       return;
     }
-    router.push("/dashboard");
-    router.refresh();
+    // location.assign, no router.push: /l/<id> termina redirigiendo a una signed
+    // URL de Supabase (otro origen) y el router de Next no puede seguir eso.
+    window.location.assign(destinoDespuesDelLogin());
     // dejamos loading=true: el overlay queda hasta que navega
   }
 

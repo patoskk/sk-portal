@@ -55,6 +55,13 @@ export default async function LeccionesPage() {
                   {esNueva(l.published_at) ? <span className="lesson-new">Nueva</span> : null}
                 </h3>
                 {l.summary ? <p className="lesson-summary">{l.summary}</p> : null}
+                {l.why.length ? (
+                  <ul className="lesson-why">
+                    {l.why.map((w, k) => (
+                      <li key={k}>{w}</li>
+                    ))}
+                  </ul>
+                ) : null}
                 <p className="lesson-meta">
                   {fmtFecha(l.published_at)}
                   {l.readMinutes ? ` · ${l.readMinutes} min de lectura` : ""}

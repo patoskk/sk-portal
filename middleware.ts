@@ -31,17 +31,22 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
   const isPublic = pathname.startsWith("/login") || pathname.startsWith("/auth");
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+    url.search = "";
+    // recordamos a dónde iba: el link del mail a una lección tiene que sobrevivir
+    // el login (antes caía siempre en /dashboard y había que buscarla a mano)
+    url.searchParams.set("next", pathname + search);
     return NextResponse.redirect(url);
   }
   return response;
 }
 
 export const config = {
-  // todo menos assets estáticos y la ruta de cron (protegida por su propio secret)
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/cron).*)"],
+  // todo menos assets estáticos y las rutas con su propio secret
+  // (api/cron = Vercel Cron, api/notify = callback de n8n)
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/cron|api/notify).*)"],
 };
