@@ -146,6 +146,12 @@ body {
 }
 .btn-primary:active { transform: translateY(0); }
 
+/* texto solo para lectores de pantalla (p. ej. el punto de novedad del nav) */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
 /* línea de cierre del Panel que lleva a /beneficios */
 .beneficios-hint { transition: border-color .16s ease, transform .16s ease; }
 .beneficios-hint:hover { border-color: var(--accent-soft); transform: translateY(-1px); }
