@@ -70,7 +70,7 @@ export function ConsultingCard() {
       <p style={{ margin: "0 0 20px", fontSize: 15, lineHeight: 1.6, maxWidth: 740, opacity: 0.88 }}>
         Tu agente es la punta del iceberg. Entramos a tu operación, encontramos dónde se pierde
         plata y tiempo, y lo resolvemos con tecnología propia. No vendemos herramientas sueltas:
-        somos tu equipo de IA.
+        somos tu socio de IA.
       </p>
 
       <div className="consulting-grid">
