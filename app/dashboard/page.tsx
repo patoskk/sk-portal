@@ -5,6 +5,7 @@ import { ClientPicker } from "@/components/ClientPicker";
 import { DateRangePicker } from "@/components/DateRangePicker";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { Nav } from "@/components/Nav";
+import { ConsultingCard } from "@/components/ConsultingCard";
 import { ReferralCard } from "@/components/ReferralCard";
 import { ActivityBars, ActivityLine, HBarChart, UsageDonut } from "@/components/Charts";
 
@@ -179,6 +180,7 @@ export default async function DashboardPage({
         <p style={{ color: "var(--ink-soft)", marginTop: 16, fontSize: 13 }}>{d.insight.proximaEtapa}</p>
       ) : null}
 
+      <ConsultingCard />
       <ReferralCard />
     </main>
   );

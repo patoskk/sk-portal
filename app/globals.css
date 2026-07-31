@@ -146,6 +146,12 @@ body {
 }
 .btn-primary:active { transform: translateY(0); }
 
+/* grilla de servicios de la sección Consultoría */
+.consulting-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 760px) {
+  .consulting-grid { grid-template-columns: 1fr; }
+}
+
 /* CTA de referidos */
 .referral-cta {
   transition: transform .12s ease, box-shadow .12s ease;
