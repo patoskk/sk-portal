@@ -5,8 +5,7 @@ import { ClientPicker } from "@/components/ClientPicker";
 import { DateRangePicker } from "@/components/DateRangePicker";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { Nav } from "@/components/Nav";
-import { ConsultingCard } from "@/components/ConsultingCard";
-import { ReferralCard } from "@/components/ReferralCard";
+import Link from "next/link";
 import { ActivityBars, ActivityLine, HBarChart, UsageDonut } from "@/components/Charts";
 
 export const dynamic = "force-dynamic";
@@ -180,8 +179,37 @@ export default async function DashboardPage({
         <p style={{ color: "var(--ink-soft)", marginTop: 16, fontSize: 13 }}>{d.insight.proximaEtapa}</p>
       ) : null}
 
-      <ConsultingCard />
-      <ReferralCard />
+      {/* El Panel es solo métricas. La oferta comercial vive en /beneficios; esta
+          línea la mantiene a la vista sin volver a mezclar reporte con venta. */}
+      <Link
+        href="/beneficios"
+        className="beneficios-hint"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          marginTop: 26,
+          padding: "13px 18px",
+          borderRadius: 12,
+          background: "var(--card)",
+          border: "1px solid var(--line)",
+          boxShadow: "var(--shadow)",
+          color: "var(--ink)",
+          textDecoration: "none",
+          fontSize: 13.5,
+          lineHeight: 1.45,
+        }}
+      >
+        <span style={{ flex: 1 }}>
+          ¿Querés llevar la IA al resto de tu empresa?{" "}
+          <span style={{ color: "var(--ink-soft)" }}>
+            Mirá el servicio de consultoría y el programa de referidos.
+          </span>
+        </span>
+        <span style={{ color: "var(--accent-dark)", fontWeight: 700, whiteSpace: "nowrap" }}>
+          Ver beneficios →
+        </span>
+      </Link>
     </main>
   );
 }

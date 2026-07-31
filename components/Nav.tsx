@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 const BASE = [
   { href: "/dashboard", label: "Panel" },
   { href: "/lecciones", label: "Lecciones" },
+  { href: "/beneficios", label: "Beneficios" },
 ];
 
 export function Nav({ isAdmin = false }: { isAdmin?: boolean }) {

@@ -46,6 +46,21 @@ export function DashboardSkeleton() {
   );
 }
 
+// Beneficios: dos bloques altos (consultoría + referidos), no una lista de filas.
+export function BlocksSkeleton() {
+  return (
+    <main className="page" aria-busy="true" aria-label="Cargando">
+      <div style={{ padding: "28px 0" }}>
+        <Bar w={220} h={20} />
+      </div>
+      <Bar w={340} h={34} mb={10} />
+      <Bar w={380} h={13} mb={24} />
+      <div className="skel" style={{ height: 300, borderRadius: 16, marginBottom: 22 }} />
+      <div className="skel" style={{ height: 210, borderRadius: 16 }} />
+    </main>
+  );
+}
+
 export function ListSkeleton({ title = 200 }: { title?: number }) {
   return (
     <main className="page" aria-busy="true" aria-label="Cargando">

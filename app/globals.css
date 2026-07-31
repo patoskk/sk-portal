@@ -146,6 +146,10 @@ body {
 }
 .btn-primary:active { transform: translateY(0); }
 
+/* línea de cierre del Panel que lleva a /beneficios */
+.beneficios-hint { transition: border-color .16s ease, transform .16s ease; }
+.beneficios-hint:hover { border-color: var(--accent-soft); transform: translateY(-1px); }
+
 /* grilla de servicios de la sección Consultoría */
 .consulting-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 @media (max-width: 760px) {
