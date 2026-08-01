@@ -47,10 +47,12 @@ export default async function DashboardPage({
   const asClientId = admin && sp.cliente ? sp.cliente : undefined;
   const clients = admin ? await getClients() : [];
 
+  // Los eventos clave van como KPI propio cada uno: un cliente que vende Y agenda
+  // (pedidos + turnos) necesita ver cuál de los dos funciona, no la suma.
   const kpis = [
     { value: d.kpis.conversations, prev: d.kpisPrev?.conversations, label: "Conversaciones" },
     { value: d.kpis.messagesHuman, prev: d.kpisPrev?.messagesHuman, label: "Mensajes de clientes" },
-    { value: d.kpis.conversions, prev: d.kpisPrev?.conversions, label: d.conversionLabel },
+    ...d.conversions.map((c) => ({ value: c.value, prev: c.prev ?? undefined, label: c.label })),
     { value: d.kpis.toolCalls, prev: d.kpisPrev?.toolCalls, label: "Acciones del agente" },
   ];
   const prevRangeLabel = d.prevPeriod
@@ -105,7 +107,7 @@ export default async function DashboardPage({
         </p>
       ) : null}
 
-      <section className="kpi-grid">
+      <section className={`kpi-grid${kpis.length > 4 ? " kpi-grid-5" : ""}`}>
         {kpis.map((k) => (
           <div key={k.label} className="card">
             <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
@@ -124,17 +126,29 @@ export default async function DashboardPage({
 
         <div className="card">
           <h3 style={{ margin: "0 0 14px", fontSize: 15 }}>Indicadores</h3>
-          {/* tasa de conversión con barra */}
+          {/* tasa de conversión con barra — una por tipo de evento (pedidos, turnos…) */}
           <div style={{ marginBottom: 18 }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span style={{ fontSize: 34, fontWeight: 800, color: "var(--accent-dark)" }}>{d.conversionRate}%</span>
-              <span style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>
-                de conversaciones llegan a {d.conversionLabel.toLowerCase()}
-              </span>
-            </div>
-            <div style={{ height: 8, borderRadius: 99, background: "var(--line)", marginTop: 8, overflow: "hidden" }}>
-              <div style={{ width: `${Math.min(d.conversionRate, 100)}%`, height: "100%", background: "var(--accent)", borderRadius: 99 }} />
-            </div>
+            {d.conversions.map((c, i) => (
+              <div key={c.key} style={i ? { marginTop: 14 } : undefined}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                  <span
+                    style={{
+                      fontSize: d.conversions.length > 1 ? 27 : 34,
+                      fontWeight: 800,
+                      color: "var(--accent-dark)",
+                    }}
+                  >
+                    {c.rate}%
+                  </span>
+                  <span style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>
+                    de conversaciones llegan a {c.label.toLowerCase()}
+                  </span>
+                </div>
+                <div style={{ height: 8, borderRadius: 99, background: "var(--line)", marginTop: 8, overflow: "hidden" }}>
+                  <div style={{ width: `${Math.min(c.rate, 100)}%`, height: "100%", background: "var(--accent)", borderRadius: 99 }} />
+                </div>
+              </div>
+            ))}
           </div>
           {/* mini-stats 2x2 */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>

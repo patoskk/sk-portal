@@ -64,6 +64,8 @@ body {
 .topbar-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .page-title { font-size: 34px; margin: 0 0 24px; letter-spacing: -.4px; }
 .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+/* clientes con más de un evento clave (p. ej. pedidos + turnos): una columna más */
+.kpi-grid-5 { grid-template-columns: repeat(5, 1fr); }
 .panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .lessons-list { display: flex; flex-direction: column; gap: 12px; }
 .lesson-row {
@@ -112,7 +114,7 @@ body {
   .topbar { padding: 18px 0; gap: 10px; }
   .topbar-actions { width: 100%; }
   .page-title { font-size: 25px; margin: 0 0 18px; }
-  .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi-grid, .kpi-grid-5 { grid-template-columns: 1fr 1fr; gap: 10px; }
   .panel-grid { grid-template-columns: 1fr; }
   .lesson-row { gap: 14px; padding: 16px 18px; flex-wrap: wrap; }
   .lesson-num { font-size: 18px; min-width: 32px; }

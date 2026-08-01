@@ -16,6 +16,7 @@ Supabase de cada cliente (logs crudos, read-only)
 Supabase CENTRAL del portal  ← RLS por client_id (aislamiento en la base)
   · clients · user_clients · client_sources
   · metrics_daily · product_queries_daily · tool_usage_daily · activity_hourly · intent_daily
+  · conversions_daily (solo clientes que separan el evento clave: pedidos vs turnos)
   · insights (oportunidades + prosa de Claude, semanal, con gate de revisión)
         ▼
 Next.js en Vercel  ← cada cliente ve SOLO sus filas
@@ -36,6 +37,33 @@ Next.js en Vercel  ← cada cliente ve SOLO sus filas
 | `lib/notify/` | aviso por mail de lecciones nuevas (render + destinatarios + despacho) |
 | `n8n/aviso-leccion-workflow.json` | workflow que manda esos mails por Gmail |
 | `supabase/migrations/0001_init.sql` | tablas + RLS + auth hook |
+
+## Conversiones separadas (pedidos vs turnos)
+
+Por defecto cada cliente tiene **un** evento clave, con la etiqueta de
+`clients.conversion_label` ("Pedidos"). Un negocio que cierra **dos cosas distintas**
+—Kopf und Puls vende productos *y* agenda turnos— necesita verlas separadas: sumadas,
+un mes malo de turnos se esconde atrás de un mes bueno de pedidos.
+
+Se activa por cliente con `clients.conversion_kinds` (jsonb). Sin esa config, nada cambia:
+
+```json
+[{"key":"pedidos","label":"Pedidos","tools":["PEDIDOS"],"signal":"order"},
+ {"key":"turnos","label":"Turnos","tools":["AGENDAR_TURNO"],"signal":"booking"}]
+```
+
+- `tools`: las tools que **cierran** el evento. No incluir las de consulta
+  (`DISPONIBILIDAD`) ni las que confirman algo ya contado (`REGISTRAR_PAGO`, que solo
+  confirma un turno tentativo de la misma charla).
+- `signal` (opcional): `order` | `booking` — además detecta el cierre declarativo en el
+  texto del agente ("tu turno quedó confirmado"), por si algún día cierra sin tool.
+- El cómputo guarda una fila por día y tipo en `conversions_daily` (`sessions` = charlas
+  distintas con ese evento, que es lo que muestra el panel; `events` = cantidad).
+  `metrics_daily.conversions` sigue siendo el total genérico y no cambia.
+- El panel muestra **un KPI y una tasa de conversión por tipo** (5 KPIs en vez de 4), y
+  los insights de Claude reciben el desglose para no mezclar pedidos con turnos.
+- **Al activarlo en un cliente con historia**, borrar `client_sources.last_synced_at`
+  (el cómputo es incremental: si no, el desglose arranca recién en los días nuevos).
 
 ## Aviso por mail de una lección nueva
 

@@ -17,6 +17,15 @@ export interface MetricsDailyRow {
   response_count: number;
 }
 
+// Conversiones separadas por tipo (solo clientes con `clients.conversion_kinds`).
+// Convive con conversions/conversion_sessions de metrics_daily, que siguen siendo el total.
+export interface ConversionDailyRow {
+  date: string;
+  kind: string; // = ConversionKind.key ("pedidos", "turnos"…)
+  sessions: number; // conversaciones distintas con ese evento
+  events: number; // cantidad de eventos de ese tipo
+}
+
 export interface ToolUsageDailyRow {
   date: string;
   tool: string; // el nombre tal cual lo usa el agente (STOCK, BQ_HUMANO, lo que sea)
@@ -43,6 +52,7 @@ export interface IntentDailyRow {
 
 export interface ComputeResult {
   metricsDaily: MetricsDailyRow[];
+  conversionsDaily: ConversionDailyRow[]; // vacío si el cliente no separa conversiones
   toolUsage: ToolUsageDailyRow[];
   toolQueries: ToolQueryDailyRow[];
   activityHourly: ActivityHourlyRow[];

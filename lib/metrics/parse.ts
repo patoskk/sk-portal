@@ -8,19 +8,70 @@ export const NO_RESULT_RE =
   /(no se encontr|no se hallar|sin resultados?|no hay resultados?|no encontr[eé]|not found|no results|sin coincidencias)/i;
 
 // "Evento clave" / conversión, detectado en el MENSAJE del agente (genérico, declarativo
-// para no contar preguntas ni "agregar al pedido"). Cubre pedido/compra/turno/reserva.
-export const CONVERSION_RE = new RegExp(
-  "(" +
-    "(pedido|compra|orden)\\s+(ha sido|fue|qued[oó]|est[aá])\\s+(tomad|confirmad|registrad|realizad|complet|hech)" +
-    "|(tu|su|el)\\s+(pedido|compra|orden)\\s+(qued[oó]|est[aá]|fue|ha sido)\\s+(tomad|confirmad|registrad|realizad|listo|hech)" +
-    "|(compra|venta|orden)\\s+(realizad|confirmad|registrad|completad)" +
-    "|(turno|reserva|cita)\\s+(confirmad|agendad|reservad|registrad)" +
-    "|(qued[oó]|est[aá])\\s+(confirmad|agendad|reservad)\\s+(tu|su|el|la)\\s+(turno|reserva|cita)" +
-  ")",
-  "i",
-);
+// para no contar preguntas ni "agregar al pedido"). Separado en dos señales para los
+// clientes que miden pedidos y turnos por separado (ver ConversionKind.signal);
+// CONVERSION_RE es la unión — el número global de conversiones no cambia.
+const ORDER_SRC =
+  "(pedido|compra|orden)\\s+(ha sido|fue|qued[oó]|est[aá])\\s+(tomad|confirmad|registrad|realizad|complet|hech)" +
+  "|(tu|su|el)\\s+(pedido|compra|orden)\\s+(qued[oó]|est[aá]|fue|ha sido)\\s+(tomad|confirmad|registrad|realizad|listo|hech)" +
+  "|(compra|venta|orden)\\s+(realizad|confirmad|registrad|completad)";
+const BOOKING_SRC =
+  "(turno|reserva|cita)\\s+(confirmad|agendad|reservad|registrad)" +
+  "|(qued[oó]|est[aá])\\s+(confirmad|agendad|reservad)\\s+(tu|su|el|la)\\s+(turno|reserva|cita)";
+
+/** Cierre declarativo de una VENTA (pedido/compra/orden). */
+export const CONVERSION_ORDER_RE = new RegExp(`(${ORDER_SRC})`, "i");
+/** Cierre declarativo de un TURNO (turno/reserva/cita). */
+export const CONVERSION_BOOKING_RE = new RegExp(`(${BOOKING_SRC})`, "i");
+export const CONVERSION_RE = new RegExp(`(${ORDER_SRC}|${BOOKING_SRC})`, "i");
+
 // Nombre de tool que sugiere un cierre/evento clave (cualquier rubro).
 export const CONVERSION_TOOL_RE = /(pedido|order|compra|venta|checkout|reserva|turno|booking|appointment)/i;
+
+/** Señal declarativa que puede acompañar a un tipo de conversión. */
+export type ConversionSignal = "order" | "booking";
+
+/**
+ * Un tipo de conversión configurado por cliente (`clients.conversion_kinds`).
+ * Sin configuración, el cómputo funciona como siempre: una sola conversión genérica.
+ */
+export interface ConversionKind {
+  key: string; // identificador estable (va a conversions_daily.kind)
+  label: string; // lo que ve el cliente
+  tools: string[]; // tools que cierran el evento, en MAYÚSCULAS
+  signal?: ConversionSignal;
+}
+
+/** Valida/normaliza la config cruda de la base. Devuelve [] si no hay nada usable. */
+export function parseConversionKinds(raw: unknown): ConversionKind[] {
+  const arr = typeof raw === "string" ? safeJson(raw) : raw;
+  if (!Array.isArray(arr)) return [];
+  const out: ConversionKind[] = [];
+  for (const item of arr) {
+    if (!item || typeof item !== "object") continue;
+    const k = item as Record<string, unknown>;
+    const key = String(k.key ?? "").trim();
+    if (!key) continue;
+    const signal = k.signal === "order" || k.signal === "booking" ? k.signal : undefined;
+    out.push({
+      key,
+      label: String(k.label ?? "").trim() || key,
+      tools: Array.isArray(k.tools)
+        ? k.tools.map((t) => String(t).trim().toUpperCase()).filter(Boolean)
+        : [],
+      signal,
+    });
+  }
+  return out;
+}
+
+function safeJson(s: string): unknown {
+  try {
+    return JSON.parse(s);
+  } catch {
+    return null;
+  }
+}
 
 // Para "lo más consultado": descarta valores con datos personales (teléfono/email) o muy largos.
 export const PII_RE = /(@|\+?\d[\d\s().-]{6,})/;

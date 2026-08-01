@@ -25,7 +25,9 @@ const SYSTEM =
   "Regla de oro: el valor son las OPORTUNIDADES, rankeadas por impacto: lo que hace perder clientes/ventas " +
   "o degrada el servicio va primero — típicamente baja tasa de CONVERSIÓN (conversations vs conversion_sessions, " +
   "el evento clave: pedido/turno/reserva), consultas sin resultado, errores de herramientas, " +
-  "tiempos de respuesta altos, o caídas de uso.\n\n" +
+  "tiempos de respuesta altos, o caídas de uso.\n" +
+  "Si vienen `conversiones_por_tipo`, ese negocio cierra VARIOS eventos distintos (p. ej. pedidos " +
+  "y turnos): analizalos por separado, nunca los sumes, y usá el `label` de cada tipo al nombrarlos.\n\n" +
   "SÉ MUY CONCISO. Prohibido el texto largo. Reglas estrictas:\n" +
   "- title: 3 a 6 palabras, sin emojis, sin dos puntos.\n" +
   "- text de cada oportunidad: UNA o DOS frases cortas (máx ~25 palabras). Dato clave + acción.\n" +

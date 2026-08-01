@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   const admin = createAdminClient();
   const { data: sources, error } = await admin
     .from("client_sources")
-    .select("client_id, supabase_url, table_name, last_synced_at, clients(utc_offset)");
+    .select("client_id, supabase_url, table_name, last_synced_at, clients(utc_offset, conversion_kinds)");
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   const results: Record<string, unknown> = {};
@@ -24,7 +24,8 @@ export async function GET(req: NextRequest) {
     try {
       const key = resolveSourceKey(src.client_id);
       if (!key) throw new Error("sin credencial de lectura (SOURCE_DEFAULT_KEY)");
-      const utc_offset = Number((src.clients as { utc_offset?: number } | null)?.utc_offset ?? -3);
+      const cfg = src.clients as { utc_offset?: number; conversion_kinds?: unknown } | null;
+      const utc_offset = Number(cfg?.utc_offset ?? -3);
       results[src.client_id] = await computeClient(admin, {
         client_id: src.client_id,
         supabase_url: src.supabase_url,
@@ -32,6 +33,7 @@ export async function GET(req: NextRequest) {
         utc_offset,
         key,
         last_synced_at: src.last_synced_at,
+        conversion_kinds: cfg?.conversion_kinds,
       });
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);

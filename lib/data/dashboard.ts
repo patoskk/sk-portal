@@ -5,6 +5,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { toolLabel } from "@/lib/toolLabels";
+import { parseConversionKinds } from "@/lib/metrics/parse";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export interface DashboardRange {
   from: string;
@@ -18,13 +20,25 @@ export interface KpiSet {
   toolCalls: number; // acciones del agente
 }
 
+/**
+ * Un tipo de conversión ya listo para mostrar. Normalmente hay UNO ("Pedidos");
+ * los clientes con `conversion_kinds` (Kopf und Puls: pedidos y turnos) tienen varios,
+ * cada uno con su propio número y su propia tasa sobre el total de conversaciones.
+ */
+export interface ConversionStat {
+  key: string;
+  label: string;
+  value: number; // conversaciones con ese evento en el rango
+  prev: number | null; // mismo dato en la ventana anterior
+  rate: number; // % sobre las conversaciones del rango
+}
+
 export interface DashboardData {
   clientName: string | null; // nombre del negocio (personaliza el panel)
-  conversionLabel: string; // "Pedidos" / "Turnos" / "Conversiones"
+  conversions: ConversionStat[]; // 1 o más tipos de evento clave
   kpis: KpiSet;
   kpisPrev: KpiSet | null; // mismo largo de ventana, inmediatamente anterior
   prevPeriod: DashboardRange | null;
-  conversionRate: number; // % de conversaciones que llegan al evento
   msgsPerConv: number; // mensajes por conversación (personas + agente)
   tools: { label: string; value: number }[];
   topQueries: { label: string; value: number }[]; // lo más consultado
@@ -44,6 +58,18 @@ export interface DashboardData {
     proximaEtapa?: string;
   } | null;
   period: DashboardRange;
+}
+
+interface ClientRowData {
+  name?: string;
+  conversion_label?: string;
+  conversion_kinds?: unknown;
+}
+
+// Fila del cliente: la propia (RLS) o la elegida por un admin en "ver como cliente".
+function clientQuery(sb: SupabaseClient, asClientId: string | undefined, cols: string) {
+  const q = sb.from("clients").select(cols);
+  return (asClientId ? q.eq("id", asClientId) : q).maybeSingle();
 }
 
 export async function getDashboardData(
@@ -67,9 +93,23 @@ export async function getDashboardData(
   // contradiciendo los gráficos de otro período.
   const insightQ = sb.from("insights").select("*").lte("period_start", to).gte("period_end", from);
 
-  const [metrics, metricsPrev, tools, queries, hourly, insightRow, clientRow, lastSyncedAt] = await Promise.all([
+  const [
+    metrics,
+    metricsPrev,
+    convKinds,
+    convKindsPrev,
+    tools,
+    queries,
+    hourly,
+    insightRow,
+    clientRow,
+    lastSyncedAt,
+  ] = await Promise.all([
     daily("metrics_daily"),
     daily("metrics_daily", prevFrom, prevTo),
+    // vacío para los clientes que no separan conversiones (la mayoría)
+    daily("conversions_daily"),
+    daily("conversions_daily", prevFrom, prevTo),
     daily("tool_usage_daily"),
     daily("tool_queries_daily"),
     daily("activity_hourly"),
@@ -77,14 +117,19 @@ export async function getDashboardData(
       .order("generated_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    asClientId
-      ? sb.from("clients").select("name,conversion_label").eq("id", asClientId).maybeSingle()
-      : sb.from("clients").select("name,conversion_label").maybeSingle(),
+    clientQuery(sb, asClientId, "name,conversion_label,conversion_kinds"),
     getLastSyncedAt(asClientId), // su mini-cadena corre en paralelo con todo lo demás
   ]);
 
-  const conversionLabel = (clientRow.data?.conversion_label as string) || "Conversiones";
-  const clientName = (clientRow.data?.name as string) || null;
+  // Si el deploy llega antes que la migración 0010, `conversion_kinds` no existe:
+  // se reintenta sin esa columna para no dejar el panel sin nombre ni etiqueta.
+  const client = clientRow.error
+    ? ((await clientQuery(sb, asClientId, "name,conversion_label")).data as ClientRowData | null)
+    : (clientRow.data as ClientRowData | null);
+
+  const conversionLabel = client?.conversion_label || "Conversiones";
+  const clientName = client?.name || null;
+  const kinds = parseConversionKinds(client?.conversion_kinds);
 
   const md = metrics.data ?? [];
   const sum = (k: string) => md.reduce((s, r) => s + (Number(r[k]) || 0), 0);
@@ -118,9 +163,32 @@ export async function getDashboardData(
       }
     : null;
 
+  // Un cliente puede cerrar VARIOS tipos de evento (Kopf und Puls: pedidos y turnos).
+  // Sin config, sigue habiendo uno solo con la etiqueta de siempre.
+  const rate = (n: number) => (conversations ? Math.round((100 * n) / conversations) : 0);
+  const sumKind = (rows: Record<string, unknown>[] | null, key: string) =>
+    (rows ?? []).reduce((s, r) => (r.kind === key ? s + (Number(r.sessions) || 0) : s), 0);
+  const conversions: ConversionStat[] = kinds.length
+    ? kinds.map((k) => ({
+        key: k.key,
+        label: k.label,
+        value: sumKind(convKinds.data, k.key),
+        prev: kpisPrev ? sumKind(convKindsPrev.data, k.key) : null,
+        rate: rate(sumKind(convKinds.data, k.key)),
+      }))
+    : [
+        {
+          key: "total",
+          label: conversionLabel,
+          value: convSessions,
+          prev: kpisPrev?.conversions ?? null,
+          rate: rate(convSessions),
+        },
+      ];
+
   return {
     clientName,
-    conversionLabel,
+    conversions,
     kpis: {
       conversations,
       messagesHuman: sum("messages_human"),
@@ -129,7 +197,6 @@ export async function getDashboardData(
     },
     kpisPrev,
     prevPeriod: kpisPrev ? { from: prevFrom, to: prevTo } : null,
-    conversionRate: conversations ? Math.round((100 * convSessions) / conversations) : 0,
     msgsPerConv: conversations ? Math.round((10 * msgsConv) / conversations) / 10 : 0,
     tools: [...byTool.entries()]
       .sort((a, b) => b[1] - a[1])

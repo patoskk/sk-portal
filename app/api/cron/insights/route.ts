@@ -20,16 +20,18 @@ export async function GET(req: NextRequest) {
   const fromS = from.toISOString().slice(0, 10);
   const toS = to.toISOString().slice(0, 10);
 
-  const { data: clients } = await admin.from("clients").select("id, name, rubro");
+  const { data: clients } = await admin.from("clients").select("id, name, rubro, conversion_kinds");
   const results: Record<string, unknown> = {};
 
   for (const c of clients ?? []) {
     try {
-      const [metrics, tools, queries, intents] = await Promise.all([
+      const [metrics, tools, queries, intents, convKinds] = await Promise.all([
         admin.from("metrics_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
         admin.from("tool_usage_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
         admin.from("tool_queries_daily").select("query,count").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
         admin.from("intent_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
+        // clientes que separan el evento clave (pedidos vs turnos): que la prosa no los mezcle
+        admin.from("conversions_daily").select("date,kind,sessions,events").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
       ]);
       // sin datos en la semana => no gastar tokens en un insight sin fundamento
       if (!metrics.data?.length) {
@@ -37,7 +39,10 @@ export async function GET(req: NextRequest) {
         continue;
       }
       const summary = { client: { name: c.name, rubro: c.rubro }, period: { from: fromS, to: toS },
-        metrics: metrics.data, tools: tools.data, top_consultas: queries.data, intents: intents.data };
+        metrics: metrics.data, tools: tools.data, top_consultas: queries.data, intents: intents.data,
+        ...(convKinds.data?.length
+          ? { tipos_de_conversion: c.conversion_kinds, conversiones_por_tipo: convKinds.data }
+          : {}) };
 
       const insight = await generateInsight(summary);
       await admin.from("insights").insert({

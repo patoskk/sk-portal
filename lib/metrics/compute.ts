@@ -11,13 +11,17 @@ import {
   ERR_RE,
   NO_RESULT_RE,
   CONVERSION_RE,
+  CONVERSION_ORDER_RE,
+  CONVERSION_BOOKING_RE,
   CONVERSION_TOOL_RE,
   PII_RE,
   QUERY_KEYS,
+  type ConversionKind,
 } from "./parse";
 import type {
   ComputeResult,
   MetricsDailyRow,
+  ConversionDailyRow,
   ToolUsageDailyRow,
   ToolQueryDailyRow,
   ActivityHourlyRow,
@@ -34,6 +38,9 @@ interface DayBucket {
   // el mensaje declarativo Y la tool de pedido; contar max() evita el doble conteo.
   convByMsg: Map<string, number>;
   convByTool: Map<string, number>;
+  // lo mismo, pero por TIPO de conversión (pedidos / turnos): kind -> sesión -> eventos
+  kindByMsg: Map<string, Map<string, number>>;
+  kindByTool: Map<string, Map<string, number>>;
   noResult: number;
   errors: number;
   toolResults: number;
@@ -54,6 +61,8 @@ function newBucket(): DayBucket {
     toolCalls: 0,
     convByMsg: new Map(),
     convByTool: new Map(),
+    kindByMsg: new Map(),
+    kindByTool: new Map(),
     noResult: 0,
     errors: 0,
     toolResults: 0,
@@ -68,6 +77,13 @@ function newBucket(): DayBucket {
 
 function inc<K>(m: Map<K, number>, k: K, by = 1): void {
   m.set(k, (m.get(k) ?? 0) + by);
+}
+
+// mapa anidado kind -> sesión -> n
+function incNested(m: Map<string, Map<string, number>>, kind: string, session: string): void {
+  let inner = m.get(kind);
+  if (!inner) m.set(kind, (inner = new Map()));
+  inc(inner, session);
 }
 
 // Recorre los args de una tool y junta valores bajo claves de producto/consulta,
@@ -89,7 +105,16 @@ function collectQueries(node: unknown, out: Map<string, number>, keyMatched = fa
   }
 }
 
-export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult {
+/**
+ * `kinds` (opcional) separa el evento clave en varios tipos — p. ej. un centro de
+ * wellness que vende productos Y agenda turnos. Sin `kinds` el resultado es idéntico
+ * al de siempre: `conversionsDaily` queda vacío y nada más cambia.
+ */
+export function computeDaily(
+  rows: RawRow[],
+  utcOffsetHours = -3,
+  kinds: ConversionKind[] = [],
+): ComputeResult {
   const days = new Map<string, DayBucket>();
   const bucket = (d: string): DayBucket => {
     let b = days.get(d);
@@ -135,17 +160,29 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
       }
       // evento clave por mensaje del agente (cierre declarativo)
       const aiText = typeof msg.content === "string" ? msg.content : "";
+      const session = sid || "(sin sesión)";
       if (b && aiText && CONVERSION_RE.test(aiText)) {
-        inc(b.convByMsg, sid || "(sin sesión)");
+        inc(b.convByMsg, session);
+      }
+      if (b && aiText) {
+        for (const k of kinds) {
+          if (!k.signal) continue;
+          const re = k.signal === "order" ? CONVERSION_ORDER_RE : CONVERSION_BOOKING_RE;
+          if (re.test(aiText)) incNested(b.kindByMsg, k.key, session);
+        }
       }
       for (const tc of msg.tool_calls ?? []) {
         const name = (tc.name ?? "").trim() || "(sin nombre)";
         if (b) {
           b.toolCalls += 1;
           inc(b.tools, name);
+          const upper = name.toUpperCase();
+          for (const k of kinds) {
+            if (k.tools.includes(upper)) incNested(b.kindByTool, k.key, session);
+          }
           if (CONVERSION_TOOL_RE.test(name)) {
             // evento clave por nombre de tool (pedido/order/reserva/turno…)
-            inc(b.convByTool, sid || "(sin sesión)");
+            inc(b.convByTool, session);
           } else {
             // "lo más consultado": valores bajo claves de producto/consulta (anidados, sin PII)
             collectQueries(tc.args ?? {}, b.queries);
@@ -164,6 +201,7 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
   }
 
   const metricsDaily: MetricsDailyRow[] = [];
+  const conversionsDaily: ConversionDailyRow[] = [];
   const toolUsage: ToolUsageDailyRow[] = [];
   const toolQueries: ToolQueryDailyRow[] = [];
   const activityHourly: ActivityHourlyRow[] = [];
@@ -191,6 +229,19 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
       response_sum_sec: Math.round(b.responseSumSec),
       response_count: b.responseCount,
     });
+    // una fila por tipo y por día SIEMPRE (aunque sea 0): el upsert del cómputo
+    // incremental tiene que poder pisar un día que quedó viejo con otro valor.
+    for (const k of kinds) {
+      const byMsg = b.kindByMsg.get(k.key);
+      const byTool = b.kindByTool.get(k.key);
+      const sessions = new Set([...(byMsg?.keys() ?? []), ...(byTool?.keys() ?? [])]);
+      let events = 0;
+      for (const s of sessions) {
+        // el MISMO cierre suele disparar la tool y el mensaje declarativo: max() evita duplicar
+        events += Math.max(byMsg?.get(s) ?? 0, byTool?.get(s) ?? 0);
+      }
+      conversionsDaily.push({ date, kind: k.key, sessions: sessions.size, events });
+    }
     for (const [tool, count] of b.tools) toolUsage.push({ date, tool, count });
     for (const [query, count] of b.queries) toolQueries.push({ date, query, count });
     for (const [hour, count] of [...b.byHour.entries()].sort((x, y) => x[0] - y[0]))
@@ -198,5 +249,5 @@ export function computeDaily(rows: RawRow[], utcOffsetHours = -3): ComputeResult
     for (const [intent, count] of b.intents) intentDaily.push({ date, intent, count });
   }
 
-  return { metricsDaily, toolUsage, toolQueries, activityHourly, intentDaily };
+  return { metricsDaily, conversionsDaily, toolUsage, toolQueries, activityHourly, intentDaily };
 }

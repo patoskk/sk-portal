@@ -1,7 +1,7 @@
 // Cómputo de métricas de un cliente, reutilizable por el cron y por el alta desde Admin.
 import { createClient as createSupabase, type SupabaseClient } from "@supabase/supabase-js";
 import { computeDaily } from "./compute";
-import type { RawRow } from "./parse";
+import { parseConversionKinds, type RawRow } from "./parse";
 
 export interface SourceDescriptor {
   client_id: string;
@@ -11,6 +11,8 @@ export interface SourceDescriptor {
   key: string;
   /** Última sincronización OK (ISO). Si viene, el cómputo es incremental. */
   last_synced_at?: string | null;
+  /** `clients.conversion_kinds` crudo: separa pedidos de turnos. Sin esto, una sola conversión. */
+  conversion_kinds?: unknown;
 }
 
 // Key de lectura de la fuente. Todas las tablas en un mismo proyecto => key compartida
@@ -80,11 +82,15 @@ export async function computeClient(admin: SupabaseClient, src: SourceDescriptor
   const sinceIso = src.last_synced_at ? incrementalSinceIso(src.last_synced_at, src.utc_offset) : null;
   const rows = await fetchRows(client, src.table_name, sinceIso);
 
-  const out = computeDaily(rows, src.utc_offset);
+  const kinds = parseConversionKinds(src.conversion_kinds);
+  const out = computeDaily(rows, src.utc_offset, kinds);
   const withId = <T,>(arr: T[]) => arr.map((r) => ({ ...r, client_id: src.client_id }));
 
   await Promise.all([
     admin.from("metrics_daily").upsert(withId(out.metricsDaily), { onConflict: "client_id,date" }),
+    out.conversionsDaily.length
+      ? admin.from("conversions_daily").upsert(withId(out.conversionsDaily), { onConflict: "client_id,date,kind" })
+      : Promise.resolve(),
     admin.from("tool_usage_daily").upsert(withId(out.toolUsage), { onConflict: "client_id,date,tool" }),
     admin.from("tool_queries_daily").upsert(withId(out.toolQueries), { onConflict: "client_id,date,query" }),
     admin.from("activity_hourly").upsert(withId(out.activityHourly), { onConflict: "client_id,date,hour" }),
@@ -92,5 +98,10 @@ export async function computeClient(admin: SupabaseClient, src: SourceDescriptor
   ]);
   await admin.from("client_sources").update({ last_synced_at: new Date().toISOString() }).eq("client_id", src.client_id);
 
-  return { days: out.metricsDaily.length, rows: rows.length, incremental: Boolean(sinceIso) };
+  return {
+    days: out.metricsDaily.length,
+    rows: rows.length,
+    incremental: Boolean(sinceIso),
+    kinds: kinds.map((k) => k.key),
+  };
 }

@@ -15,7 +15,7 @@ async function main() {
     { auth: { persistSession: false } },
   );
 
-  const c = await admin.from("clients").select("name,rubro").eq("id", CLIENT_ID).single();
+  const c = await admin.from("clients").select("name,rubro,conversion_kinds").eq("id", CLIENT_ID).single();
   if (c.error) throw c.error;
 
   // rango completo con datos
@@ -29,20 +29,25 @@ async function main() {
   const fromS = range.data[0].date;
   const toS = range.data[range.data.length - 1].date;
 
-  const [metrics, tools, queries, intents] = await Promise.all([
+  const [metrics, tools, queries, intents, convKinds] = await Promise.all([
     admin.from("metrics_daily").select("*").eq("client_id", CLIENT_ID).gte("date", fromS).lte("date", toS),
     admin.from("tool_usage_daily").select("*").eq("client_id", CLIENT_ID).gte("date", fromS).lte("date", toS),
     admin.from("tool_queries_daily").select("query,count").eq("client_id", CLIENT_ID).gte("date", fromS).lte("date", toS),
     admin.from("intent_daily").select("*").eq("client_id", CLIENT_ID).gte("date", fromS).lte("date", toS),
+    admin.from("conversions_daily").select("date,kind,sessions,events").eq("client_id", CLIENT_ID).gte("date", fromS).lte("date", toS),
   ]);
 
   const summary = {
-    client: c.data,
+    client: { name: c.data.name, rubro: c.data.rubro },
     period: { from: fromS, to: toS },
     metrics: metrics.data,
     tools: tools.data,
     top_consultas: queries.data,
     intents: intents.data,
+    // si el cliente separa el evento clave (pedidos vs turnos), va desglosado
+    ...(convKinds.data?.length
+      ? { tipos_de_conversion: c.data.conversion_kinds, conversiones_por_tipo: convKinds.data }
+      : {}),
   };
 
   console.log(`Generando insights de "${c.data.name}" (${fromS} -> ${toS})…`);

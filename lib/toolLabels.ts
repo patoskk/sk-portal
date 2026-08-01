@@ -8,6 +8,9 @@ const KNOWN: Record<string, string> = {
   calculator: "Cálculos",
   turnos: "Turnos",
   reservas: "Reservas",
+  agendar_turno: "Turnos agendados",
+  disponibilidad: "Horarios disponibles",
+  registrar_pago: "Pagos registrados",
 };
 
 export function toolLabel(name: string): string {
