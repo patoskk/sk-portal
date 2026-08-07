@@ -5,7 +5,14 @@
 // uno que escribe Pato, no una campaña — Gmail manda a Promociones lo que huele
 // a newsletter. Reglas duras (ver email-ventas/reference/deliverability.md):
 //   · sin imágenes (ni logo, ni banner, ni pixel de tracking)
-//   · una columna, max-width 560px, tablas role="presentation" + CSS inline
+//   · una columna a ANCHO COMPLETO, tablas role="presentation" + CSS inline.
+//     Nada de columna angosta centrada: el max-width de 560px es la silueta
+//     clásica de un template de newsletter, y un mail que escribís a mano en
+//     Gmail fluye hasta el borde del panel. Ancho completo = menos "campaña".
+//   · el background:#ffffff explícito NO se saca: los colores de texto son
+//     tinta oscura fija, así que sin fondo declarado el mail queda ilegible en
+//     cualquier cliente en modo oscuro que no invierta por su cuenta. Gmail en
+//     oscuro invierte el par fondo/texto completo y se lee bien.
 //   · system fonts, sin webfonts
 //   · UN solo link, como texto (no botón grande)
 //   · parte text/plain en paralelo
@@ -82,8 +89,8 @@ export function renderLessonEmail(i: LessonEmailInput): LessonEmail {
 <div style="display:none;font-size:0;line-height:0;max-height:0;overflow:hidden;opacity:0;color:transparent;">${esc(preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
   <tr>
-    <td align="left" style="padding:26px 20px 40px;">
-      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="width:100%;max-width:560px;font-family:${FONT};">
+    <td align="left" style="padding:22px 6px 36px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;font-family:${FONT};">
 
         <!-- acento de marca: una regla fina, nada de header de newsletter -->
         <tr><td style="height:3px;background:${BRAND.accent};line-height:3px;font-size:0;">&nbsp;</td></tr>
