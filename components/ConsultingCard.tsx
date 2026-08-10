@@ -2,7 +2,7 @@
 // va justo arriba de ReferralCard). A propósito NO usa el gradiente teal de los
 // referidos: fondo ink fijo + acento oro para que se lea como el escalón premium
 // y no como otra promo. Fondo fijo en ambos temas (el texto es siempre blanco).
-const CONTACT_WHATSAPP = "5493816417933";
+import { waLink as wa } from "@/lib/contact";
 
 const SERVICIOS = [
   {
@@ -24,11 +24,9 @@ const SERVICIOS = [
 ];
 
 export function ConsultingCard() {
-  const waLink =
-    `https://wa.me/${CONTACT_WHATSAPP}?text=` +
-    encodeURIComponent(
-      "¡Hola! Soy cliente de SK Optimal y quiero saber más sobre el servicio de consultoría."
-    );
+  const waLink = wa(
+    "¡Hola! Soy cliente de SK Optimal y quiero saber más sobre el servicio de consultoría."
+  );
 
   return (
     <section

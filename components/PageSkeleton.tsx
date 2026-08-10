@@ -1,6 +1,7 @@
-// Esqueletos de carga por página (los usan los loading.tsx). El topbar real
-// persiste durante la navegación (layout compartido no se re-monta), esto
-// reemplaza solo el contenido — la sensación es "respondió al toque".
+// Esqueletos de carga por página (los usan los loading.tsx). El sidebar real
+// persiste durante la navegación —vive en app/(portal)/layout.tsx, que no se
+// re-monta—, así que esto reemplaza solo el contenido: la sensación es
+// "respondió al toque".
 
 function Bar({ w, h = 14, mb = 0 }: { w: number | string; h?: number; mb?: number }) {
   return <div className="skel" style={{ width: w, height: h, marginBottom: mb }} />;
@@ -9,18 +10,28 @@ function Bar({ w, h = 14, mb = 0 }: { w: number | string; h?: number; mb?: numbe
 export function DashboardSkeleton() {
   return (
     <main className="page" aria-busy="true" aria-label="Cargando el panel">
-      <div style={{ padding: "28px 0" }}>
-        <Bar w={220} h={20} />
+      <div className="page-head">
+        <Bar w={140} h={12} mb={10} />
+        <Bar w={320} h={34} mb={10} />
+        <Bar w={260} h={13} />
       </div>
-      <Bar w={320} h={34} mb={10} />
-      <Bar w={200} h={12} mb={24} />
-      <section className="kpi-grid">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="skel-card">
-            <Bar w={90} h={30} mb={8} />
-            <Bar w={130} h={12} />
-          </div>
-        ))}
+      {/* mismo reparto que el Panel: destacada + tres tiles */}
+      <section className="hero-grid">
+        <div className="skel-card" style={{ padding: 24 }}>
+          <Bar w={90} h={12} mb={12} />
+          <Bar w={160} h={46} mb={16} />
+          <Bar w="70%" h={13} mb={10} />
+          <Bar w="100%" h={8} mb={14} />
+          <Bar w="100%" h={40} />
+        </div>
+        <div className="stat-col">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="skel-card" style={{ padding: "16px 18px" }}>
+              <Bar w={80} h={25} mb={6} />
+              <Bar w={120} h={12} />
+            </div>
+          ))}
+        </div>
       </section>
       <section className="panel-grid">
         <div className="skel-card" style={{ minHeight: 320 }}>
@@ -50,11 +61,10 @@ export function DashboardSkeleton() {
 export function BlocksSkeleton() {
   return (
     <main className="page" aria-busy="true" aria-label="Cargando">
-      <div style={{ padding: "28px 0" }}>
-        <Bar w={220} h={20} />
+      <div className="page-head">
+        <Bar w={340} h={34} mb={10} />
+        <Bar w={380} h={13} />
       </div>
-      <Bar w={340} h={34} mb={10} />
-      <Bar w={380} h={13} mb={24} />
       <div className="skel" style={{ height: 300, borderRadius: 16, marginBottom: 22 }} />
       <div className="skel" style={{ height: 210, borderRadius: 16 }} />
     </main>
@@ -64,11 +74,10 @@ export function BlocksSkeleton() {
 export function ListSkeleton({ title = 200 }: { title?: number }) {
   return (
     <main className="page" aria-busy="true" aria-label="Cargando">
-      <div style={{ padding: "28px 0" }}>
-        <Bar w={220} h={20} />
+      <div className="page-head">
+        <Bar w={title} h={34} mb={10} />
+        <Bar w={300} h={13} />
       </div>
-      <Bar w={title} h={34} mb={10} />
-      <Bar w={300} h={13} mb={24} />
       {[0, 1, 2].map((i) => (
         <div key={i} className="skel-card" style={{ marginBottom: 12, display: "flex", gap: 20, alignItems: "center" }}>
           <Bar w={40} h={24} />

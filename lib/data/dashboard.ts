@@ -31,6 +31,7 @@ export interface ConversionStat {
   value: number; // conversaciones con ese evento en el rango
   prev: number | null; // mismo dato en la ventana anterior
   rate: number; // % sobre las conversaciones del rango
+  series: number[]; // un valor por día del rango, para la sparkline
 }
 
 export interface DashboardData {
@@ -39,6 +40,9 @@ export interface DashboardData {
   kpis: KpiSet;
   kpisPrev: KpiSet | null; // mismo largo de ventana, inmediatamente anterior
   prevPeriod: DashboardRange | null;
+  /** Serie diaria por KPI, un valor por día del rango (los días sin datos van en 0,
+   *  no salteados: una sparkline que se salta días miente sobre la forma). */
+  series: { conversations: number[]; messagesHuman: number[]; toolCalls: number[] };
   msgsPerConv: number; // mensajes por conversación (personas + agente)
   tools: { label: string; value: number }[];
   topQueries: { label: string; value: number }[]; // lo más consultado
@@ -144,6 +148,27 @@ export async function getDashboardData(
 
   const byDay = new Map<string, number>();
   for (const r of md) byDay.set(r.date, (byDay.get(r.date) ?? 0) + (Number(r.messages_total) || 0));
+
+  // Eje de días denso del rango: las sparklines se arman contra ESTA lista, así
+  // un día sin fila en metrics_daily se dibuja en cero en vez de desaparecer.
+  const dayAxis: string[] = [];
+  for (let t = Date.parse(from); t <= Date.parse(to); t += DAY) {
+    dayAxis.push(new Date(t).toISOString().slice(0, 10));
+  }
+  const seriesOf = (col: string) => {
+    const m = new Map<string, number>();
+    for (const r of md) m.set(r.date, (m.get(r.date) ?? 0) + (Number(r[col]) || 0));
+    return dayAxis.map((d) => m.get(d) ?? 0);
+  };
+  const seriesOfKind = (rows: Record<string, unknown>[] | null, key: string) => {
+    const m = new Map<string, number>();
+    for (const r of rows ?? []) {
+      if (r.kind !== key) continue;
+      const d = String(r.date);
+      m.set(d, (m.get(d) ?? 0) + (Number(r.sessions) || 0));
+    }
+    return dayAxis.map((d) => m.get(d) ?? 0);
+  };
   const byHour = new Array(24).fill(0);
   for (const r of hourly.data ?? []) byHour[Number(r.hour)] += Number(r.count) || 0;
 
@@ -175,6 +200,7 @@ export async function getDashboardData(
         value: sumKind(convKinds.data, k.key),
         prev: kpisPrev ? sumKind(convKindsPrev.data, k.key) : null,
         rate: rate(sumKind(convKinds.data, k.key)),
+        series: seriesOfKind(convKinds.data, k.key),
       }))
     : [
         {
@@ -183,6 +209,7 @@ export async function getDashboardData(
           value: convSessions,
           prev: kpisPrev?.conversions ?? null,
           rate: rate(convSessions),
+          series: seriesOf("conversion_sessions"),
         },
       ];
 
@@ -197,6 +224,11 @@ export async function getDashboardData(
     },
     kpisPrev,
     prevPeriod: kpisPrev ? { from: prevFrom, to: prevTo } : null,
+    series: {
+      conversations: seriesOf("conversations"),
+      messagesHuman: seriesOf("messages_human"),
+      toolCalls: seriesOf("tool_calls"),
+    },
     msgsPerConv: conversations ? Math.round((10 * msgsConv) / conversations) / 10 : 0,
     tools: [...byTool.entries()]
       .sort((a, b) => b[1] - a[1])

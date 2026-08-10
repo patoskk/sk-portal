@@ -1,11 +1,9 @@
 // Sección "Recomendá y ganá" — programa de referidos (estático, al final del dashboard).
-// Cambiá CONTACT_WHATSAPP por el número real (formato internacional sin +, ej. 549351...).
-const CONTACT_WHATSAPP = "5493816417933";
+// El número de contacto vive en lib/contact.ts.
+import { waLink as wa } from "@/lib/contact";
 
 export function ReferralCard() {
-  const waLink =
-    `https://wa.me/${CONTACT_WHATSAPP}?text=` +
-    encodeURIComponent("¡Hola! Quiero recomendar a alguien para el servicio de SK Optimal.");
+  const waLink = wa("¡Hola! Quiero recomendar a alguien para el servicio de SK Optimal.");
 
   return (
     <section

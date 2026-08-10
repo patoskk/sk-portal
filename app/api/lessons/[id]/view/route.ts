@@ -5,6 +5,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { markLessonRead } from "@/lib/data/lessons";
 
 export const runtime = "nodejs";
 
@@ -21,6 +22,13 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const sb = await createClient();
   const { data } = await sb.from("lessons").select("body,url").eq("id", id).maybeSingle();
   if (!data) return new NextResponse("Lección no encontrada", { status: 404 });
+
+  // Marcar leída acá y no en el cliente: esta ruta es el ÚNICO camino por el que
+  // se abre un PDF o un link externo, así que el registro no depende de JS.
+  // Si falla, la lección igual se sirve — el progreso no vale romper la lectura.
+  try {
+    await markLessonRead(id);
+  } catch {}
   if (data.body) {
     return new NextResponse(data.body, {
       headers: { "content-type": "text/html; charset=utf-8" },

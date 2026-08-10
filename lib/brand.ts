@@ -18,14 +18,18 @@ export const BRAND = {
 
 // Orden del donut de uso: [Precio/stock, Promos, Imágenes, Pedidos, ...]
 // 6 tonos de la marca antes de repetir (agentes con muchas tools).
+//
+// El ORDEN no es estético: en un donut los colores contiguos son los que hay que
+// poder distinguir. El orden viejo dejaba juntos accentSoft y gold (ΔE 12,7: se
+// confunden incluso con visión de color normal) y warn con accentDark (ΔE 5,0
+// con protanopía). Este orden los separa — mismos colores de marca, otra
+// secuencia. Si agregás o movés uno, revalidalo antes de commitear:
+//   node <skills>/dataviz/scripts/validate_palette.js "<hex,hex,…>" --mode light --surface "#FFFFFF"
 export const USAGE_COLORS = [
   BRAND.accent,
-  BRAND.accentSoft,
   BRAND.gold,
-  BRAND.grey,
   BRAND.accentDark,
+  BRAND.accentSoft,
   BRAND.warn,
+  BRAND.grey,
 ];
-
-// Embudo: del más claro (entraron) al más oscuro (pedido), como en el reporte.
-export const FUNNEL_COLORS = [BRAND.accentSoft, BRAND.accent, BRAND.accentDark];
