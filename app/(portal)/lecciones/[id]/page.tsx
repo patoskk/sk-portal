@@ -2,21 +2,17 @@
 // pestaña pelada, sin marca ni forma de volver: el cliente salía del portal
 // para leer lo que el portal le mandó.
 //
-// El cuerpo es un documento HTML completo con su propio <style> (los genera la
-// skill nutricion-ia), así que va en un <iframe srcDoc>: es el aislamiento
-// correcto — inyectarlo con dangerouslySetInnerHTML le dejaría pisar los
-// estilos del portal.
-//
-// Sobre el sandbox: esos documentos se DIBUJAN con JS (`window.DOC = {…}` y una
-// función que arma el DOM), así que allow-scripts es obligatorio o la lección
-// sale en blanco. Va SIN allow-same-origin a propósito: con los dos juntos el
-// iframe puede sacarse el sandbox solo y llegar a las cookies de sesión. Sin
-// allow-same-origin queda en un origen opaco — corre su JS y no toca nada más.
+// El cuerpo es un documento HTML completo con su propio CSS y su propio JS, así
+// que se muestra en un iframe (el aislamiento correcto). Para que NO se vea como
+// algo embebido —marco adentro de marco, logo repetido y scroll adentro del
+// scroll— se le apaga el cromo y se le mide el alto: ver lib/lessonEmbed.ts.
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 import { getLesson, getLessons, markLessonRead } from "@/lib/data/lessons";
+import { embedLesson } from "@/lib/lessonEmbed";
+import { LessonFrame } from "@/components/LessonFrame";
 
 export const dynamic = "force-dynamic";
 
@@ -69,13 +65,7 @@ export default async function LeccionPage({ params }: { params: Promise<{ id: st
         </p>
       </div>
 
-      <iframe
-        className="reader-frame"
-        title={lesson.title}
-        srcDoc={lesson.body}
-        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
-        loading="eager"
-      />
+      <LessonFrame title={lesson.title} html={embedLesson(lesson.body)} />
 
       <nav className="reader-nav" aria-label="Otras lecciones">
         {masVieja ? (

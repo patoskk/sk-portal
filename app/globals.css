@@ -445,11 +445,19 @@ body {
   color: var(--ink-soft); font-size: var(--fs-md); font-weight: 600; text-decoration: none;
 }
 .back-link:hover { color: var(--accent-dark); }
+/* Columna de lectura. El documento traía 760px propios; ahora ese ancho lo
+   decide el portal (lessonEmbed le saca el suyo) — más que esto, los renglones
+   se hacen largos y cuesta seguirlos. */
+.reader { max-width: 820px; }
+/* Sin borde, sin sombra y sin fondo propio: el marco era justamente lo que hacía
+   que la lección se viera "embebida". El alto lo fija LessonFrame con el que le
+   reporta el documento, así scrollea la página y no una caja adentro. */
 .reader-frame {
-  width: 100%; min-height: 78vh;
-  border: 1px solid var(--line); border-radius: var(--r-lg);
-  background: #fff; /* el documento trae su propio fondo claro */
-  box-shadow: var(--shadow);
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
 }
 .reader-nav {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -574,7 +582,6 @@ body {
   .search input { width: 100%; }
   .search { flex: 1; }
   .reader-nav { grid-template-columns: minmax(0, 1fr); }
-  .reader-frame { min-height: 70vh; }
   .tl-item { grid-template-columns: 50px 20px minmax(0, 1fr); }
   .tl-card { margin-left: var(--sp-3); padding: var(--sp-3) 14px; }
   .card { padding: var(--sp-4); }
