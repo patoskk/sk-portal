@@ -65,6 +65,25 @@ Se activa por cliente con `clients.conversion_kinds` (jsonb). Sin esa config, na
 - **Al activarlo en un cliente con historia**, borrar `client_sources.last_synced_at`
   (el cómputo es incremental: si no, el desglose arranca recién en los días nuevos).
 
+## Lecciones: temas y ruta inicial
+
+- **Se clasifican por RESULTADO, no por dificultad.** `lessons.topic` con los valores
+  de `lib/lessonTopics.ts` (lista canónica: chips de `/lecciones`, selector de
+  `/admin` y validación de la API). Nada de principiante/intermedio/avanzado: el
+  lector no se autodiagnostica, la etiqueta incomoda al público al que le
+  escribimos y toda la serie está escrita para ser fácil.
+- **El nivel se expresa como ruta.** `lessons.starter_order` arma "Empezá por acá":
+  un índice compacto (no tarjetas, para que no parezcan duplicadas las de abajo)
+  que **desaparece** cuando el cliente ya leyó las tres, o mientras hay filtro o
+  búsqueda activa.
+- **La columna es texto libre a propósito:** sumar un tema es una línea en
+  `lessonTopics.ts`, no una migración. El valor se valida en la API para que un
+  tema inventado no cree un chip fantasma.
+- `/admin` → **"Quién está leyendo"** (`lib/data/lessonReads.ts`): lecciones distintas
+  abiertas por cliente. Complementa el estado del mail, que mide lo que mandamos
+  nosotros y no si lo abrieron. Se lee con service role porque `lesson_reads`
+  tiene RLS por usuario.
+
 ## Aviso por mail de una lección nueva
 
 El portal **compone** (destinatarios, copy, HTML, log) y **n8n manda** (ahí vive la

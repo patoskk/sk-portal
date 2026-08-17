@@ -2,6 +2,7 @@
 // Verifica el rol con la sesión del usuario y escribe con service role.
 import { NextResponse, type NextRequest } from "next/server";
 import { requireAdmin } from "@/lib/api/requireAdmin";
+import { isLessonTopic } from "@/lib/lessonTopics";
 
 export const runtime = "nodejs";
 
@@ -17,6 +18,18 @@ export async function POST(req: NextRequest) {
   const summary = String(fd.get("summary") ?? "").trim() || null;
   const clientId = null; // targeting por cliente: a futuro — hoy toda lección es global
   if (!title) return new NextResponse("falta el título", { status: 400 });
+
+  // la categoría se valida contra la lista canónica (la columna es texto libre):
+  // un valor raro dejaría un chip fantasma en /lecciones
+  const rawTopic = String(fd.get("topic") ?? "").trim();
+  if (rawTopic && !isLessonTopic(rawTopic)) return new NextResponse("categoría desconocida", { status: 400 });
+  const topic = rawTopic || null;
+
+  const rawStarter = String(fd.get("starter_order") ?? "").trim();
+  const starterOrder = rawStarter ? Number(rawStarter) : null;
+  if (starterOrder !== null && (!Number.isInteger(starterOrder) || starterOrder < 1 || starterOrder > 99)) {
+    return new NextResponse("el orden de la ruta tiene que ser un número del 1 al 99", { status: 400 });
+  }
 
   let url = String(fd.get("url") ?? "").trim() || null;
   let body: string | null = null;
@@ -45,7 +58,7 @@ export async function POST(req: NextRequest) {
   // 5. insertar (devolvemos el id: el front sigue con el aviso por mail)
   const ins = await admin
     .from("lessons")
-    .insert({ title, summary, url, body, client_id: clientId })
+    .insert({ title, summary, url, body, client_id: clientId, topic, starter_order: starterOrder })
     .select("id")
     .single();
   if (ins.error) return new NextResponse("guardando: " + ins.error.message, { status: 500 });

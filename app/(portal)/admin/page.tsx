@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentRole } from "@/lib/data/role";
 import { getLessonsForAdmin } from "@/lib/data/lessons";
+import { getReadsByClient } from "@/lib/data/lessonReads";
 import { getUpdatesForAdmin } from "@/lib/data/updates";
 import { getClients } from "@/lib/data/clients";
 import { UpdateForm } from "@/components/UpdateForm";
@@ -10,6 +11,7 @@ import { LessonForm } from "@/components/LessonForm";
 import { LessonsAdminList } from "@/components/LessonsAdminList";
 import { ClientForm } from "@/components/ClientForm";
 import { ClientsAdminList } from "@/components/ClientsAdminList";
+import { ReadsPanel } from "@/components/ReadsPanel";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Administración" };
@@ -18,11 +20,12 @@ export default async function AdminPage() {
   // el gate corre en paralelo con los datos: si no es admin, redirect y
   // lo consultado se descarta (getClients usa service role, pero acá nunca
   // llega a renderizarse para un no-admin)
-  const [role, lessons, clients, updates] = await Promise.all([
+  const [role, lessons, clients, updates, reads] = await Promise.all([
     getCurrentRole(),
     getLessonsForAdmin(),
     getClients(),
     getUpdatesForAdmin(),
+    getReadsByClient(),
   ]);
   if (role !== "admin") redirect("/dashboard");
 
@@ -54,6 +57,15 @@ export default async function AdminPage() {
           <h3 style={{ marginTop: 0, fontSize: 15 }}>Publicadas ({lessons.length})</h3>
           <LessonsAdminList lessons={lessons} />
         </div>
+      </div>
+
+      {/* el estado del mail dice lo que mandamos; esto dice si lo abrieron */}
+      <div className="card" style={{ marginBottom: 40 }}>
+        <h3 style={{ marginTop: 0, fontSize: 15 }}>Quién está leyendo</h3>
+        <p style={{ color: "var(--ink-soft)", fontSize: 12.5, marginTop: 0, marginBottom: 16 }}>
+          Lecciones distintas que abrió cada cliente. El que no abre ninguna se está enfriando.
+        </p>
+        <ReadsPanel rows={reads} />
       </div>
 
       <h2 style={{ fontSize: 20, margin: "0 0 12px" }}>Novedades</h2>

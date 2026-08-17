@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { LESSON_TOPICS } from "@/lib/lessonTopics";
 import { NotifyPanel } from "./NotifyPanel";
 
 export function LessonForm() {
@@ -56,6 +57,33 @@ export function LessonForm() {
 
       <label style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>Resumen (opcional)</label>
       <textarea name="summary" rows={2} placeholder="Una línea de qué trata." style={{ ...field, resize: "vertical" }} />
+
+      <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <label style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>Tema</label>
+          <select name="topic" defaultValue="" style={field}>
+            <option value="">Sin tema (cae en «Otras»)</option>
+            {LESSON_TOPICS.map((t) => (
+              <option key={t.key} value={t.key}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div style={{ width: 130, flex: "none" }}>
+          {/* la ruta ordena sin etiquetar al lector: nada de "principiante" */}
+          <label style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>Ruta inicial</label>
+          <input
+            name="starter_order"
+            type="number"
+            min={1}
+            max={99}
+            placeholder="—"
+            title="Posición en «Empezá por acá». Vacío = fuera de la ruta."
+            style={field}
+          />
+        </div>
+      </div>
 
       <div style={{ display: "flex", gap: 8, margin: "4px 0 12px" }}>
         {(["file", "link"] as const).map((m) => (

@@ -15,6 +15,10 @@ export interface Lesson {
   read: boolean; // ya la abrió este usuario (lesson_reads)
   /** true si la lección se lee DENTRO del portal; false si es PDF/link y abre aparte */
   inline: boolean;
+  /** categoría por resultado (ver lib/lessonTopics.ts); null = "Otras" */
+  topic: string | null;
+  /** posición en "Empezá por acá"; null = fuera de la ruta */
+  starterOrder: number | null;
 }
 
 /** Lección + estado del aviso por mail. Solo para el panel Admin. */
@@ -42,7 +46,7 @@ function splitWhy(why: unknown): string[] {
   return typeof why === "string" ? why.split("\n").map((w) => w.trim()).filter(Boolean) : [];
 }
 
-const SELECT = "id,title,summary,why,url,published_at,body";
+const SELECT = "id,title,summary,why,url,published_at,body,topic,starter_order";
 
 interface Row {
   id: string;
@@ -52,6 +56,8 @@ interface Row {
   url: string | null;
   published_at: string;
   body: string | null;
+  topic: string | null;
+  starter_order: number | null;
 }
 
 function toLesson(l: Row, read = false): Lesson {
@@ -67,6 +73,8 @@ function toLesson(l: Row, read = false): Lesson {
     // con body la servimos adentro del portal; si es PDF en Storage o link
     // externo, sigue abriéndose en una pestaña aparte
     inline: Boolean(l.body),
+    topic: l.topic,
+    starterOrder: l.starter_order,
   };
 }
 
@@ -132,7 +140,7 @@ export async function getLessonsForAdmin(): Promise<AdminLesson[]> {
     admin
       // literal, no SELECT + "...": supabase-js infiere los tipos del string
       .from("lessons")
-      .select("id,title,summary,why,url,published_at,body,notified_at")
+      .select("id,title,summary,why,url,published_at,body,topic,starter_order,notified_at")
       // igual que la lista del cliente: lo último publicado, primero
       .order("published_at", { ascending: false })
       .order("created_at", { ascending: false }),

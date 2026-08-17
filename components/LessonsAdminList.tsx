@@ -1,12 +1,15 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { LESSON_TOPICS, topicLabel } from "@/lib/lessonTopics";
 import { NotifyPanel } from "./NotifyPanel";
 
 interface L {
   id: string;
   title: string;
   summary: string | null;
+  topic: string | null;
+  starterOrder: number | null;
   notified_at?: string | null;
   notified?: { sent: number; queued: number; error: number };
 }
@@ -23,6 +26,8 @@ export function LessonsAdminList({ lessons }: { lessons: L[] }) {
   const [notifying, setNotifying] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
+  const [topic, setTopic] = useState("");
+  const [starter, setStarter] = useState("");
   const [busy, setBusy] = useState(false);
   const [errMsg, setErrMsg] = useState<string | null>(null);
 
@@ -30,6 +35,8 @@ export function LessonsAdminList({ lessons }: { lessons: L[] }) {
     setEditing(l.id);
     setTitle(l.title);
     setSummary(l.summary ?? "");
+    setTopic(l.topic ?? "");
+    setStarter(l.starterOrder == null ? "" : String(l.starterOrder));
     setErrMsg(null);
   }
 
@@ -39,7 +46,7 @@ export function LessonsAdminList({ lessons }: { lessons: L[] }) {
     const res = await fetch(`/api/admin/lessons/${id}`, {
       method: "PATCH",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ title, summary }),
+      body: JSON.stringify({ title, summary, topic, starter_order: starter }),
     });
     setBusy(false);
     if (!res.ok) {
@@ -84,6 +91,26 @@ export function LessonsAdminList({ lessons }: { lessons: L[] }) {
             <div>
               <input value={title} onChange={(e) => setTitle(e.target.value)} style={field} placeholder="Título" />
               <textarea value={summary} onChange={(e) => setSummary(e.target.value)} rows={2} style={{ ...field, resize: "vertical" }} placeholder="Resumen" />
+              <div style={{ display: "flex", gap: 8 }}>
+                <select value={topic} onChange={(e) => setTopic(e.target.value)} style={{ ...field, flex: 1, minWidth: 0 }}>
+                  <option value="">Sin tema</option>
+                  {LESSON_TOPICS.map((t) => (
+                    <option key={t.key} value={t.key}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  value={starter}
+                  onChange={(e) => setStarter(e.target.value)}
+                  type="number"
+                  min={1}
+                  max={99}
+                  placeholder="Ruta"
+                  title="Posición en «Empezá por acá». Vacío = fuera de la ruta."
+                  style={{ ...field, width: 92, flex: "none" }}
+                />
+              </div>
               <div style={{ display: "flex", gap: 12 }}>
                 <button onClick={() => save(l.id)} disabled={busy} style={{ ...link, color: "var(--accent-dark)" }}>Guardar</button>
                 <button onClick={() => setEditing(null)} style={{ ...link, color: "var(--ink-soft)" }}>Cancelar</button>
@@ -96,6 +123,10 @@ export function LessonsAdminList({ lessons }: { lessons: L[] }) {
                 <a href={`/api/lessons/${l.id}/view`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent-dark)", fontSize: 13 }}>↗</a>
               </div>
               {l.summary ? <div style={{ fontSize: 12.5, color: "var(--ink-soft)", marginTop: 2 }}>{l.summary}</div> : null}
+              <div style={{ fontSize: 11.5, marginTop: 4, color: l.topic ? "var(--accent-dark)" : "var(--ink-soft)" }}>
+                {topicLabel(l.topic)}
+                {l.starterOrder != null ? ` · ruta ${l.starterOrder}` : ""}
+              </div>
               {l.notified_at ? (
                 <div style={{ fontSize: 11.5, color: "var(--ink-soft)", marginTop: 4 }}>
                   ✓ Avisado el {fmtFechaCorta(l.notified_at)}
