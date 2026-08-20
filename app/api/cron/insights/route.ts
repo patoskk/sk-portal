@@ -20,11 +20,24 @@ export async function GET(req: NextRequest) {
   const fromS = from.toISOString().slice(0, 10);
   const toS = to.toISOString().slice(0, 10);
 
-  const { data: clients } = await admin.from("clients").select("id, name, rubro, conversion_kinds");
+  // Se trae la fuente para poder saltear a los clientes que no tienen ninguna:
+  // hoy eso es el "Panel de demostración" (datos sintéticos, ver scripts/seed-demo.ts).
+  // Generarle un insight cuesta tokens todas las semanas y además pisa la prosa
+  // escrita a mano que es la que sale en las capturas.
+  const { data: clients } = await admin
+    .from("clients")
+    .select("id, name, rubro, conversion_kinds, client_sources(client_id)");
   const results: Record<string, unknown> = {};
 
   for (const c of clients ?? []) {
     try {
+      // client_sources es 1-a-1: PostgREST devuelve un OBJETO, no un array.
+      const rel = c.client_sources as { client_id?: string } | { client_id?: string }[] | null;
+      const tieneFuente = Array.isArray(rel) ? rel.length > 0 : !!rel;
+      if (!tieneFuente) {
+        results[c.id] = { skipped: "cliente sin fuente de datos (demo)" };
+        continue;
+      }
       const [metrics, tools, queries, intents, convKinds] = await Promise.all([
         admin.from("metrics_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
         admin.from("tool_usage_daily").select("*").eq("client_id", c.id).gte("date", fromS).lte("date", toS),
