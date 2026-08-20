@@ -72,6 +72,49 @@ export function ClientForm() {
       <label style={label}>Tabla de conversaciones (en tu Supabase)</label>
       <input name="table" required placeholder="nombre_exacto_de_la_tabla" style={field} />
 
+      {/* Recordatorio del contrato de la tabla fuente. Va acá y no en el README
+          porque el error se comete justo en este momento y falla en SILENCIO:
+          sin `fecha` el cómputo termina bien, sella el sync en verde y no
+          escribe una sola métrica. Pasó con kopfundpuls (20/08/2026). */}
+      <div
+        style={{
+          border: "1px solid var(--line)",
+          borderLeft: "3px solid var(--accent)",
+          borderRadius: 9,
+          padding: "14px",
+          margin: "2px 0 14px",
+          background: "var(--tint)",
+        }}
+      >
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Antes de seguir: revisá esa tabla</div>
+        <p style={{ ...label, margin: "0 0 8px", lineHeight: 1.45 }}>
+          Si le falta alguna de estas columnas, el panel va a mostrar <strong>todo en cero</strong> y el sync
+          igual va a figurar en verde. No avisa por otro lado.
+        </p>
+        <ul style={{ ...label, margin: 0, paddingLeft: 18, lineHeight: 1.6 }}>
+          <li>
+            <code>fecha</code> — <code>timestamptz not null default now()</code>. Es la que más se olvida. Sin
+            ella ninguna fila entra en ningún día. El <code>default</code> hace que n8n la complete sola.
+          </li>
+          <li>
+            <code>session_id</code> — identifica la charla. Sin esto no hay conversaciones.
+          </li>
+          <li>
+            <code>message</code> — <code>jsonb</code> con el mensaje de LangChain.
+          </li>
+          <li>
+            <code>id</code> — cualquier columna ordenable, para paginar.
+          </li>
+          <li>
+            <code>Texto</code> — opcional, texto plano del mensaje del cliente.
+          </li>
+        </ul>
+        <p style={{ ...label, margin: "8px 0 0", lineHeight: 1.45 }}>
+          La <code>fecha</code> va en <strong>UTC</strong>: el portal la pasa a hora local con el huso de acá
+          abajo. Si se guarda hora local como si fuera UTC, el horario pico queda corrido.
+        </p>
+      </div>
+
       <label style={label}>Email de la empresa — con este se crea la cuenta del portal</label>
       <input name="email" type="email" placeholder="ventas@laempresa.com" style={field} />
 

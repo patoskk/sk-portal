@@ -139,6 +139,59 @@ npm install
 npm run dev   # http://localhost:3000
 ```
 
+## Qué tiene que tener la tabla de un cliente
+
+Antes de dar de alta a nadie, revisar esto. Si falta `fecha`, el panel muestra
+**todo en cero** y el sync igual queda en verde: el cómputo termina bien, sella
+`last_synced_at` y no escribe una sola fila. El único cartel que lo delata es el
+"sin datos aún" en rojo del panel de Admin. (Pasó con `kopfundpuls`, 20/08/2026.)
+
+**Columnas obligatorias**
+
+| columna | tipo | por qué |
+|---|---|---|
+| `fecha` | `timestamptz not null default now()` | **La crítica.** Cada fila se ubica en un día y una hora con esto (`compute.ts` → `parseFechaLocal`). Sin la columna, ninguna fila entra en ningún día y todas las métricas dan 0. El `default now()` es lo que hace que el nodo de memoria de n8n la complete solo, sin tocar el workflow. |
+| `session_id` | `text` | Identidad de la conversación. Sin esto no hay "Conversaciones" ni se pueden atribuir los pedidos a una charla. |
+| `message` | `jsonb` (o `text` con JSON) | El mensaje LangChain. De acá sale todo lo demás. |
+| `id` | cualquiera ordenable | Se usa para paginar de a 1000. Si no existe, cae a ordenar por `fecha`. |
+
+**Columna opcional**
+
+| columna | para qué |
+|---|---|
+| `Texto` | Texto plano del mensaje del cliente, para clasificar la intención. Si no está, se usa `message.content`. |
+
+**Guardar `fecha` en UTC.** El portal la pasa a hora local con `clients.utc_offset`
+(Argentina = −3). Si se guarda hora local *como si fuera* UTC, todo el panel queda
+corrido 3 horas y el "horario pico" miente. Al rellenar fechas a mano en el SQL
+Editor de Supabase, `set timezone` **no** persiste entre sentencias: conviene
+escribir el offset explícito y después verificar contra la hora que el propio
+prompt escribe en el mensaje.
+
+**Qué tiene que traer el `message` para que cada métrica exista**
+
+| en el JSON | alimenta |
+|---|---|
+| `type`: `human` / `ai` / `tool` | Mensajes de clientes, mensajes por charla |
+| `content` (string) | Intención, y el cierre declarativo del evento clave |
+| `tool_calls: [{name, args}]` en los `ai` | Acciones del agente · Uso de herramientas · Lo más consultado (sale de `args`) |
+| `content` de los `tool` | Errores y Consultas sin resultado |
+
+Los patrones que se buscan están en `lib/metrics/parse.ts`:
+
+- **Evento clave por tool**: el nombre matchea `pedido|order|compra|venta|checkout|reserva|turno|booking|appointment`.
+- **Evento clave por mensaje**: el agente lo declara cerrado — *"tu pedido quedó registrado"*, *"turno confirmado"*. Preguntar o "agregar al pedido" no cuenta.
+- **Consultas sin resultado**: `no se encontr…`, `sin resultados`, `not found`, `sin coincidencias`.
+- **Errores**: `There was an error`, `authorization grant`, `did not return a response`.
+
+Si el agente de un cliente usa otras palabras para cerrar, esos patrones hay que
+ampliarlos o el panel va a marcar 0 conversiones con conversaciones reales.
+
+**Ojo con limpiar la tabla de memoria.** El cómputo es incremental: relee desde el
+último sync menos 48 h. Si las filas se borran antes de que el cron de las 8 las
+lea, esos días **no se recuperan** — el histórico ya calculado queda en el portal,
+pero el día borrado nunca se computa.
+
 ## Alta de un cliente nuevo
 
 Cada cliente tiene su **propio** Supabase (la fuente). Pasos:
