@@ -4,8 +4,11 @@
 export const ERR_RE = /(There was an error|authorization grant|did not return a response)/i;
 // "Sin resultado" genérico: una búsqueda/consulta del agente que no devolvió nada.
 // Aplica a cualquier rubro (no solo "No se encontraron productos").
+// `"resultado":"nada"` es la convención de nuestros sub-workflows de consulta
+// (devuelven "stock" o "nada"): un dato explícito, mejor que adivinar por texto.
+// El resto son frases sueltas, para fuentes que devuelven prosa.
 export const NO_RESULT_RE =
-  /(no se encontr|no se hallar|sin resultados?|no hay resultados?|no encontr[eé]|not found|no results|sin coincidencias)/i;
+  /("resultado"\s*:\s*"nada"|no hay stock|no se encontr|no se hallar|sin resultados?|no hay resultados?|no encontr[eé]|not found|no results|sin coincidencias)/i;
 
 // "Evento clave" / conversión, detectado en el MENSAJE del agente (genérico, declarativo
 // para no contar preguntas ni "agregar al pedido"). Separado en dos señales para los
