@@ -177,6 +177,37 @@ prompt escribe en el mensaje.
 | `tool_calls: [{name, args}]` en los `ai` | Acciones del agente · Uso de herramientas · Lo más consultado (sale de `args`) |
 | `content` de los `tool` | Errores y Consultas sin resultado |
 
+**Pero las dos últimas filas casi nunca están, y no es un problema de la fuente.**
+La memoria de n8n persiste los **turnos de texto** — el mensaje del cliente y la
+respuesta final — no los pasos internos del agente. Medido el 21/08/2026 sobre las
+cuatro fuentes: cero mensajes `ai` con `tool_calls` y cero mensajes `tool`. Con eso
+quedan en 0 seis métricas a la vez (acciones del agente, uso de herramientas, lo
+más consultado, consultas sin resultado, errores y media detección de conversiones).
+
+Y **no se arregla escribiéndolas en la tabla de memoria**: esa tabla es la que el
+agente relee como contexto, y meterle los tool calls es exactamente lo que
+envenenó al modelo el 04/08/2026. Por eso existe el camino de al lado:
+
+- el workflow del cliente prende **Return Intermediate Steps** en el nodo del
+  agente y, **después** de mandar la respuesta, postea a `/api/ingest/tool-events`
+  (Bearer `INGEST_SECRET`) qué tool usó, qué buscó y cómo le fue;
+- `runCompute` lee `tool_events` del rango y `computeDaily` los pliega sobre los
+  mismos contadores. **Si un día tiene eventos, se ignoran las `tool_calls` que
+  vengan de la fuente para ese día**, así un cliente que algún día vuelva a
+  persistirlas no cuenta doble;
+- un día que existe **solo** por eventos (vaciaron la memoria antes del cron) se
+  guarda parcial: se actualizan `tool_calls`, `tool_results`, `no_result` y
+  `errors`, y no se pisan conversaciones ni mensajes con ceros.
+
+El Code node que arma el reporte es el mismo para los cuatro clientes y vive en
+`~/.claude/skills/probador-agentes/reference/registro-tools.js`, con sus pruebas en
+`scripts/tests/registro-tools.test.mjs` de esa skill. Que el pegado haya quedado
+bien se verifica ahí mismo, sin tocar la base:
+
+```bash
+node scripts/verificar-metricas.mjs "<export del workflow>" --subflujos "<carpeta>" --cliente <uuid>
+```
+
 Los patrones que se buscan están en `lib/metrics/parse.ts`:
 
 - **Evento clave por tool**: el nombre matchea `pedido|order|compra|venta|checkout|reserva|turno|booking|appointment`.

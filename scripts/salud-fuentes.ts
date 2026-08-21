@@ -8,6 +8,7 @@
 //   3. frescura   — la fuente de CGG dejó de escribir y nadie se enteró por 15 días
 //   4. cobertura  — vacían la tabla de memoria antes del cron y el día se pierde
 //   5. tools      — la memoria no persiste tool calls: 6 métricas en cero desde julio
+//   5b. cruce      — el CLIENT_ID copiado de otro cliente: los eventos van al panel de al lado
 //   6. coherencia — números imposibles que delatan un cómputo mal enchufado
 import { loadEnv } from "./loadEnv.ts";
 loadEnv();
@@ -181,6 +182,34 @@ async function chequearCliente(
       r.push({ nivel: "OK", chequeo: "tools", detalle: "sin conversaciones todavía: nada que registrar" });
     } else {
       r.push({ nivel: "OK", chequeo: "tools", detalle: `último registro de tools: ${String(ultimo).slice(0, 16)}` });
+    }
+  }
+
+  // ---------- 5b. los eventos son de ESTE cliente ----------
+  // Un CLIENT_ID copiado del workflow de otro cliente no da error en ningún lado:
+  // los eventos se guardan, pero en el panel equivocado. La forma de verlo es que
+  // las conversaciones que reportan no existen en la tabla de este cliente.
+  const evs = await admin
+    .from("tool_events")
+    .select("session_id")
+    .eq("client_id", c.id)
+    .order("ts", { ascending: false })
+    .limit(50);
+  const sesiones = [...new Set((evs.data ?? []).map((x) => String(x.session_id)).filter(Boolean))];
+  if (sesiones.length && filas.length) {
+    const cruce = await fuente.from(src.table_name).select("session_id").in("session_id", sesiones).limit(1);
+    if (cruce.error) {
+      r.push({ nivel: "AVISO", chequeo: "cruce", detalle: `no se pudo cruzar contra la fuente: ${cruce.error.message}` });
+    } else if (!(cruce.data ?? []).length) {
+      r.push({
+        nivel: "FALLA",
+        chequeo: "cruce",
+        detalle:
+          `ninguna de las ${sesiones.length} conversaciones que reportó el workflow existe en ${src.table_name}. ` +
+          "O el CLIENT_ID del nodo de registro es el de otro cliente, o la tabla se vació entera.",
+      });
+    } else {
+      r.push({ nivel: "OK", chequeo: "cruce", detalle: "las conversaciones que reporta el workflow existen en la fuente" });
     }
   }
 

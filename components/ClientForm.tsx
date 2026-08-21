@@ -115,6 +115,52 @@ export function ClientForm() {
         </p>
       </div>
 
+
+      {/* Segundo recordatorio: el lado del workflow. La tabla sola no alcanza —
+          la memoria de n8n no persiste las tool calls, así que sin estos dos
+          nodos el panel arranca con seis métricas en cero y tampoco avisa.
+          Los cuatro clientes estuvieron así entre julio y agosto de 2026. */}
+      <div
+        style={{
+          border: "1px solid var(--line)",
+          borderLeft: "3px solid var(--accent)",
+          borderRadius: 9,
+          padding: "14px",
+          margin: "2px 0 14px",
+          background: "var(--tint)",
+        }}
+      >
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Y en el workflow de n8n: registrar las herramientas</div>
+        <p style={{ ...label, margin: "0 0 8px", lineHeight: 1.45 }}>
+          La memoria de n8n guarda los mensajes, <strong>no</strong> las herramientas que usa el agente. Si esto
+          no se hace, quedan en cero <em>Acciones del agente</em>, <em>Uso de herramientas</em>, <em>Lo más
+          consultado</em>, <em>Consultas sin resultado</em>, <em>Errores</em> y la mitad de los pedidos.
+        </p>
+        <ul style={{ ...label, margin: 0, paddingLeft: 18, lineHeight: 1.6 }}>
+          <li>
+            Nodo del agente → Options → <strong>Return Intermediate Steps</strong> prendida.
+          </li>
+          <li>
+            Al final de la cadena de envío: <code>Armar registro de tools</code> (Code) →{" "}
+            <code>Registrar tools en el portal</code> (POST a <code>/api/ingest/tool-events</code>).
+          </li>
+          <li>
+            Cablear los <strong>cuatro</strong> finales: el <code>false</code> de los tres <code>If</code> del
+            splitter y el último HTTP. Una respuesta de un solo mensaje sale por el primer <code>false</code>.
+          </li>
+          <li>
+            El nodo HTTP en <strong>Continue (using regular output)</strong>: el registro nunca puede romper una
+            conversación.
+          </li>
+        </ul>
+        <p style={{ ...label, margin: "8px 0 0", lineHeight: 1.45 }}>
+          El código va igual para todos los clientes — solo cambia el <code>CLIENT_ID</code>. Está en la skill
+          <code> probador-agentes</code> (<code>reference/registro-tools.js</code>), y ahí mismo se verifica el
+          pegado con <code>verificar-metricas.mjs</code>. Nunca escribir las tool calls en la tabla de memoria:
+          el agente la relee como contexto.
+        </p>
+      </div>
+
       <label style={label}>Email de la empresa — con este se crea la cuenta del portal</label>
       <input name="email" type="email" placeholder="ventas@laempresa.com" style={field} />
 
