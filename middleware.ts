@@ -47,6 +47,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // todo menos assets estáticos y las rutas con su propio secret
-  // (api/cron = Vercel Cron, api/notify = callback de n8n)
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/cron|api/notify).*)"],
+  // (api/cron = Vercel Cron, api/notify = callback de n8n,
+  //  api/ingest = los workflows reportando el uso de herramientas).
+  // Si una ruta con secreto propio NO se excluye acá, el middleware la manda a
+  // /login con un 307 y el que llama cree que salió todo bien: falla muda.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/cron|api/notify|api/ingest).*)"],
 };

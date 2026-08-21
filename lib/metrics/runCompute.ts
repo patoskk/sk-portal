@@ -2,6 +2,7 @@
 import { createClient as createSupabase, type SupabaseClient } from "@supabase/supabase-js";
 import { computeDaily } from "./compute";
 import { parseConversionKinds, type RawRow } from "./parse";
+import type { ToolEvent } from "./types";
 
 export interface SourceDescriptor {
   client_id: string;
@@ -77,17 +78,72 @@ async function fetchRows(
   return rows;
 }
 
+/**
+ * Uso de herramientas reportado por n8n. Se lee con la MISMA ventana que las filas
+ * de la fuente: el corte incremental cae en el arranque de un día local, así que un
+ * día que entra en la ventana se recomputa entero desde las dos fuentes.
+ */
+async function fetchToolEvents(
+  admin: SupabaseClient,
+  clientId: string,
+  sinceIso: string | null,
+): Promise<ToolEvent[]> {
+  const out: ToolEvent[] = [];
+  for (let from = 0; ; from += PAGE) {
+    let q = admin
+      .from("tool_events")
+      .select("ts,session_id,tool,query,outcome")
+      .eq("client_id", clientId)
+      .order("ts", { ascending: true })
+      .range(from, from + PAGE - 1);
+    if (sinceIso) q = q.gte("ts", sinceIso);
+    const { data, error } = await q;
+    // La tabla puede no existir todavía (migración sin correr): que no tire abajo
+    // el cómputo entero — se computa como hasta ahora y se avisa por consola.
+    if (error) {
+      console.warn(`[compute] tool_events no disponible para ${clientId}: ${error.message}`);
+      return [];
+    }
+    out.push(...((data ?? []) as ToolEvent[]));
+    if (!data || data.length < PAGE) break;
+  }
+  return out;
+}
+
 export async function computeClient(admin: SupabaseClient, src: SourceDescriptor) {
   const client = createSupabase(src.supabase_url, src.key, { auth: { persistSession: false } });
   const sinceIso = src.last_synced_at ? incrementalSinceIso(src.last_synced_at, src.utc_offset) : null;
-  const rows = await fetchRows(client, src.table_name, sinceIso);
+  const [rows, toolEvents] = await Promise.all([
+    fetchRows(client, src.table_name, sinceIso),
+    fetchToolEvents(admin, src.client_id, sinceIso),
+  ]);
 
   const kinds = parseConversionKinds(src.conversion_kinds);
-  const out = computeDaily(rows, src.utc_offset, kinds);
+  const out = computeDaily(rows, src.utc_offset, kinds, toolEvents);
   const withId = <T,>(arr: T[]) => arr.map((r) => ({ ...r, client_id: src.client_id }));
 
+  // Días que salieron SOLO de tool_events (limpiaron la tabla de memoria antes de
+  // que corriera el cron). De esos se upsertean únicamente las columnas de
+  // herramientas: la fila entera pisaría con ceros las conversaciones ya
+  // calculadas. Las conversiones tampoco se tocan — sin las filas no se puede
+  // recalcular la señal por mensaje, y bajarlas sería peor que dejarlas.
+  const soloTools = new Set(out.daysFromEventsOnly);
+  const metricsCompletas = out.metricsDaily.filter((r) => !soloTools.has(r.date));
+  const metricsParciales = out.metricsDaily
+    .filter((r) => soloTools.has(r.date))
+    .map((r) => ({
+      date: r.date,
+      tool_calls: r.tool_calls,
+      tool_results: r.tool_results,
+      no_result: r.no_result,
+      errors: r.errors,
+    }));
+
   await Promise.all([
-    admin.from("metrics_daily").upsert(withId(out.metricsDaily), { onConflict: "client_id,date" }),
+    admin.from("metrics_daily").upsert(withId(metricsCompletas), { onConflict: "client_id,date" }),
+    metricsParciales.length
+      ? admin.from("metrics_daily").upsert(withId(metricsParciales), { onConflict: "client_id,date" })
+      : Promise.resolve(),
     out.conversionsDaily.length
       ? admin.from("conversions_daily").upsert(withId(out.conversionsDaily), { onConflict: "client_id,date,kind" })
       : Promise.resolve(),
@@ -101,6 +157,8 @@ export async function computeClient(admin: SupabaseClient, src: SourceDescriptor
   return {
     days: out.metricsDaily.length,
     rows: rows.length,
+    toolEvents: toolEvents.length,
+    daysOnlyTools: out.daysFromEventsOnly.length,
     incremental: Boolean(sinceIso),
     kinds: kinds.map((k) => k.key),
   };

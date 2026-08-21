@@ -50,6 +50,19 @@ export interface IntentDailyRow {
   count: number;
 }
 
+/**
+ * Un uso de herramienta reportado por n8n (tabla `tool_events`).
+ * La memoria del agente NO persiste las tool calls — ver 0014_tool_events.sql —
+ * así que esta es la única fuente confiable de lo que el agente hizo.
+ */
+export interface ToolEvent {
+  ts: string; // UTC
+  session_id: string;
+  tool: string;
+  query?: string | null;
+  outcome?: string | null; // ok | sin_resultado | error
+}
+
 export interface ComputeResult {
   metricsDaily: MetricsDailyRow[];
   conversionsDaily: ConversionDailyRow[]; // vacío si el cliente no separa conversiones
@@ -57,4 +70,11 @@ export interface ComputeResult {
   toolQueries: ToolQueryDailyRow[];
   activityHourly: ActivityHourlyRow[];
   intentDaily: IntentDailyRow[];
+  /**
+   * Días que salieron SOLO de `tool_events`, sin una sola fila en la tabla fuente
+   * (pasa cuando limpian la tabla de memoria antes de que corra el cron).
+   * De esos días se upsertean únicamente las columnas de herramientas: pisar la
+   * fila entera borraría las conversaciones ya calculadas. Ver runCompute.ts.
+   */
+  daysFromEventsOnly: string[];
 }

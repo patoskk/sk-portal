@@ -9,6 +9,7 @@ interface C {
   table_name: string | null;
   last_synced_at: string | null;
   last_data_at: string | null;
+  last_tool_event_at: string | null;
   contact_name: string | null;
   contact_email: string | null;
   notify_lessons: boolean;
@@ -30,6 +31,18 @@ function dataBadge(iso: string | null): { text: string; dead: boolean } {
   const d = Math.floor((Date.now() - Date.parse(iso)) / 86400000);
   if (d <= 3) return { text: `último dato: ${iso.slice(8, 10)}/${iso.slice(5, 7)}`, dead: false };
   return { text: `⚠ la fuente no trae datos desde ${iso.slice(8, 10)}/${iso.slice(5, 7)} (${d} días)`, dead: true };
+}
+
+// La memoria del agente NO guarda las tool calls: llegan por /api/ingest/tool-events.
+// Si dejan de llegar, "Acciones del agente", "Uso de herramientas" y "Lo más
+// consultado" se van a cero sin un solo error — que es como estuvimos desde julio.
+// Solo se avisa si el cliente además tiene datos: sin conversaciones no hay tools.
+function toolsBadge(iso: string | null, lastDataAt: string | null): { text: string; dead: boolean } | null {
+  if (!lastDataAt) return null;
+  if (!iso) return { text: "⚠ sin registro de tools", dead: true };
+  const d = Math.floor((Date.now() - Date.parse(iso)) / 86400000);
+  if (d <= 3) return null; // al día: no ensuciar la lista
+  return { text: `⚠ sin registro de tools hace ${d} días`, dead: true };
 }
 
 export function ClientsAdminList({ clients }: { clients: C[] }) {
@@ -104,6 +117,14 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
             <span style={{ color: dataBadge(c.last_data_at).dead ? "var(--warn)" : "var(--ink-soft)" }}>
               {dataBadge(c.last_data_at).text}
             </span>
+            {toolsBadge(c.last_tool_event_at, c.last_data_at) ? (
+              <>
+                {" · "}
+                <span style={{ color: "var(--warn)" }}>
+                  {toolsBadge(c.last_tool_event_at, c.last_data_at)!.text}
+                </span>
+              </>
+            ) : null}
           </div>
           {/* contacto del dueño: a dónde van los avisos de lecciones */}
           {editing === c.id ? (

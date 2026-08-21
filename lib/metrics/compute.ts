@@ -20,6 +20,7 @@ import {
 } from "./parse";
 import type {
   ComputeResult,
+  ToolEvent,
   MetricsDailyRow,
   ConversionDailyRow,
   ToolUsageDailyRow,
@@ -114,6 +115,7 @@ export function computeDaily(
   rows: RawRow[],
   utcOffsetHours = -3,
   kinds: ConversionKind[] = [],
+  toolEvents: ToolEvent[] = [],
 ): ComputeResult {
   const days = new Map<string, DayBucket>();
   const bucket = (d: string): DayBucket => {
@@ -200,6 +202,60 @@ export function computeDaily(
     }
   }
 
+  // ---------- uso de herramientas reportado por n8n ----------
+  // La memoria del agente no persiste las tool calls, así que esta es la fuente
+  // real de lo que el agente hizo. PRECEDENCIA: si un día tiene eventos, mandan
+  // ellos y se descarta lo que hubiera salido de la tabla fuente para ese día —
+  // si un cliente algún día vuelve a persistirlas, no se cuenta dos veces.
+  const diasConFilas = new Set(days.keys());
+  const diasConEventos = new Set<string>();
+  for (const e of toolEvents) {
+    const f = parseFechaLocal(e.ts, utcOffsetHours);
+    if (f) diasConEventos.add(f.date);
+  }
+  for (const d of diasConEventos) {
+    const b = bucket(d);
+    b.toolCalls = 0;
+    b.toolResults = 0;
+    b.noResult = 0;
+    b.errors = 0;
+    b.tools.clear();
+    b.queries.clear();
+    b.convByTool.clear();
+    b.kindByTool.clear();
+  }
+  for (const e of toolEvents) {
+    const f = parseFechaLocal(e.ts, utcOffsetHours);
+    if (!f) continue;
+    const b = bucket(f.date);
+    const name = (e.tool ?? "").trim() || "(sin nombre)";
+    const session = (e.session_id ?? "").trim() || "(sin sesión)";
+
+    b.toolCalls += 1;
+    inc(b.tools, name);
+
+    // mismo criterio que los mensajes `tool`: toolResults es el denominador y
+    // errores / sin-resultado son subconjuntos suyos.
+    b.toolResults += 1;
+    const outcome = (e.outcome ?? "ok").trim().toLowerCase();
+    if (outcome === "error") b.errors += 1;
+    else if (outcome === "sin_resultado") b.noResult += 1;
+
+    const upper = name.toUpperCase();
+    for (const k of kinds) {
+      if (k.tools.includes(upper)) incNested(b.kindByTool, k.key, session);
+    }
+    if (CONVERSION_TOOL_RE.test(name)) {
+      // tool de cierre (pedido/turno/reserva): es evento clave, no consulta
+      inc(b.convByTool, session);
+    } else {
+      // "lo más consultado". El endpoint ya sanea, pero se revalida acá: es la
+      // última barrera antes de que un dato personal entre en una métrica.
+      const q = (e.query ?? "").trim();
+      if (q && q.length <= 50 && !PII_RE.test(q)) inc(b.queries, q.toLowerCase());
+    }
+  }
+
   const metricsDaily: MetricsDailyRow[] = [];
   const conversionsDaily: ConversionDailyRow[] = [];
   const toolUsage: ToolUsageDailyRow[] = [];
@@ -249,5 +305,15 @@ export function computeDaily(
     for (const [intent, count] of b.intents) intentDaily.push({ date, intent, count });
   }
 
-  return { metricsDaily, conversionsDaily, toolUsage, toolQueries, activityHourly, intentDaily };
+  const daysFromEventsOnly = [...days.keys()].filter((d) => !diasConFilas.has(d)).sort();
+
+  return {
+    metricsDaily,
+    conversionsDaily,
+    toolUsage,
+    toolQueries,
+    activityHourly,
+    intentDaily,
+    daysFromEventsOnly,
+  };
 }
