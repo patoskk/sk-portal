@@ -8,6 +8,7 @@
 //   3. frescura   — la fuente de CGG dejó de escribir y nadie se enteró por 15 días
 //   4. cobertura  — vacían la tabla de memoria antes del cron y el día se pierde
 //   5. tools      — la memoria no persiste tool calls: 6 métricas en cero desde julio
+//                   (solo FALLA si hubo una charla en las últimas 24 h y no reportó nada)
 //   5b. cruce      — el CLIENT_ID copiado de otro cliente: los eventos van al panel de al lado
 //   6. coherencia — números imposibles que delatan un cómputo mal enchufado
 import { loadEnv } from "./loadEnv.ts";
@@ -169,19 +170,35 @@ async function chequearCliente(
     r.push({ nivel: "AVISO", chequeo: "tools", detalle: `no se pudo leer tool_events: ${te.error.message}` });
   } else {
     const ultimo = (te.data ?? [])[0]?.ts as string | undefined;
-    const hayConversaciones = metricas.some((x) => x.conversations > 0);
-    if (!ultimo && hayConversaciones) {
+    // Cero eventos puede querer decir dos cosas MUY distintas: que el workflow no
+    // reporta, o que nadie le escribió al agente desde que se pegaron los nodos.
+    // Decide la última charla real: si hubo una en las últimas 24 h y no llegó un
+    // solo evento, ahí sí está roto. Si la última es más vieja, todavía no hay con
+    // qué opinar — y un rojo que no se puede accionar es un rojo que se ignora.
+    const horasSinCharla = ultimaFuente ? (Date.now() - Date.parse(String(ultimaFuente))) / 3600000 : Infinity;
+    if (ultimo && dias(ultimo) > DIAS_FRESCURA) {
+      r.push({ nivel: "AVISO", chequeo: "tools", detalle: `último registro de tools: hace ${dias(ultimo)} días` });
+    } else if (ultimo) {
+      r.push({ nivel: "OK", chequeo: "tools", detalle: `último registro de tools: ${String(ultimo).slice(0, 16)}` });
+    } else if (!ultimaFuente) {
+      r.push({ nivel: "OK", chequeo: "tools", detalle: "la fuente no tiene mensajes: nada que registrar todavía" });
+    } else if (horasSinCharla <= 24) {
       r.push({
         nivel: "FALLA",
         chequeo: "tools",
-        detalle: "hay conversaciones pero cero tool_events → 'Acciones del agente' y 'Lo más consultado' van a dar 0",
+        detalle:
+          `hubo una charla hace ${Math.round(horasSinCharla)} h y no llegó un solo tool_event → ` +
+          "'Acciones del agente' y 'Lo más consultado' van a dar 0. Revisá el workflow: " +
+          "node scripts/verificar-metricas.mjs (en probador-agentes)",
       });
-    } else if (ultimo && dias(ultimo) > DIAS_FRESCURA) {
-      r.push({ nivel: "AVISO", chequeo: "tools", detalle: `último registro de tools: hace ${dias(ultimo)} días` });
-    } else if (!ultimo) {
-      r.push({ nivel: "OK", chequeo: "tools", detalle: "sin conversaciones todavía: nada que registrar" });
     } else {
-      r.push({ nivel: "OK", chequeo: "tools", detalle: `último registro de tools: ${String(ultimo).slice(0, 16)}` });
+      r.push({
+        nivel: "AVISO",
+        chequeo: "tools",
+        detalle:
+          `todavía no llegó ningún tool_event y la última charla fue el ${String(ultimaFuente).slice(0, 10)}. ` +
+          "Si los nodos se pegaron después de esa fecha, se despeja con la primera conversación nueva.",
+      });
     }
   }
 
