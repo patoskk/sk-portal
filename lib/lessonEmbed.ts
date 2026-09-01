@@ -52,8 +52,12 @@ html { overflow: hidden !important; }
 :root[data-sk-theme="dark"] .tip p,
 :root[data-sk-theme="dark"] .compare li,
 :root[data-sk-theme="dark"] .keys li { color: var(--ink) !important; }
+/* .tool (la tarjeta de herramienta) también trae background:#fff fijo, y su
+   texto sale de --ink, que en oscuro es CLARO: quedaba claro sobre blanco. */
 :root[data-sk-theme="dark"] .tip,
+:root[data-sk-theme="dark"] .tool,
 :root[data-sk-theme="dark"] .compare__card { background: rgba(255,255,255,.04) !important; }
+:root[data-sk-theme="dark"] .tool__row { color: var(--ink) !important; }
 :root[data-sk-theme="dark"] .tip--dato,
 :root[data-sk-theme="dark"] .compare__card.is-after { background: var(--tint) !important; }
 /* el número del paso: sobre el teal claro del modo oscuro, el blanco no se lee */
