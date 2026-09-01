@@ -249,6 +249,39 @@ npx tsx scripts/publish-insights.ts <client_id>  # publica al cliente (reviewed=
 
 **Verificación:** `npx tsx scripts/verify.ts` chequea que el usuario vea sus filas y que no haya fugas de otros clientes (RLS).
 
+Corre con la cuenta `verify@skoptimal.test`, que cuelga del **Panel de demostración**.
+Si falta (o hay que rotarla): `npx tsx scripts/verify-user.ts`. **No usar el piloto de un
+cliente real**: dar de baja a ese cliente se lleva puesta la única prueba de que el hook
+del JWT y RLS funcionan. Tampoco `demo@skoptimal.test` — su contraseña es conocida a
+propósito (`seed-demo.ts`) porque se usa para capturas y demos en vivo.
+
+## Baja de un cliente y corte del período de prueba
+
+Dos acciones en el panel **Admin**, en la fila de cada cliente. Las dos **bajan un
+respaldo JSON antes de tocar nada** (`GET /api/admin/clients/<id>/export`, que también
+sirve de preview: sus `counts` son lo que se muestra en la confirmación).
+
+**Borrar métricas…** — corta el período de prueba/garantía. Se elige una fecha y se
+borra todo lo ANTERIOR: las siete tablas diarias, `tool_events` (con el corte llevado a
+la medianoche LOCAL del cliente) y los `insights` que arrancan antes. No toca lecciones,
+novedades ni el contacto del dueño.
+
+Lo que hace que el borrado **aguante**: sube `clients.metrics_from`. Borrar filas no
+alcanza — el cómputo es incremental, pero la tabla de conversaciones del cliente nunca se
+borra, así que un recómputo completo (`update client_sources set last_synced_at = null`,
+lo que hacemos al activar tipos de conversión) reconstruiría el período entero y en
+silencio. Con el piso puesto, `computeClient` descarta cualquier día anterior antes de
+escribir. El piso **solo avanza**.
+
+**Eliminar cliente** — baja definitiva. Pide escribir el nombre exacto (se valida en el
+server, no en el navegador). Todas las tablas cuelgan de `clients(id) on delete cascade`,
+pero la cuenta en `auth.users` **no cascadea**: se borra explícitamente, o queda un acceso
+huérfano que sigue pudiendo loguearse. Un usuario con rol `admin` nunca se borra.
+**No toca la tabla de conversaciones del agente**: es la memoria cruda y borrarla es
+irreversible; si además hay que darla de baja, se hace aparte y a conciencia.
+
+Después de dar de baja: sacar `SOURCE_KEY_<ID>` de `.env.local` y de Vercel.
+
 ## Seguridad (no negociable)
 - **RLS activado en todas las tablas**; cada usuario ve solo su `client_id` (vía claim del JWT).
 - **`service_role` solo en backend** (`lib/supabase/admin.ts`, rutas de cron). El frontend usa la `anon` key.

@@ -37,7 +37,7 @@ function dias(desde: string | number): number {
 
 async function chequearCliente(
   admin: SupabaseClient,
-  c: { id: string; name: string; utc_offset: number },
+  c: { id: string; name: string; utc_offset: number; metrics_from: string | null },
   src: { supabase_url: string; table_name: string } | null,
 ): Promise<Resultado[]> {
   const r: Resultado[] = [];
@@ -131,7 +131,14 @@ async function chequearCliente(
     .limit(1);
   const ultimaFuente = (ultimaFila ?? [])[0]?.fecha as string | undefined;
 
-  if (!ultimoDato) {
+  if (!ultimoDato && c.metrics_from && dias(c.metrics_from) <= 2) {
+    // recién le borraron el histórico: hasta que corra el cron no tiene por qué haber nada
+    r.push({
+      nivel: "AVISO",
+      chequeo: "frescura",
+      detalle: `sin métricas todavía: se borró el histórico anterior al ${c.metrics_from} y el cómputo aún no corrió`,
+    });
+  } else if (!ultimoDato) {
     r.push({ nivel: "FALLA", chequeo: "frescura", detalle: "el cliente no tiene una sola fila de métricas" });
   } else if (dias(ultimoDato) > DIAS_FRESCURA) {
     r.push({ nivel: "AVISO", chequeo: "frescura", detalle: `último día con métricas: ${ultimoDato} (${dias(ultimoDato)} días)` });
@@ -147,7 +154,12 @@ async function chequearCliente(
       if (p) diasFuente.add(p.date);
     }
     const conMetricas = new Set(metricas.map((x) => x.date));
-    const sinComputar = [...diasFuente].filter((d) => !conMetricas.has(d)).sort();
+    // Los días anteriores al piso no son un agujero del cómputo: se borraron a
+    // propósito al cerrar el período de prueba. Sin esto, cobertura queda en FALLA
+    // para siempre — la fuente conserva esas conversaciones aunque las métricas no.
+    const sobrePiso = [...diasFuente].filter((d) => !c.metrics_from || d >= c.metrics_from);
+    const bajoPiso = diasFuente.size - sobrePiso.length;
+    const sinComputar = sobrePiso.filter((d) => !conMetricas.has(d)).sort();
     if (sinComputar.length) {
       r.push({
         nivel: "FALLA",
@@ -155,7 +167,13 @@ async function chequearCliente(
         detalle: `días con filas en la fuente y sin métricas: ${sinComputar.join(", ")} → correr el cómputo`,
       });
     } else {
-      r.push({ nivel: "OK", chequeo: "cobertura", detalle: `${diasFuente.size} día(s) de la fuente, todos computados` });
+      r.push({
+        nivel: "OK",
+        chequeo: "cobertura",
+        detalle:
+          `${sobrePiso.length} día(s) de la fuente, todos computados` +
+          (bajoPiso ? ` (+${bajoPiso} anteriores al piso ${c.metrics_from}, borrados a propósito)` : ""),
+      });
     }
   }
 
@@ -254,7 +272,13 @@ async function main() {
     { auth: { persistSession: false } },
   );
 
-  const { data: clientes } = await admin.from("clients").select("id,name,utc_offset").order("created_at");
+  // el reintento sin `metrics_from` (migración 0015) evita que el chequeo se calle
+  // entero por una columna que todavía no está
+  let { data: clientes, error: errCli } = await admin
+    .from("clients")
+    .select("id,name,utc_offset,metrics_from")
+    .order("created_at");
+  if (errCli) ({ data: clientes } = await admin.from("clients").select("id,name,utc_offset").order("created_at"));
   const { data: fuentes } = await admin.from("client_sources").select("client_id,supabase_url,table_name");
   const porCliente = new Map((fuentes ?? []).map((s) => [s.client_id, s]));
 
@@ -265,7 +289,7 @@ async function main() {
     console.log(`\n== ${c.name} ${src ? `(${src.table_name})` : ""}`);
     const resultados = await chequearCliente(
       admin,
-      { id: c.id, name: c.name, utc_offset: Number(c.utc_offset ?? -3) },
+      { id: c.id, name: c.name, utc_offset: Number(c.utc_offset ?? -3), metrics_from: (c.metrics_from as string | null) ?? null },
       src,
     );
     for (const x of resultados) {

@@ -13,6 +13,21 @@ interface C {
   contact_name: string | null;
   contact_email: string | null;
   notify_lessons: boolean;
+  metrics_from: string | null;
+}
+
+interface Dump {
+  counts: Record<string, number>;
+  users: { user_id: string; role: string; email: string | null }[];
+}
+
+function hoyIso(): string {
+  // hora local de Argentina: con UTC, de 21 a 24 h el default sería el día de mañana
+  return new Date(Date.now() - 3 * 3600 * 1000).toISOString().slice(0, 10);
+}
+
+function ddmm(iso: string): string {
+  return `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
 }
 
 // hace cuánto sincronizó; > 26 h = el cron diario se salteó al menos una corrida
@@ -53,6 +68,10 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [cName, setCName] = useState("");
   const [cMail, setCMail] = useState("");
+  // zona de riesgo: un solo panel abierto por vez, y nunca abierto de entrada
+  const [zona, setZona] = useState<{ id: string; modo: "metricas" | "baja" } | null>(null);
+  const [corte, setCorte] = useState(hoyIso());
+  const [nombreConfirm, setNombreConfirm] = useState("");
 
   function startEdit(c: C) {
     setEditing(c.id);
@@ -75,6 +94,101 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
       return;
     }
     setEditing(null);
+    router.refresh();
+  }
+
+  /**
+   * Baja el respaldo y devuelve el volcado. Se llama SIEMPRE antes de borrar: el
+   * archivo tiene que existir en Descargas aunque el borrado falle después.
+   * Devuelve null si algo salió mal — y entonces no se borra nada.
+   */
+  async function respaldar(c: C, before: string | null): Promise<Dump | null> {
+    const url = `/api/admin/clients/${c.id}/export${before ? `?before=${before}` : ""}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      const err = await res.text();
+      setMsg((m) => ({ ...m, [c.id]: "No se pudo bajar el respaldo: " + err }));
+      return null;
+    }
+    const texto = await res.text();
+    const objUrl = URL.createObjectURL(new Blob([texto], { type: "application/json" }));
+    const a = document.createElement("a");
+    a.href = objUrl;
+    a.download = `respaldo-${c.name.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}-${before ?? "todo"}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    // revocar en el acto puede cancelar la descarga en algunos navegadores, y todo
+    // el sentido de esto es que el archivo llegue a Descargas antes de borrar nada
+    setTimeout(() => URL.revokeObjectURL(objUrl), 60_000);
+    return JSON.parse(texto) as Dump;
+  }
+
+  function resumen(d: Dump): string {
+    return (
+      Object.entries(d.counts)
+        .filter(([, n]) => n > 0)
+        .map(([t, n]) => `  ${t}: ${n}`)
+        .join("\n") || "  (no hay filas en ese período)"
+    );
+  }
+
+  async function borrarMetricas(c: C) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(corte)) {
+      setMsg((m) => ({ ...m, [c.id]: "Fecha de corte inválida" }));
+      return;
+    }
+    setBusy(c.id);
+    setMsg((m) => ({ ...m, [c.id]: "" }));
+    const dump = await respaldar(c, corte);
+    if (!dump) return setBusy(null);
+    const ok = confirm(
+      `Se bajó el respaldo. Ahora se borra TODO lo anterior al ${ddmm(corte)} de ${c.name}:\n\n` +
+        `${resumen(dump)}\n\n` +
+        `El panel del cliente va a arrancar el ${ddmm(corte)}. No se puede deshacer (salvo con el respaldo).`,
+    );
+    if (!ok) return setBusy(null);
+    const res = await fetch(`/api/admin/clients/${c.id}/metrics?before=${corte}`, { method: "DELETE" });
+    setBusy(null);
+    if (!res.ok) {
+      const err = await res.text();
+      setMsg((m) => ({ ...m, [c.id]: "Error al borrar: " + err }));
+      return;
+    }
+    const r = (await res.json()) as { total: number; metrics_from: string };
+    setZona(null);
+    setMsg((m) => ({ ...m, [c.id]: `Borradas ${r.total} filas · métricas desde ${ddmm(r.metrics_from)}` }));
+    router.refresh();
+  }
+
+  async function eliminarCliente(c: C) {
+    setBusy(c.id);
+    setMsg((m) => ({ ...m, [c.id]: "" }));
+    const dump = await respaldar(c, null);
+    if (!dump) return setBusy(null);
+    const cuentas = dump.users.filter((u) => u.role !== "admin").map((u) => u.email ?? u.user_id);
+    const ok = confirm(
+      `Se bajó el respaldo completo. Ahora se elimina ${c.name} del portal:\n\n` +
+        `${resumen(dump)}\n\n` +
+        (cuentas.length
+          ? `Cuentas que pierden el acceso:\n  ${cuentas.join("\n  ")}\n\n`
+          : `Sin cuentas de acceso.\n\n`) +
+        `La tabla de conversaciones en Supabase NO se toca. No se puede deshacer.`,
+    );
+    if (!ok) return setBusy(null);
+    const res = await fetch(`/api/admin/clients/${c.id}`, {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ confirm: nombreConfirm }),
+    });
+    setBusy(null);
+    if (!res.ok) {
+      const err = await res.text();
+      setMsg((m) => ({ ...m, [c.id]: "Error al eliminar: " + err }));
+      return;
+    }
+    setZona(null);
+    setNombreConfirm("");
     router.refresh();
   }
 
@@ -117,6 +231,12 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
             <span style={{ color: dataBadge(c.last_data_at).dead ? "var(--warn)" : "var(--ink-soft)" }}>
               {dataBadge(c.last_data_at).text}
             </span>
+            {c.metrics_from ? (
+              <>
+                {" · "}
+                <span>métricas desde {ddmm(c.metrics_from)}</span>
+              </>
+            ) : null}
             {toolsBadge(c.last_tool_event_at, c.last_data_at) ? (
               <>
                 {" · "}
@@ -172,8 +292,107 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
                 {c.contact_email ? "Editar contacto" : "Cargar mail del dueño"}
               </button>
             )}
+            {zona?.id === c.id ? null : (
+              <>
+                <button
+                  onClick={() => {
+                    setZona({ id: c.id, modo: "metricas" });
+                    setCorte(hoyIso());
+                    setMsg((m) => ({ ...m, [c.id]: "" }));
+                  }}
+                  style={{ ...linkBtn, color: "var(--ink-soft)" }}
+                >
+                  Borrar métricas…
+                </button>
+                <button
+                  onClick={() => {
+                    setZona({ id: c.id, modo: "baja" });
+                    setNombreConfirm("");
+                    setMsg((m) => ({ ...m, [c.id]: "" }));
+                  }}
+                  style={{ ...linkBtn, color: "var(--warn)" }}
+                >
+                  Eliminar cliente
+                </button>
+              </>
+            )}
             {msg[c.id] ? <span style={{ fontSize: 12, color: "var(--warn)" }}>{msg[c.id]}</span> : null}
           </div>
+
+          {/* Zona de riesgo. Los dos flujos bajan el respaldo ANTES de borrar. */}
+          {zona?.id === c.id ? (
+            <div
+              style={{
+                marginTop: 10,
+                padding: 12,
+                border: "1px solid var(--line)",
+                borderRadius: 10,
+                background: "var(--tint)",
+              }}
+            >
+              {zona.modo === "metricas" ? (
+                <>
+                  <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Borrar métricas anteriores a…</div>
+                  <p style={{ fontSize: 12.5, color: "var(--ink-soft)", margin: "0 0 10px" }}>
+                    Cierra el período de prueba: se borra todo lo anterior a esa fecha y el panel del cliente
+                    arranca ahí. Las lecciones, las novedades y el contacto del dueño no se tocan.
+                  </p>
+                  <input
+                    type="date"
+                    value={corte}
+                    max={hoyIso()}
+                    onChange={(e) => setCorte(e.target.value)}
+                    style={{ ...field, maxWidth: 200 }}
+                  />
+                  <div style={{ display: "flex", gap: 14 }}>
+                    <button
+                      onClick={() => borrarMetricas(c)}
+                      disabled={busy === c.id}
+                      style={{ ...linkBtn, color: "var(--warn)" }}
+                    >
+                      {busy === c.id ? "Borrando…" : "Bajar respaldo y borrar"}
+                    </button>
+                    <button onClick={() => setZona(null)} style={{ ...linkBtn, color: "var(--ink-soft)" }}>
+                      Cancelar
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4, color: "var(--warn)" }}>
+                    Eliminar {c.name} del portal
+                  </div>
+                  <p style={{ fontSize: 12.5, color: "var(--ink-soft)", margin: "0 0 10px" }}>
+                    Se borran sus métricas, sus insights, sus novedades, sus lecciones propias y las cuentas
+                    que entran a ver su panel. La tabla de conversaciones en Supabase queda intacta. Para
+                    confirmar, escribí el nombre exacto del cliente.
+                  </p>
+                  <input
+                    value={nombreConfirm}
+                    onChange={(e) => setNombreConfirm(e.target.value)}
+                    placeholder={c.name}
+                    style={field}
+                  />
+                  <div style={{ display: "flex", gap: 14 }}>
+                    <button
+                      onClick={() => eliminarCliente(c)}
+                      disabled={busy === c.id || nombreConfirm.trim() !== c.name.trim()}
+                      style={{
+                        ...linkBtn,
+                        color: nombreConfirm.trim() === c.name.trim() ? "var(--warn)" : "var(--ink-soft)",
+                        cursor: nombreConfirm.trim() === c.name.trim() ? "pointer" : "not-allowed",
+                      }}
+                    >
+                      {busy === c.id ? "Eliminando…" : "Bajar respaldo y eliminar"}
+                    </button>
+                    <button onClick={() => setZona(null)} style={{ ...linkBtn, color: "var(--ink-soft)" }}>
+                      Cancelar
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : null}
         </li>
       ))}
     </ul>

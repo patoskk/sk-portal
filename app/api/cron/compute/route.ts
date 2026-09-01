@@ -14,9 +14,11 @@ export async function GET(req: NextRequest) {
   }
 
   const admin = createAdminClient();
-  const { data: sources, error } = await admin
-    .from("client_sources")
-    .select("client_id, supabase_url, table_name, last_synced_at, clients(utc_offset, conversion_kinds)");
+  const cols = "client_id, supabase_url, table_name, last_synced_at, clients(utc_offset, conversion_kinds";
+  // Sin este reintento, un deploy anterior a la migración 0015 deja el cron en 500
+  // y NINGÚN cliente computa: el panel de los cuatro se congela sin un solo aviso.
+  let { data: sources, error } = await admin.from("client_sources").select(`${cols}, metrics_from)`);
+  if (error) ({ data: sources, error } = await admin.from("client_sources").select(`${cols})`));
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   const results: Record<string, unknown> = {};
@@ -24,7 +26,7 @@ export async function GET(req: NextRequest) {
     try {
       const key = resolveSourceKey(src.client_id);
       if (!key) throw new Error("sin credencial de lectura (SOURCE_DEFAULT_KEY)");
-      const cfg = src.clients as { utc_offset?: number; conversion_kinds?: unknown } | null;
+      const cfg = src.clients as { utc_offset?: number; conversion_kinds?: unknown; metrics_from?: string | null } | null;
       const utc_offset = Number(cfg?.utc_offset ?? -3);
       results[src.client_id] = await computeClient(admin, {
         client_id: src.client_id,
@@ -34,6 +36,8 @@ export async function GET(req: NextRequest) {
         key,
         last_synced_at: src.last_synced_at,
         conversion_kinds: cfg?.conversion_kinds,
+        // sin esto, un recómputo completo revive el período que se borró desde Admin
+        metrics_from: cfg?.metrics_from ?? null,
       });
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);

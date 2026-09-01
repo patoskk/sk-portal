@@ -16,14 +16,32 @@ export interface ClientRow {
   contact_name: string | null;
   contact_email: string | null;
   notify_lessons: boolean;
+  // piso de métricas: se cerró el período de prueba y lo anterior se borró
+  metrics_from: string | null;
+}
+
+/** Fila cruda de `clients`: `metrics_from` es opcional porque el select puede caer al de respaldo. */
+interface RawClient {
+  id: string;
+  name: string;
+  rubro: string;
+  contact_name: string | null;
+  contact_email: string | null;
+  notify_lessons: boolean | null;
+  metrics_from?: string | null;
+  client_sources: unknown;
 }
 
 export async function getClients(): Promise<ClientRow[]> {
   const admin = createAdminClient();
-  const { data } = await admin
-    .from("clients")
-    .select("id,name,rubro,contact_name,contact_email,notify_lessons,client_sources(table_name,last_synced_at)")
-    .order("created_at");
+  const cols = "id,name,rubro,contact_name,contact_email,notify_lessons,client_sources(table_name,last_synced_at)";
+  // Si el deploy llega antes que la migración 0015, `metrics_from` no existe y el
+  // select entero falla: sin este reintento el panel Admin se queda SIN CLIENTES
+  // (no vacío por error, vacío a secas — la falla más silenciosa que hay acá).
+  const conPiso = await admin.from("clients").select(`${cols},metrics_from`).order("created_at");
+  const data = (conPiso.error
+    ? (await admin.from("clients").select(cols).order("created_at")).data
+    : conPiso.data) as unknown as RawClient[] | null;
   const lastData = new Map<string, string>();
   const lastTool = new Map<string, string>();
   await Promise.all(
@@ -68,6 +86,7 @@ export async function getClients(): Promise<ClientRow[]> {
       contact_name: (c.contact_name as string | null) ?? null,
       contact_email: (c.contact_email as string | null) ?? null,
       notify_lessons: (c.notify_lessons as boolean | null) ?? true,
+      metrics_from: (c.metrics_from as string | null) ?? null,
     };
   });
 }

@@ -68,6 +68,8 @@ interface ClientRowData {
   name?: string;
   conversion_label?: string;
   conversion_kinds?: unknown;
+  /** Piso de métricas: antes de esta fecha se borró el período de prueba. */
+  metrics_from?: string | null;
 }
 
 // Fila del cliente: la propia (RLS) o la elegida por un admin en "ver como cliente".
@@ -121,12 +123,14 @@ export async function getDashboardData(
       .order("generated_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    clientQuery(sb, asClientId, "name,conversion_label,conversion_kinds"),
+    clientQuery(sb, asClientId, "name,conversion_label,conversion_kinds,metrics_from"),
     getLastSyncedAt(asClientId), // su mini-cadena corre en paralelo con todo lo demás
   ]);
 
-  // Si el deploy llega antes que la migración 0010, `conversion_kinds` no existe:
-  // se reintenta sin esa columna para no dejar el panel sin nombre ni etiqueta.
+  // Si el deploy llega antes que la migración (0010 `conversion_kinds`, 0015
+  // `metrics_from`), la columna no existe y el select entero falla: se reintenta sin
+  // ellas para no dejar el panel sin nombre ni etiqueta. Sin piso, el rango no se
+  // recorta — que es exactamente el comportamiento de antes.
   const client = clientRow.error
     ? ((await clientQuery(sb, asClientId, "name,conversion_label")).data as ClientRowData | null)
     : (clientRow.data as ClientRowData | null);
@@ -151,8 +155,12 @@ export async function getDashboardData(
 
   // Eje de días denso del rango: las sparklines se arman contra ESTA lista, así
   // un día sin fila en metrics_daily se dibuja en cero en vez de desaparecer.
+  // Arranca en el PISO si el rango pedido es anterior: los días previos al corte no
+  // están en cero, están borrados — dibujarlos parecería un agente que dejó de andar.
+  const metricsFrom = client?.metrics_from ?? null;
+  const axisFrom = metricsFrom && metricsFrom > from ? metricsFrom : from;
   const dayAxis: string[] = [];
-  for (let t = Date.parse(from); t <= Date.parse(to); t += DAY) {
+  for (let t = Date.parse(axisFrom); t <= Date.parse(to); t += DAY) {
     dayAxis.push(new Date(t).toISOString().slice(0, 10));
   }
   const seriesOf = (col: string) => {
@@ -251,7 +259,7 @@ export async function getDashboardData(
           proximaEtapa: ins.proxima_etapa ?? undefined,
         }
       : null,
-    period: range,
+    period: { from: axisFrom, to },
   };
 }
 

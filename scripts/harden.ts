@@ -3,27 +3,14 @@
 //     y la guarda en .env.local como TEST_USER_EMAIL / TEST_USER_PASSWORD
 //  2. pone el bucket `lessons` en privado (se sirve vía signed URLs desde la app)
 //   npx tsx scripts/harden.ts [email-usuario-prueba]
-import { loadEnv } from "./loadEnv.ts";
+import { loadEnv, upsertEnvLocal } from "./loadEnv.ts";
 loadEnv();
 import { createClient } from "@supabase/supabase-js";
 import { randomBytes } from "node:crypto";
-import { readFileSync, writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
 
-const TEST_EMAIL = process.argv[2] || process.env.TEST_USER_EMAIL || "piloto.elbuho@skoptimal.test";
-
-function upsertEnvLocal(vars: Record<string, string>) {
-  const path = join(dirname(fileURLToPath(import.meta.url)), "..", ".env.local");
-  let txt = readFileSync(path, "utf8");
-  for (const [k, v] of Object.entries(vars)) {
-    const line = `${k}=${v}`;
-    txt = new RegExp(`^${k}=`, "m").test(txt)
-      ? txt.replace(new RegExp(`^${k}=.*$`, "m"), line)
-      : txt.trimEnd() + `\n${line}\n`;
-  }
-  writeFileSync(path, txt);
-}
+// El default NO puede ser el piloto de un cliente: se va con el cliente. La cuenta
+// de verificación se crea con scripts/verify-user.ts y cuelga del panel demo.
+const TEST_EMAIL = process.argv[2] || process.env.TEST_USER_EMAIL || "verify@skoptimal.test";
 
 async function main() {
   const admin = createClient(

@@ -14,6 +14,12 @@ export interface SourceDescriptor {
   last_synced_at?: string | null;
   /** `clients.conversion_kinds` crudo: separa pedidos de turnos. Sin esto, una sola conversión. */
   conversion_kinds?: unknown;
+  /**
+   * `clients.metrics_from`: piso de métricas (YYYY-MM-DD). Los días anteriores NO se
+   * escriben. Sin esto, un recómputo completo reconstruye el período que el panel
+   * Admin borró — la fuente sigue teniendo esas conversaciones.
+   */
+  metrics_from?: string | null;
 }
 
 // Key de lectura de la fuente. Todas las tablas en un mismo proyecto => key compartida
@@ -120,6 +126,13 @@ export async function computeClient(admin: SupabaseClient, src: SourceDescriptor
 
   const kinds = parseConversionKinds(src.conversion_kinds);
   const out = computeDaily(rows, src.utc_offset, kinds, toolEvents);
+  // Piso: los días anteriores a `metrics_from` no se escriben NUNCA. Se filtra acá,
+  // en el único punto por donde pasan todas las escrituras (cron y alta), y no en
+  // cada upsert: una salida nueva que se olvide del filtro reviviría el período borrado.
+  const floor = src.metrics_from ?? null;
+  const overFloor = <T extends { date: string }>(arr: T[]) =>
+    floor ? arr.filter((r) => r.date >= floor) : arr;
+  const conversionsDaily = overFloor(out.conversionsDaily);
   const withId = <T,>(arr: T[]) => arr.map((r) => ({ ...r, client_id: src.client_id }));
 
   // Días que salieron SOLO de tool_events (limpiaron la tabla de memoria antes de
@@ -128,9 +141,8 @@ export async function computeClient(admin: SupabaseClient, src: SourceDescriptor
   // calculadas. Las conversiones tampoco se tocan — sin las filas no se puede
   // recalcular la señal por mensaje, y bajarlas sería peor que dejarlas.
   const soloTools = new Set(out.daysFromEventsOnly);
-  const metricsCompletas = out.metricsDaily.filter((r) => !soloTools.has(r.date));
-  const metricsParciales = out.metricsDaily
-    .filter((r) => soloTools.has(r.date))
+  const metricsCompletas = overFloor(out.metricsDaily.filter((r) => !soloTools.has(r.date)));
+  const metricsParciales = overFloor(out.metricsDaily.filter((r) => soloTools.has(r.date)))
     .map((r) => ({
       date: r.date,
       tool_calls: r.tool_calls,
@@ -144,18 +156,18 @@ export async function computeClient(admin: SupabaseClient, src: SourceDescriptor
     metricsParciales.length
       ? admin.from("metrics_daily").upsert(withId(metricsParciales), { onConflict: "client_id,date" })
       : Promise.resolve(),
-    out.conversionsDaily.length
-      ? admin.from("conversions_daily").upsert(withId(out.conversionsDaily), { onConflict: "client_id,date,kind" })
+    conversionsDaily.length
+      ? admin.from("conversions_daily").upsert(withId(conversionsDaily), { onConflict: "client_id,date,kind" })
       : Promise.resolve(),
-    admin.from("tool_usage_daily").upsert(withId(out.toolUsage), { onConflict: "client_id,date,tool" }),
-    admin.from("tool_queries_daily").upsert(withId(out.toolQueries), { onConflict: "client_id,date,query" }),
-    admin.from("activity_hourly").upsert(withId(out.activityHourly), { onConflict: "client_id,date,hour" }),
-    admin.from("intent_daily").upsert(withId(out.intentDaily), { onConflict: "client_id,date,intent" }),
+    admin.from("tool_usage_daily").upsert(withId(overFloor(out.toolUsage)), { onConflict: "client_id,date,tool" }),
+    admin.from("tool_queries_daily").upsert(withId(overFloor(out.toolQueries)), { onConflict: "client_id,date,query" }),
+    admin.from("activity_hourly").upsert(withId(overFloor(out.activityHourly)), { onConflict: "client_id,date,hour" }),
+    admin.from("intent_daily").upsert(withId(overFloor(out.intentDaily)), { onConflict: "client_id,date,intent" }),
   ]);
   await admin.from("client_sources").update({ last_synced_at: new Date().toISOString() }).eq("client_id", src.client_id);
 
   return {
-    days: out.metricsDaily.length,
+    days: metricsCompletas.length + metricsParciales.length,
     rows: rows.length,
     toolEvents: toolEvents.length,
     daysOnlyTools: out.daysFromEventsOnly.length,
