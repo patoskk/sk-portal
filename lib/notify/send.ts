@@ -13,11 +13,23 @@ export interface OutgoingRecipient {
   text: string;
 }
 
+/**
+ * `lesson_id` es la REFERENCIA del envío: n8n no la interpreta, solo la devuelve en el callback de cada
+ * mail. Para un aviso de lección es el uuid de la lección; para el resumen mensual de novedades es
+ * `digest:YYYY-MM` (ver digestRef). Así el mismo workflow de Gmail manda los dos sin cambiarle nada, y
+ * /api/notify/callback sabe en qué log anotar el resultado.
+ */
 export interface NotifyPayload {
   lesson_id: string;
   lesson_title: string;
   test: boolean;
   recipients: OutgoingRecipient[];
+}
+
+export const DIGEST_REF_PREFIX = "digest:";
+
+export function digestRef(period: string): string {
+  return `${DIGEST_REF_PREFIX}${period}`;
 }
 
 /** URL pública del portal, sin barra final. */

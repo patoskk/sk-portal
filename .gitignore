@@ -8,3 +8,7 @@ out/
 .DS_Store
 next-env.d.ts
 .vercel
+
+# automatizaciones de n8n: lo generado y los backups de lo que se pisó (se regeneran)
+n8n/automatizaciones/dist/
+n8n/automatizaciones/backups/

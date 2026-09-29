@@ -1,0 +1,29 @@
+{
+  "_que_es": "Lo que build.mjs mete en los workflows. Sin secretos: el AUTOMATION_SECRET vive en una credencial de n8n (httpHeaderAuth) y en Vercel.",
+  "portal_url": "https://portal.skoptimal.com",
+  "pato_chat": "5851465737",
+  "pato_email": "patoskenasi@gmail.com",
+  "modelo": "claude-opus-5-5",
+  "_precios": "USD por millón de tokens de claude-opus-5-5 (skill claude-api, 28/09/2026). La escritura de caché de 5 minutos es 1,25x la entrada. Las búsquedas web se informan como cantidad, sin precio.",
+  "precios": { "entrada": 4, "salida": 20, "cache_lectura": 0.2, "cache_escritura": 5 },
+  "zona": "America/Argentina/Buenos_Aires",
+  "utc_offset_horas": -3,
+  "temas_bajo_umbral": 6,
+  "mail_desde_hora": 9,
+  "mail_hasta_hora": 21,
+  "credenciales": {
+    "telegram": "Vigilante Telegram",
+    "anthropic": "Anthropic SK Optimal",
+    "gmail": "Gmail OA",
+    "portal": "SK Portal — Automatizaciones"
+  },
+  "workflows": {
+    "temas": "SK — Lecciones: temas del lunes",
+    "bot": "SK — Bot de Pato",
+    "escribir": "SK — Lecciones: escribir y publicar",
+    "resumen": "SK — Novedades: resumen del mes",
+    "errores": "SK — Avisarme si algo falla",
+    "aviso": "SK — Aviso de lección nueva",
+    "recordatorio_viejo": "Recordatorio Lecciones"
+  }
+}

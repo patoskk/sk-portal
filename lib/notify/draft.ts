@@ -1,8 +1,10 @@
-// Claude redacta el copy del aviso leyendo la lección. Pato lo EDITA en pantalla
-// antes de enviar (gate humano obligatorio) — esto es un borrador, no un envío.
+// Claude redacta el copy del aviso leyendo la lección. Desde /admin, Pato lo EDITA en
+// pantalla antes de enviar. En la lección automática de los lunes (/api/automation)
+// este borrador sale tal cual: por decisión de Pato (28/09) no hay revisión humana.
 // Mismo patrón que lib/insights/generate.ts: SDK oficial + structured outputs
 // (JSON garantizado por schema, sin parseo por regex) y thinking desactivado.
 import Anthropic from "@anthropic-ai/sdk";
+import { docFromHtml, docToText } from "@/lib/lessons/docText";
 
 export const DRAFT_MODEL = "claude-sonnet-5";
 
@@ -52,9 +54,17 @@ const MAX_WHY = 3;
 
 const MAX_CHARS = 8000; // el cuerpo de la lección recortado: alcanza y sobra
 
-/** HTML de la lección -> texto plano legible para el modelo. */
+/**
+ * HTML de la lección -> texto plano legible para el modelo.
+ *
+ * Primero busca el `window.DOC` de nutricion-ia: esas lecciones tienen TODO el contenido adentro de un
+ * <script>, y limpiar el HTML sacando los scripts dejaba solo el encabezado y el pie (el borrador salía
+ * del título solo). Si no hay DOC (un HTML hecho a mano), limpia el HTML como antes.
+ */
 export function lessonToText(body: string | null): string {
   if (!body) return "";
+  const doc = docFromHtml(body);
+  if (doc) return docToText(doc).slice(0, MAX_CHARS);
   return body
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<script[\s\S]*?<\/script>/gi, " ")

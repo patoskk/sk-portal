@@ -1,0 +1,1416 @@
+[
+  {
+    "title": "Cómo pedirle las cosas a la IA correctamente",
+    "topic": "primeros-pasos",
+    "published_at": "2026-06-30",
+    "doc": {
+      "modo": "deep-dive",
+      "eyebrow": "GUÍA DE IA PARA TU NEGOCIO",
+      "titulo": "Cómo pedirle a la IA para que salga bien a la primera",
+      "subtitulo": "El secreto no es la herramienta: es cómo se la pedís. Y se aprende en cinco minutos.",
+      "lectura": "5 min de lectura",
+      "intro": "Quizás ya probaste ChatGPT y la respuesta te salió genérica o medio para cualquier lado. Casi siempre no es culpa de la IA: es que le pedimos poco. Le pasa a todo el mundo al principio. La buena noticia es que pedir bien es una sola fórmula simple, y una vez que la agarrás no la soltás más.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "Qué es un \"prompt\", en palabras simples",
+          "parrafos": [
+            "**Un \"prompt\" es simplemente lo que vos le escribís a la IA: la orden, con tus palabras.** No hay nada técnico atrás. Si le escribís \"resumime esto\", eso es un prompt.",
+            "La clave es esta: **la IA no adivina, hace lo que le pedís.** Si le pedís poco, te da algo genérico. Si le das contexto, te da algo que parece hecho a tu medida. Es igual que con un empleado nuevo: cuanto mejor le explicás la tarea, mejor te la hace."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "dinero",
+          "titulo": "Por qué te conviene aprender esto",
+          "parrafos": [
+            "**La diferencia entre un pedido flojo y uno bueno es la diferencia entre perder el tiempo y resolverlo en 30 segundos.** Mucha gente prueba la IA una vez, le sale algo soso y abandona pensando \"no es para mí\".",
+            "Con la fórmula de abajo, el mismo ChatGPT que te daba respuestas genéricas te redacta el aviso a tus clientes, te contesta el mensaje difícil de un proveedor o te resume una lista de precios de 200 productos — y suena a vos, no a robot."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "check",
+          "titulo": "La fórmula: contexto + qué querés + cómo",
+          "parrafos": [
+            "**Un buen pedido tiene tres partes.** No hace falta que las memorices: con que estén, alcanza.",
+            "**1) Contexto** — quién sos y para qué es. \"Tengo una distribuidora de bebidas, le escribo a clientes mayoristas.\"",
+            "**2) Qué querés** — la tarea concreta. \"Escribime un mensaje para avisar que repusimos stock y reactivar pedidos.\"",
+            "**3) Cómo** — el tono y el largo. \"Cortito y profesional, para mandar por WhatsApp, sin que parezca publicidad.\""
+          ]
+        },
+        {
+          "tipo": "comparacion",
+          "titulo": "El mismo pedido, antes y después",
+          "antes": {
+            "titulo": "Pedido flojo",
+            "items": [
+              "\"Escribime una promo.\"",
+              "Resultado: genérico, frío, sirve para cualquiera y para nadie",
+              "Terminás reescribiéndolo vos igual"
+            ]
+          },
+          "despues": {
+            "titulo": "Pedido con la fórmula",
+            "items": [
+              "\"Tengo una distribuidora. Escribime un WhatsApp cortito y profesional para avisar a mis clientes mayoristas que repusimos stock, sin que parezca publicidad.\"",
+              "Resultado: listo para copiar y mandar",
+              "Lo ajustás en 10 segundos y va"
+            ]
+          }
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo probarlo hoy (sin saber nada de tecnología)",
+          "pasos": [
+            {
+              "t": "Pensá una tarea chica y real",
+              "d": "Algo que harías igual hoy: una respuesta a un cliente, el texto de un aviso, resumir un audio largo de un proveedor."
+            },
+            {
+              "t": "Escribila con las tres partes",
+              "d": "Quién sos, qué querés y cómo lo querés. Todo junto, como si se lo contaras a una persona."
+            },
+            {
+              "t": "Leé lo que te devolvió y pedile un ajuste",
+              "d": "Si no te cierra, decíle \"hacelo más corto\" o \"más informal\". Va corrigiendo sobre la misma charla."
+            },
+            {
+              "t": "Guardá el que te funcionó",
+              "d": "Cuando un pedido te sale redondo, copialo en una nota del teléfono. La próxima solo cambiás los datos."
+            }
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "El error más común al empezar",
+          "texto": "Pensar que con escribir dos palabras alcanza, y rendirse cuando sale genérico. La IA no lee la mente: lo que para vos es obvio (que tenés una distribuidora, que es para tus clientes mayoristas) hay que decírselo. Diez segundos más de contexto cambian por completo el resultado."
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "Tomá una sola tarea que harías igual —una promo, una respuesta difícil— y pedísela a ChatGPT con las tres partes: quién sos, qué querés y cómo. Compará lo que sale con lo que hubieras escrito vos. Esa es toda la diferencia."
+        },
+        {
+          "tipo": "cita",
+          "texto": "No le hablás a una máquina: le explicás una tarea a alguien que nunca se cansa. Cuanto mejor la explicás, mejor sale.",
+          "autor": ""
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "No hace falta que te salga perfecto a la primera: pedir bien se agarra probando. Empezá por una tarea chica esta semana y vas a ver cómo cambia. Cualquier duda que te surja, escribinos — para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  },
+  {
+    "title": "Cómo empezar con ChatGPT",
+    "topic": "primeros-pasos",
+    "published_at": "2026-06-30",
+    "doc": {
+      "modo": "deep-dive",
+      "eyebrow": "GUÍA SEMANAL DE IA · CÓMO EMPEZAR CON CHATGPT",
+      "titulo": "Cómo usar ChatGPT sin saber nada de tecnología",
+      "subtitulo": "Un asistente gratis que escribe, resume y resuelve por vos. Lo único que tenés que saber es pedirle bien.",
+      "lectura": "5 min de lectura",
+      "intro": "Seguro escuchaste hablar de ChatGPT y pensaste \"eso es para gente que sabe de computación\". No. Si sabés mandar un mensaje de WhatsApp, ya sabés usarlo. Te muestro cómo, paso a paso.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "Qué es, en palabras simples",
+          "parrafos": [
+            "**ChatGPT es un asistente con el que charlás escribiendo.** Le explicás lo que necesitás con tus propias palabras —como si le hablaras a un empleado— y te lo resuelve al toque: te redacta un mensaje, te resume un texto largo, te tira ideas.",
+            "No hay que instalar nada ni saber comandos raros. Entrás a una página, escribís, y listo. Y la versión que alcanza para casi todo es **gratis**."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "dinero",
+          "titulo": "Por qué te conviene",
+          "parrafos": [
+            "**Te saca de encima el trabajo aburrido de escribir.** Esas tareas que te comen tiempo —contestar una consulta difícil, armar el texto de una promo, pasar en limpio una idea— pasan de 20 minutos a 2.",
+            "No te reemplaza a vos ni a tu gente: te saca lo repetitivo para que uses tu tiempo en lo que de verdad importa, que es atender y vender."
+          ]
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo empezar hoy",
+          "pasos": [
+            {
+              "t": "Entrá a la página",
+              "d": "Abrí chatgpt.com en el celular o la computadora. Podés crear una cuenta gratis con tu mail."
+            },
+            {
+              "t": "Escribile lo que necesitás",
+              "d": "En el recuadro de abajo, pedile algo con tus palabras. Tal cual le hablarías a una persona."
+            },
+            {
+              "t": "Leé lo que te devuelve",
+              "d": "En unos segundos te responde. Si no te gustó, escribile \"hacelo más corto\" o \"más simple\" y lo rehace."
+            },
+            {
+              "t": "Copiá y usalo",
+              "d": "Cuando quede como querés, lo copiás y lo pegás donde lo necesites: WhatsApp, un cartel, un mail."
+            }
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "chat",
+          "titulo": "El secreto: pedile como a un empleado nuevo",
+          "parrafos": [
+            "**Cuanto mejor le explicás, mejor te responde.** A un empleado que recién entra no le decís \"hacé algo\": le contás qué vendés, a quién y cómo querés que suene. Con ChatGPT es igual."
+          ]
+        },
+        {
+          "tipo": "comparacion",
+          "titulo": "Cómo le pedís cambia todo",
+          "antes": {
+            "titulo": "Pedido flojo",
+            "items": [
+              "\"Escribime algo para una promo.\"",
+              "No sabe qué vendés, ni a quién, ni el tono: te da algo genérico que no sirve."
+            ]
+          },
+          "despues": {
+            "titulo": "Pedido que funciona",
+            "items": [
+              "\"Tengo un negocio. Escribime un mensaje corto y cálido para WhatsApp ofreciendo un 20% off este fin de semana.\"",
+              "Le diste rubro, canal, tono y dato: te devuelve algo listo para mandar."
+            ]
+          }
+        },
+        {
+          "tipo": "claves",
+          "icono": "check",
+          "titulo": "Tres cosas que le podés pedir esta misma semana",
+          "items": [
+            "**Redactar una respuesta difícil:** \"Un cliente se quejó por una demora. Escribime una respuesta amable y profesional.\"",
+            "**Resumir algo largo:** pegale un texto y pedile \"resumime esto en 3 puntos\".",
+            "**Mejorar un mensaje tuyo:** \"Hacé que este texto suene más claro y cordial\" y pegás el tuyo."
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "El error más común",
+          "texto": "Copiar y pegar sin leer. ChatGPT a veces se equivoca o inventa un dato (un precio, una fecha). Usalo como un borrador rápido: lo lees, lo corregís con tu criterio, y recién ahí lo mandás. La última palabra siempre es tuya."
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "Entrá una vez a chatgpt.com y pedile que te escriba la respuesta a la pregunta que más te repiten tus clientes. Solo con eso ya vas a entender de qué se trata."
+        },
+        {
+          "tipo": "cita",
+          "texto": "No tenés que entender cómo funciona para que te sirva. Lo abrís, le hablás, y te ayuda. Así de simple.",
+          "autor": ""
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "No hace falta entenderlo todo de una. Abrí ChatGPT, probá la acción de arriba y vas a ver que es más simple de lo que parece. Cualquier duda que te surja, escribinos — para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  },
+  {
+    "title": "Cómo hacer un flyer (sin diseñador)",
+    "topic": "comunicacion",
+    "published_at": "2026-07-02",
+    "doc": {
+      "modo": "deep-dive",
+      "eyebrow": "GUÍA DE IA PARA TU NEGOCIO",
+      "titulo": "Un flyer de promo en 5 minutos, sin diseñador",
+      "subtitulo": "Cómo armar la imagen de una promoción con IA, aunque nunca hayas abierto un programa de diseño.",
+      "lectura": "4 min de lectura",
+      "intro": "Cada vez que querés anunciar una promo aparece el mismo problema: o esperás a que el diseñador tenga un rato, o lo resolvés con una foto sacada del celular que no termina de quedar bien. Hoy hay una forma más simple, y no necesitás saber nada de diseño.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "Qué es esto, en simple",
+          "parrafos": [
+            "**La IA hoy también hace imágenes.** Le describís con tus palabras lo que querés —por ejemplo, un flyer para una promo de 3x2— y en segundos te arma una propuesta lista para usar.",
+            "No reemplaza a un diseñador para tu logo o tu identidad de marca. Pero para lo del día a día —una promo, un aviso, una historia de Instagram— te saca del apuro sin depender de nadie."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "reloj",
+          "titulo": "Por qué te conviene",
+          "parrafos": [
+            "**Es tiempo que dejás de perder.** El encargado de tu tienda online que hoy pierde media hora buscando una imagen para la promo del fin de semana la resuelve en cinco minutos, sin frenar a nadie del equipo.",
+            "Y no es un gasto nuevo: la herramienta que vamos a usar tiene una versión gratis que alcanza de sobra para esto."
+          ]
+        },
+        {
+          "tipo": "comparacion",
+          "titulo": "Cómo cambia el armado de una promo",
+          "antes": {
+            "titulo": "Hoy",
+            "items": [
+              "Esperás a que el diseñador tenga un hueco",
+              "O improvisás con una foto del celular",
+              "La promo sale tarde o sale fea"
+            ]
+          },
+          "despues": {
+            "titulo": "Con IA",
+            "items": [
+              "Lo armás vos en minutos",
+              "Queda prolijo y con tu texto",
+              "Lo publicás cuando lo necesitás"
+            ]
+          }
+        },
+        {
+          "tipo": "herramienta",
+          "nombre": "Canva (con IA)",
+          "precio": "Tiene versión gratis",
+          "que": "Un programa de diseño online, muy fácil de usar, que ahora trae IA adentro.",
+          "como": "Le decís qué querés y su función Diseño Mágico te arma el flyer; después le cambiás textos y colores a mano.",
+          "para": "Flyers de promos, historias de Instagram, avisos y carteles."
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo armar tu primer flyer hoy",
+          "pasos": [
+            {
+              "t": "Entrá a Canva",
+              "d": "Abrí canva.com o la app y creá una cuenta gratis con tu mail."
+            },
+            {
+              "t": "Pedile lo que querés",
+              "d": "Buscá Diseño Mágico y escribí, por ejemplo: flyer para una promo 3x2 en vinos, estilo elegante. Cuanto más concreto, mejor sale."
+            },
+            {
+              "t": "Elegí y ajustá",
+              "d": "Te muestra varias opciones. Elegí la que más te gusta y cambiale el texto por el tuyo: precio, fecha y tu logo."
+            },
+            {
+              "t": "Descargá y publicá",
+              "d": "Tocá Compartir y después Descargar. Ya lo podés mandar por WhatsApp o subir a tus redes."
+            }
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "El error más común",
+          "texto": "No dejes que la IA escriba el texto adentro de la imagen. Cuando genera letras dentro de una foto, casi siempre salen mal escritas o deformadas. Escribí vos el texto importante —el precio, el nombre de la promo— encima del diseño. Es un minuto y queda perfecto."
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "Elegí una promo real que quieras anunciar y armá un flyer en Canva con Diseño Mágico. Aunque después no lo publiques, vas a ver lo rápido que sale."
+        },
+        {
+          "tipo": "claves",
+          "icono": "check",
+          "titulo": "Para llevarte",
+          "items": [
+            "La IA hace imágenes decentes en minutos, y gratis.",
+            "Sirve para lo del día a día (promos, avisos), no para tu identidad de marca.",
+            "El texto importante, escribilo vos encima: la IA lo deforma."
+          ]
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "No hace falta que te salga perfecto la primera vez. Probá con una promo, jugá un poco con las palabras que le pedís y vas a ver que es más simple de lo que parece. Cualquier duda que te surja, escribinos — para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  },
+  {
+    "title": "Qué NO conviene darle a la IA",
+    "topic": "criterio",
+    "published_at": "2026-07-11",
+    "doc": {
+      "modo": "deep-dive",
+      "eyebrow": "GUÍA DE IA PARA TU NEGOCIO",
+      "titulo": "Qué NO conviene darle a la IA (y cómo cuidarte sin complicarte)",
+      "subtitulo": "Una lista corta de sentido común para usar la IA tranquilo y sin exponer datos de tu negocio ni de tus clientes.",
+      "lectura": "4 min de lectura",
+      "intro": "Ya usás la IA para redactar, resumir y ordenar cosas del día a día, y está muy bien. Pero hay un puñado de datos que conviene no pegarle nunca. No es nada complicado ni te va a frenar: es una regla simple para trabajar tranquilo y cuidar la confianza que tus clientes depositaron en vos.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "Qué pasa cuando le pegás algo a la IA",
+          "parrafos": [
+            "**Cuando le escribís a una IA online, eso sale de tu computadora y viaja a los servidores de otra empresa.** No es un cajón con llave que tenés en tu oficina: es más parecido a mandarle un mensaje a una empresa de afuera para que te ayude.",
+            "En la mayoría de los casos no pasa absolutamente nada. Pero por las dudas, con la información delicada conviene tratarla como tratás la caja fuerte del negocio: no la dejás a la vista de cualquiera."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "persona",
+          "titulo": "Por qué te conviene cuidarlo",
+          "parrafos": [
+            "**Los datos de tus clientes no son tuyos: son de ellos, y vos sos el responsable de cuidarlos.** Un teléfono, una dirección o un dato bancario que se filtra es un problema serio de confianza —y, según el rubro, también legal.",
+            "Pensá una inmobiliaria que pega la ficha completa de un interesado para que la IA le arme un mensaje, o un estudio contable que sube un contrato con datos sensibles. Se puede hacer lo mismo sin exponer nada: solo hay que sacarle los datos personales antes."
+          ]
+        },
+        {
+          "tipo": "claves",
+          "icono": "aviso",
+          "titulo": "Lo que conviene NO pegarle",
+          "items": [
+            "Datos personales de clientes: nombre completo junto a DNI, teléfono o dirección exacta.",
+            "Claves y contraseñas de cualquier sistema, correo o cuenta.",
+            "Datos bancarios o de tarjetas: números de cuenta, CBU, tarjetas.",
+            "Contratos o documentos confidenciales tal cual, con nombres y cláusulas privadas.",
+            "Información interna sensible: tus márgenes, acuerdos con proveedores, precios especiales."
+          ]
+        },
+        {
+          "tipo": "comparacion",
+          "titulo": "El truco: pedí lo mismo, sin los datos",
+          "antes": {
+            "titulo": "Exponiendo datos",
+            "items": [
+              "\"Juan Pérez, DNI 30.111.222, debe $85.000 desde marzo\"",
+              "Pegás la lista de clientes entera con teléfonos",
+              "Subís el contrato con nombres y montos reales"
+            ]
+          },
+          "despues": {
+            "titulo": "Cuidándote (mismo resultado)",
+            "items": [
+              "\"Un cliente debe $85.000 desde marzo, ¿cómo le reclamo con onda?\"",
+              "Pegás solo las columnas que importan, sin datos personales",
+              "Reemplazás nombres y montos por \"CLIENTE\" y \"$XXX\""
+            ]
+          }
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo cuidarte hoy (sin volverte loco)",
+          "pasos": [
+            {
+              "t": "Antes de pegar, mirá qué hay",
+              "d": "Preguntate: ¿esto tiene nombres, teléfonos, claves o números de cuenta? Si sí, va el paso 2."
+            },
+            {
+              "t": "Tachá lo personal",
+              "d": "Reemplazá nombres por \"cliente\", teléfonos y DNI por \"XXX\". La IA te ayuda igual de bien."
+            },
+            {
+              "t": "Nunca le des claves",
+              "d": "Ninguna contraseña, ni de tu correo ni de un sistema. La IA no las necesita para ayudarte."
+            },
+            {
+              "t": "Si dudás, no lo pegues",
+              "d": "Ante la duda con algo delicado, mejor describilo en general en vez de pegarlo tal cual."
+            }
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "El error más común",
+          "texto": "Pegar la lista completa de clientes con todos sus datos para que la IA la ordene. Se puede hacer igual: sacale primero las columnas personales (teléfono, dirección, DNI) y dejá solo lo que necesitás ordenar. El resultado es el mismo y no expusiste a nadie."
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "La próxima vez que vayas a pegarle algo a la IA, frená dos segundos y preguntate: \"¿esto tiene datos que no quiero que salgan del negocio?\". Si la respuesta es sí, tachalos antes. Con ese hábito solo ya trabajás tranquilo."
+        },
+        {
+          "tipo": "cita",
+          "texto": "La IA es una gran ayudante, pero sigue siendo alguien de afuera: le contás lo que necesita saber, no todo lo que sabés vos.",
+          "autor": ""
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "No es para asustarse ni para dejar de usarla: con una regla simple —sacar los datos personales antes de pegar— seguís aprovechando la IA a full y con la tranquilidad de estar cuidando a tus clientes. Cualquier duda sobre qué sí o qué no, escribinos — para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  },
+  {
+    "title": "4 formas de que la IA te resuelva los documentos largos",
+    "topic": "papeles-datos",
+    "published_at": "2026-07-26",
+    "doc": {
+      "modo": "digest",
+      "eyebrow": "GUÍA DE IA PARA TU NEGOCIO",
+      "titulo": "4 formas de que la IA te resuelva los documentos largos",
+      "subtitulo": "Contratos, listas de precios, pliegos: sacarles lo importante sin leerlos enteros.",
+      "lectura": "3 min de lectura",
+      "intro": "Un contrato de veinte páginas, una lista de precios interminable, el pliego de una licitación. Leerlos enteros para encontrar dos datos te come la tarde. La IA te lo resuelve en un par de minutos, con tus palabras. Van cuatro formas simples.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "1. Pedile el resumen en 3 puntos",
+          "parrafos": [
+            "**Le das el documento y le pedís lo importante.** En vez de leer las veinte páginas, tenés el resumen en tres líneas: el plazo, el monto, las condiciones. Lo leés en treinta segundos.",
+            "Sirve para un contrato, un reglamento nuevo o el mail eterno de un proveedor. Leés el resumen y, si algo te preocupa, vas al detalle sabiendo qué buscar."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "chat",
+          "titulo": "2. Preguntale directo, sin buscar a mano",
+          "parrafos": [
+            "**Subís el archivo y le preguntás lo que necesitás.** \"¿Qué dice sobre el plazo de pago?\", \"¿Tiene cláusula de ajuste?\". Te contesta y te muestra en qué parte lo dice.",
+            "Es como un buscador que entiende la pregunta, no solo palabras sueltas. Ideal para el pliego de una licitación o un contrato donde sabés que el dato está, pero no dónde."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "check",
+          "titulo": "3. Compará dos documentos de una",
+          "parrafos": [
+            "**Le das dos y le pedís las diferencias.** Dos presupuestos de proveedores, el contrato del año pasado contra el nuevo, dos versiones de una misma propuesta.",
+            "Te dice en qué cambian: precio, plazos, condiciones. Lo que a ojo te llevaría media hora y encima se te escapa algún detalle."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "herramienta",
+          "titulo": "4. Pasá una lista desordenada a una tabla prolija",
+          "parrafos": [
+            "**Le pegás datos sueltos y te los ordena solo.** Una lista de precios que te llegó hecha un desastre, nombres y teléfonos mezclados, productos con sus códigos.",
+            "Te lo devuelve en columnas prolijas que copiás y pegás en Excel o Google Sheets. Sin escribir una sola fórmula."
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "Ojo con esto",
+          "texto": "Antes de subir un documento, fijate qué tiene adentro. Si hay datos sensibles de clientes o cláusulas confidenciales, no lo pegues en cualquier herramienta gratuita. Y revisá siempre el resumen contra el original antes de decidir algo importante: la IA te ayuda a leer más rápido, no reemplaza tu criterio."
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "Agarrá un solo documento largo que tengas hoy — un contrato, una lista de precios, ese PDF que venís pateando — subilo a ChatGPT y pedile: \"Resumime esto en 3 puntos\". Con eso ya sabés de qué se trata."
+        },
+        {
+          "tipo": "tip",
+          "estilo": "dato",
+          "titulo": "Dato de IA de la semana",
+          "texto": "Leer veinte páginas con atención te lleva unos quince minutos. Pedirle a la IA los puntos clave, menos de uno. No es para saltearte lo que importa, es para saber por dónde empezar."
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "No hace falta cambiar cómo trabajás. Empezá con un documento y una pregunta simple, y vas a ver que le agarrás la mano enseguida. Cualquier duda que te surja, escribinos — para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  },
+  {
+    "title": "Las 3 preguntas que te dicen si una tarea se puede automatizar",
+    "topic": "criterio",
+    "published_at": "2026-08-07",
+    "doc": {
+      "modo": "deep-dive",
+      "eyebrow": "GUÍA DE IA PARA TU NEGOCIO",
+      "titulo": "Las 3 preguntas que te dicen si una tarea se puede automatizar",
+      "subtitulo": "Una regla simple para mirar tu semana y separar lo que puede hacerse solo de lo que necesita tu criterio.",
+      "lectura": "5 min de lectura",
+      "intro": "Todas las semanas hay un rato que se te va en lo mismo: pasar los pedidos a la planilla, mandar la lista de precios actualizada, contestar por décima vez cuánto sale el envío. Ninguna de esas cosas es difícil. El problema es que se repiten. Acá vas a encontrar una regla corta para mirar tu semana y darte cuenta cuáles de esas tareas pueden hacerse solas.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "Qué es automatizar, en palabras simples",
+          "parrafos": [
+            "**Automatizar es escribir una sola vez un trabajo que hacés siempre igual, para que después se haga solo.** No hay robots ni ciencia ficción: hay instrucciones bien escritas y algo que las sigue al pie de la letra.",
+            "Se parece bastante a entrenar a un empleado nuevo. La primera vez le explicás con detalle de dónde saca la información, qué hace con ella y dónde la deja. La diferencia es que a este se lo explicás una sola vez, no se olvida, no se cansa y no se toma vacaciones.",
+            "Cuando además hace falta **entender** lo que alguien escribió — un mensaje de un cliente, un audio, un mail largo — ahí es donde entra la IA. Pero la decisión de fondo es la misma de siempre, y empieza mirando la tarea, no la herramienta."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "reloj",
+          "titulo": "Por qué conviene mirar esto ahora",
+          "parrafos": [
+            "**Lo que te cuesta una tarea repetitiva no son los minutos que dura.** Cargar un pedido a mano lleva tres minutos. Pero son tres minutos por pedido, treinta veces por semana, y cada vez te corta lo que estabas haciendo.",
+            "En una distribuidora, pasar los pedidos del día a la planilla se lleva casi una hora diaria de alguien. En un estudio contable, mandar los mismos tres recordatorios a cada cliente antes del vencimiento se lleva media mañana. Son horas que ya estás pagando, solo que no figuran en ninguna factura.",
+            "Y está el costo que no se ve: cuando algo se hace a mano treinta veces, alguna vez sale mal. Un precio viejo en una lista, un pedido que quedó sin cargar, un cliente al que nadie le contestó."
+          ]
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "La regla, en 3 preguntas",
+          "pasos": [
+            {
+              "t": "¿Lo hago igual cada vez?",
+              "d": "Si los pasos son siempre los mismos, buena señal. Si cada caso se resuelve distinto según quién sea el cliente, todavía no."
+            },
+            {
+              "t": "¿La información sale siempre del mismo lugar?",
+              "d": "La misma planilla, el mismo mail, el mismo sistema. Si cada vez hay que ir a buscarla a un lado distinto, eso es lo primero que hay que ordenar."
+            },
+            {
+              "t": "¿Se lo podría explicar a alguien por escrito?",
+              "d": "Si podés dejar las instrucciones en media carilla y otra persona lo haría igual que vos, una máquina también puede."
+            }
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "dato",
+          "titulo": "Cómo leer el resultado",
+          "texto": "Tres \"sí\": tarea lista para automatizar, casi seguro. Dos \"sí\": probablemente sí, después de ordenar un poco. Un \"sí\" o ninguno: dejala en manos de una persona. No todo tiene que automatizarse, y saber cuáles no también es parte de la regla."
+        },
+        {
+          "tipo": "comparacion",
+          "titulo": "La misma semana, dos listas",
+          "antes": {
+            "titulo": "Mejor que lo siga haciendo una persona",
+            "items": [
+              "Decidir qué descuento hacerle a un cliente grande que se está por ir.",
+              "Redactar la respuesta a un reclamo delicado.",
+              "Elegir qué productos entran en la promo del mes.",
+              "Cualquier cosa que hagas una o dos veces al año."
+            ]
+          },
+          "despues": {
+            "titulo": "Esto se automatiza bien",
+            "items": [
+              "Cargar en la planilla de siempre cada pedido que entra.",
+              "Mandar la lista de precios actualizada a los mismos clientes.",
+              "Avisar cuando un producto queda por debajo del stock mínimo.",
+              "Responder las cinco preguntas que te hacen todos los días."
+            ]
+          }
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "El error más común",
+          "texto": "**Automatizar algo que está desordenado.** La máquina no ordena: repite, y repite rápido. Si tenés tres versiones de la lista de precios dando vueltas, automatizar el envío hace que el precio viejo llegue a más gente y más rápido. Primero se ordena, después se automatiza."
+        },
+        {
+          "tipo": "cita",
+          "texto": "Si lo hacés igual cada vez, no es una tarea: es un instructivo que todavía no escribiste.",
+          "autor": ""
+        },
+        {
+          "tipo": "claves",
+          "icono": "check",
+          "titulo": "Para llevarte",
+          "items": [
+            "Automatizar no se decide por la herramienta, se decide por la tarea.",
+            "Las tres señales: se repite igual, la información sale siempre del mismo lugar, y se puede explicar por escrito.",
+            "Lo que necesita criterio tuyo se queda con vos, y está bien que así sea.",
+            "Antes de automatizar algo, ordenalo. Si no, lo que multiplicás es el desorden."
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "Agarrá una hoja y anotá todo lo que hiciste dos o más veces en los últimos siete días, por chico que sea. Pasá cada renglón por las tres preguntas y marcá los que dan tres \"sí\". Con que encuentres uno solo, la lista ya valió la pena."
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "No hace falta que salgas a automatizar nada mañana. El ejercicio de la lista ya te deja algo valioso por sí solo: saber dónde se te va el tiempo repetido. Cualquier duda que te surja mientras lo hacés, escribinos — para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  },
+  {
+    "title": "Cómo hacerle preguntas a tu planilla de ventas",
+    "topic": "papeles-datos",
+    "published_at": "2026-08-10",
+    "doc": {
+      "modo": "deep-dive",
+      "eyebrow": "GUÍA DE IA PARA TU NEGOCIO",
+      "titulo": "Cómo hacerle preguntas a tu planilla de ventas y que te conteste",
+      "subtitulo": "Subís el archivo, preguntás con tus palabras y te responde. Sin fórmulas ni tablas dinámicas.",
+      "lectura": "5 min de lectura",
+      "intro": "En tu planilla de ventas está buena parte de lo que necesitás saber: qué cliente se está enfriando, qué producto se frenó, en qué se te fue el mes. El problema nunca fue tener los datos —los tenés hace años— sino sacarlos: para eso había que pelearse con una tabla dinámica o esperar a que alguien te lo armara. Hoy podés subir esa misma planilla y preguntarle con tus palabras.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "Qué es, en palabras simples",
+          "parrafos": [
+            "**Es subir tu archivo al chat y preguntar.** Las mismas herramientas que ya usás para redactar (ChatGPT, por ejemplo) también leen un Excel o un CSV. Le adjuntás la planilla, le hacés la pregunta en castellano y te devuelve el número, la lista o la tabla.",
+            "**Pensalo como un empleado nuevo muy rápido.** Se leyó las cuatro mil filas en diez segundos y se acuerda de todas. No sabe nada de tu negocio hasta que se lo contás, pero contar, ordenar y comparar lo hace mejor que cualquiera.",
+            "No hay que instalar nada ni aprender ninguna fórmula: alcanza con la planilla que ya exportás de tu sistema."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "dinero",
+          "titulo": "Por qué te conviene",
+          "parrafos": [
+            "**Las preguntas más valiosas de tu negocio son justo las que nunca te sentás a contestar.** No porque no te importen: porque sacarlas te lleva media tarde y siempre hay algo más urgente.",
+            "Un mayorista puede pedir en un minuto la lista de clientes que compraban todos los meses y hace sesenta días que no aparecen: eso son llamados concretos para la semana. Una inmobiliaria puede ver qué tipo de propiedad se consulta mucho y se cierra poco. Un e-commerce, qué productos se frenaron sin que nadie lo notara.",
+            "**Lo que antes era un proyecto ahora es una pregunta.** Y como cuesta tan poco, empezás a preguntar cosas que antes ni te planteabas."
+          ]
+        },
+        {
+          "tipo": "claves",
+          "icono": "chat",
+          "titulo": "Preguntas para copiar tal cual",
+          "items": [
+            "«¿Qué clientes me compraban todos los meses y hace más de 60 días que no me compran? Dame la lista con la fecha de la última compra.»",
+            "«Compará este trimestre contra el anterior y decime qué 10 clientes bajaron más.»",
+            "«¿Qué productos no vendí ni una sola vez en los últimos 90 días?»",
+            "«Ordename los productos por facturación y decime qué porcentaje del total hacen los primeros diez.»",
+            "«Armame una tabla de cliente, cantidad de compras y total facturado, de mayor a menor.»"
+          ]
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo hacerlo hoy, paso a paso",
+          "pasos": [
+            {
+              "t": "Exportá la planilla",
+              "d": "Desde tu sistema, bajala en Excel o CSV. Que tenga los títulos de las columnas en la primera fila y una sola hoja: así se entiende sola."
+            },
+            {
+              "t": "Sacale los datos personales",
+              "d": "Borrá las columnas de teléfono, mail y dirección antes de subirla. Si necesitás distinguir clientes, dejá la razón social o reemplazá los nombres por «Cliente 1», «Cliente 2»."
+            },
+            {
+              "t": "Subila y contale qué es",
+              "d": "Adjuntala con el clip y escribile una línea: «Esta es mi planilla de ventas del último año. Cada fila es una venta y la columna Importe es el total sin IVA»."
+            },
+            {
+              "t": "Preguntá de a una",
+              "d": "Una pregunta por vez, con tus palabras. Si la respuesta te abre otra duda, preguntásela ahí mismo: se acuerda de la planilla durante toda la conversación."
+            }
+          ]
+        },
+        {
+          "tipo": "comparacion",
+          "titulo": "La misma planilla, dos preguntas",
+          "antes": {
+            "titulo": "Pregunta vaga",
+            "items": [
+              "«Analizá mis ventas y decime cómo vengo»",
+              "Te devuelve un resumen prolijo de cosas que ya sabías",
+              "Lo leés, asentís y no hacés nada"
+            ]
+          },
+          "despues": {
+            "titulo": "Pregunta concreta",
+            "items": [
+              "«¿Qué clientes compraban todos los meses y hace 60 días que no aparecen?»",
+              "Te devuelve doce nombres con la fecha de su última compra",
+              "El lunes ya sabés a quién llamar"
+            ]
+          }
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "El error más común",
+          "texto": "Creerle el número sin controlarlo. La IA cuenta muy bien, pero si una columna tiene el importe escrito de dos formas distintas o hay filas repetidas, el resultado sale torcido y te lo va a decir igual de convencida. Antes de tomar una decisión con un dato, hacele una pregunta cuya respuesta ya sepas —el total facturado del mes pasado, por ejemplo— y fijate si le da. Si ese no le da, ninguno de los otros vale."
+        },
+        {
+          "tipo": "cita",
+          "texto": "No hace falta saber fórmulas para sacarle respuestas a tu planilla. Hace falta saber qué preguntarle.",
+          "autor": ""
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "Exportá una sola planilla —la de ventas del último año—, borrale las columnas de teléfono y mail, subila y hacele una sola pregunta: qué clientes dejaron de comprarte en los últimos dos meses. Con esa lista en la mano ya tenés la semana resuelta."
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "Como te contábamos en la guía sobre qué no conviene darle a la IA, la regla sigue siendo la misma: los números sí, los datos personales de tus clientes no. Con eso resuelto, la planilla que ya tenías arriba del escritorio se vuelve bastante más útil de lo que venía siendo. Cualquier duda que te surja mientras lo probás, escribinos — para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  },
+  {
+    "title": "Del papel a la planilla",
+    "topic": "papeles-datos",
+    "published_at": "2026-08-17",
+    "doc": {
+      "modo": "deep-dive",
+      "eyebrow": "GUÍA DE IA PARA TU NEGOCIO",
+      "titulo": "Sacale una foto al remito y tenelo en la planilla en un minuto",
+      "subtitulo": "Remitos, listas de precios, facturas y etiquetas: le mostrás la foto y te lo devuelve en tabla, listo para pegar.",
+      "lectura": "5 min de lectura",
+      "intro": "Todos los días entra papel a tu negocio: el remito del proveedor, la lista de precios nueva, los comprobantes del mes, la caja del producto que vas a publicar. Y todo eso, en algún momento, alguien lo tipea a mano. Esa media hora que se va renglón por renglón —y el dígito que se traspapela y aparece dos semanas después, cuando falta la mercadería— tiene arreglo, y no hay que comprar nada.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "Qué es, en palabras simples",
+          "parrafos": [
+            "**Las mismas apps de chat que ya usás para escribir hoy también ven.** Le sacás una foto al papel con el celular, se la mandás al chat y le pedís que te lo pase a una tabla. En unos segundos te devuelve el contenido ordenado en columnas, listo para copiar y pegar en tu planilla.",
+            "**Pensalo como alguien que tipea rapidísimo y nunca se aburre.** Mira la hoja, la pasa entera y no protesta si son sesenta renglones. Eso sí: copia lo que ve. Si la foto salió oscura o el papel está arrugado, va a leer mal —y por eso el último paso siempre es tuyo.",
+            "Funciona con papel impreso, con un PDF escaneado, con la foto que te reenviaron por WhatsApp y hasta con letra manuscrita, si es prolija."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "dinero",
+          "titulo": "Por qué te conviene",
+          "parrafos": [
+            "**Cargar datos no le suma nada a tu negocio, pero se come horas de gente que necesitás para otra cosa.** Y encima es donde más errores se cuelan: nadie tipea doscientos precios sin equivocarse en uno.",
+            "Un mayorista que recibe la lista nueva de un proveedor en PDF puede tenerla en columnas en dos minutos, en vez de dejarla esperando a que alguien la cargue el jueves. Una constructora puede fotografiar el remito de materiales en la obra y mandarlo ya en tabla a administración. Un estudio contable pasa el fajo de comprobantes de un cliente en una tarde en lugar de en tres. Un e-commerce le saca una foto a la caja de un producto nuevo y de ahí salen las medidas, el contenido y la ficha para publicarlo.",
+            "**Lo mejor es que dejás de depender del formato en que te lo mandaron.** Te llegó como te llegó —papel, PDF, foto de mala calidad— y vos igual lo tenés en columnas."
+          ]
+        },
+        {
+          "tipo": "comparacion",
+          "titulo": "Un remito de sesenta renglones",
+          "antes": {
+            "titulo": "Cómo se hace hoy",
+            "items": [
+              "Alguien lo tipea renglón por renglón",
+              "Cuarenta minutos de una persona de tu equipo",
+              "Un código mal cargado que se descubre cuando falta la mercadería"
+            ]
+          },
+          "despues": {
+            "titulo": "Con una foto",
+            "items": [
+              "Foto, subida y tabla en menos de un minuto",
+              "Cinco minutos de control, que es donde sí conviene mirar",
+              "El total tiene que dar igual al del papel: si no da, lo ves ahí mismo"
+            ]
+          }
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo hacerlo hoy, paso a paso",
+          "pasos": [
+            {
+              "t": "Sacá la foto derecha y con luz",
+              "d": "La hoja entera dentro del cuadro, apoyada en la mesa y sin tu sombra encima. Si el papel es largo, sacá dos fotos de cerca en vez de una de lejos: se lee mucho mejor."
+            },
+            {
+              "t": "Tapá lo que no tiene que salir",
+              "d": "Si el papel tiene el teléfono, el domicilio o el documento de un cliente, tapalo con el dedo antes de disparar o recortá la foto después. Lo que te sirve son los productos y los importes, no los datos personales."
+            },
+            {
+              "t": "Subila y pedile la tabla con TUS columnas",
+              "d": "Adjuntá la foto y escribile una línea: «Este es el remito de mi proveedor. Pasámelo a una tabla con Código, Descripción y Cantidad». Nombrale las columnas igual y en el mismo orden que tu planilla, así pegás de una."
+            },
+            {
+              "t": "Controlá el total antes de pegar",
+              "d": "Pedile que sume la columna de cantidades o de importes y compará ese número con el total impreso en el papel. Si coincide, leyó bien; si no, algo se le escapó y conviene mirar antes de cargarlo."
+            }
+          ]
+        },
+        {
+          "tipo": "claves",
+          "icono": "chat",
+          "titulo": "Pedidos para copiar tal cual",
+          "items": [
+            "«Pasá esta lista de precios a una tabla con Producto, Presentación y Precio. Si algo no se lee bien, poné ??? en vez de adivinar.»",
+            "«Este es el remito de hoy. Armame una tabla con Código, Descripción y Cantidad, en el mismo orden en que están en el papel.»",
+            "«De esta factura sacame número, fecha, proveedor, neto, IVA y total, todo en una sola fila.»",
+            "«Sumá la columna Importe y decime si coincide con el total que figura al pie.»",
+            "«Son cinco fotos de la misma lista. Armame una sola tabla con todas, sin repetir los encabezados.»",
+            "«Devolvémelo en formato CSV, así lo pego directo en Excel.»"
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "El error más común",
+          "texto": "Suponer que, si algo no se leía, te lo va a avisar. No lo hace: si el número está borroso pone el que más se le parece y sigue, con la misma seguridad que cuando lee bien. Por eso hay dos cosas que no se negocian. La primera, pedirle siempre que marque con ??? lo que no está seguro de haber leído. La segunda, controlar el total contra el del papel antes de pegar nada en tu sistema: si el total da, el resto casi siempre está bien; si no da, buscá el renglón raro antes de seguir."
+        },
+        {
+          "tipo": "cita",
+          "texto": "Lo que entra en papel no tiene por qué volver a salir tecla por tecla.",
+          "autor": ""
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "La próxima lista de precios o el próximo remito que te llegue, antes de pasárselo a alguien para que lo cargue, sacale una foto y pedile la tabla. Tomate el minuto de comparar el total. Con ese solo papel ya vas a saber si esto te sirve para el día a día o no."
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "Es de esas cosas que parecen chicas hasta que las probás con un papel de verdad: el trabajo que te llevaba media tarde queda en un rato de control. Empezá por un solo documento, el más molesto de todos. Y acordate de tapar los datos personales antes de la foto —los números sí, los datos de tus clientes no—. Cualquier duda que te surja, escribinos: para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  },
+  {
+    "title": "Cuando la IA inventa un dato",
+    "topic": "criterio",
+    "published_at": "2026-08-24",
+    "doc": {
+      "modo": "deep-dive",
+      "eyebrow": "GUÍA DE IA PARA TU NEGOCIO",
+      "titulo": "Cómo darte cuenta de que la IA te está inventando un dato",
+      "subtitulo": "Se equivoca con la misma seguridad con la que acierta. Tres chequeos de treinta segundos para no enterarte tarde.",
+      "lectura": "5 min de lectura",
+      "intro": "Le preguntás algo puntual —el plazo de una norma, la medida exacta de un producto, el artículo de una resolución— y te contesta al instante, redondo y sin dudar. El detalle es que contesta con la misma seguridad cuando sabe y cuando no sabe. Y ese dato, si nadie lo mira, sigue camino: al presupuesto, al mail que le mandás a un cliente, a la ficha del producto que publicaste.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "Qué pasa, en palabras simples",
+          "parrafos": [
+            "**La IA no busca el dato en ningún lado: lo arma.** No tiene un cajón con las respuestas guardadas ni consulta una base de datos. Escribe palabra por palabra lo que más probablemente sigue, según todo lo que leyó. Casi siempre lo más probable coincide con lo cierto; algunas veces es apenas lo que suena cierto.",
+            "**Pensalo como alguien con una memoria enorme y una sola debilidad: le cuesta decir que no sabe.** Leyó millones de páginas y se acuerda de la forma que tienen las cosas: que una resolución tiene número, año y artículo; que una ficha técnica tiene watts y medidas. Cuando no tiene el dato preciso, completa con algo que tiene la forma correcta. Por eso suena perfecto.",
+            "No es mala intención ni te está mintiendo: no sabe cuándo no sabe. En la jerga a esto lo llaman «alucinación», que es un nombre raro para algo simple —dar por cierto algo que no lo es—. Las versiones que buscan en internet lo hacen bastante menos, pero no lo dejan de hacer."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "aviso",
+          "titulo": "Dónde duele de verdad",
+          "parrafos": [
+            "**El problema no es el error: es dónde termina el error.** Un dato inventado en un borrador que vos revisás no cuesta nada. El mismo dato dentro de un presupuesto firmado, de una cláusula o de una publicación de producto ya es otra historia.",
+            "Una inmobiliaria que copia un plazo equivocado a un contrato lo termina discutiendo con el inquilino. Una distribuidora que arma una cotización con un código de artículo que no existe en su lista la tiene que rehacer delante del cliente. Un estudio contable que cita el artículo de una resolución que nunca se escribió queda expuesto justo con quien más confianza le tiene. Un e-commerce que publica una especificación inventada la paga en devoluciones.",
+            "**La buena noticia es que el riesgo está concentrado.** No hay que desconfiar de todo: hay un puñado de cosas que conviene mirar siempre, y con el resto se trabaja tranquilo."
+          ]
+        },
+        {
+          "tipo": "comparacion",
+          "titulo": "Dónde frenar y dónde ir tranquilo",
+          "antes": {
+            "titulo": "Frená y verificá",
+            "items": [
+              "Cifras, fechas y plazos",
+              "Números de norma, artículos y resoluciones",
+              "Precios, códigos y especificaciones de productos",
+              "Nombres propios, teléfonos y direcciones",
+              "Links y fuentes que te ofrece por su cuenta",
+              "Cuentas y porcentajes hechos de memoria"
+            ]
+          },
+          "despues": {
+            "titulo": "Podés ir tranquilo",
+            "items": [
+              "Redactar o mejorar un texto que después leés vos",
+              "Resumir un documento que vos le adjuntaste",
+              "Ordenar y clasificar información que vos le diste",
+              "Traducir o cambiarle el tono a un mail",
+              "Generar ideas, borradores y variantes",
+              "Explicarte un concepto general de un tema"
+            ]
+          }
+        },
+        {
+          "tipo": "cita",
+          "texto": "Cuando el dato lo pone la IA, verificá. Cuando el dato lo ponés vos y la IA solo lo ordena, andá tranquilo.",
+          "autor": ""
+        },
+        {
+          "tipo": "claves",
+          "icono": "aviso",
+          "titulo": "Las cinco señales de que puede estar inventando",
+          "items": [
+            "**Le pediste un dato muy específico y contestó al instante**, sin dudar ni aclarar nada: un número de artículo, una medida exacta, una fecha puntual.",
+            "**Te ofreció una fuente, un link o el nombre de un documento.** Es de lo que más inventa, y convence justamente porque tiene la forma correcta.",
+            "**Le repreguntaste y cambió la respuesta.** Si cambia porque insististe, ninguna de las dos versiones estaba verificada.",
+            "**Es un dato que cambia seguido:** precios, stock, normativa, quién ocupa un cargo hoy. Aprendió hasta una fecha y de ahí en adelante no tiene noticias.",
+            "**Le preguntaste por algo tuyo que nunca le diste:** tu lista de precios, tu contrato, tu catálogo. Si no se lo adjuntaste, lo que responde es una suposición bien redactada."
+          ]
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo chequearlo en treinta segundos",
+          "pasos": [
+            {
+              "t": "Preguntale de dónde lo sacó",
+              "d": "«¿De dónde sale ese dato? Nombrame la fuente exacta.» Que te nombre una no prueba nada, porque también puede inventarla. Lo que sí es señal es la evasiva: si contesta en general y no puede nombrar el documento, tratá el dato como no verificado."
+            },
+            {
+              "t": "Preguntá lo mismo en un chat nuevo",
+              "d": "Abrí una conversación desde cero, sin el historial y sin darle pistas de lo que esperás escuchar. Si en las dos te da el mismo número, hay bastantes más chances de que sea correcto. Si te da dos números distintos, ya tenés la respuesta."
+            },
+            {
+              "t": "Abrí vos la fuente",
+              "d": "La verificación que cuenta siempre pasa afuera del chat: la página del organismo, la ficha del fabricante, tu propia planilla. Son veinte segundos y es el único paso que da certeza."
+            },
+            {
+              "t": "Mejor todavía: dale el documento",
+              "d": "En vez de preguntarle de memoria, adjuntale el PDF, la lista o el contrato y pedile que responda solo con eso: «Si no está en el documento, decímelo». Así deja de adivinar y pasa a leer, que es donde casi no falla."
+            }
+          ]
+        },
+        {
+          "tipo": "claves",
+          "icono": "chat",
+          "titulo": "Frases para copiar tal cual",
+          "items": [
+            "«Si no estás seguro de un dato, decime que no lo sabés en vez de completarlo.»",
+            "«Marcá con ??? cualquier cifra que no puedas verificar.»",
+            "«Respondé solo con lo que dice el documento que te adjunté. Si no está ahí, decímelo.»",
+            "«Separame la respuesta en dos partes: lo que sabés con certeza y lo que estás suponiendo.»",
+            "«Dame la fuente exacta de cada dato: nombre del documento, número y año.»",
+            "«No necesito un número si no lo tenés. Prefiero que me digas que no lo sabés.»"
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "El error más común",
+          "texto": "Preguntarle «¿estás seguro?» y tomar el sí como verificación. Estos sistemas tienden a acompañar a la persona que tienen enfrente: cuando dudás en voz alta, muchas veces cambian la respuesta, y no porque hayan chequeado algo, sino porque leyeron que esperabas otra cosa. Y al revés, si le insistís con el dato que vos querías escuchar, termina dándotelo. Ninguna de las dos cosas es una comprobación. La única que cuenta sucede afuera del chat."
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "Hacele tres preguntas cuya respuesta ya sepas de memoria: el precio del producto que más vendés, la medida exacta de algo que manejás todos los días, el plazo de un trámite de tu rubro. Fijate cómo contesta cuando le erra, con el mismo tono seguro que cuando acierta. Son dos minutos y valen más que cualquier explicación: después no vas a volver a leer sus respuestas de la misma manera."
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "Nada de esto significa usarla menos. Sigue siendo la mejor herramienta que tenés para redactar, resumir y ordenar, y en todo eso el margen de error es mínimo. El cambio que vale la pena es chico: antes de que un dato salido de la IA se vaya de tu pantalla —a un cliente, a un presupuesto, a una publicación—, pasalo por uno de los chequeos de arriba. Treinta segundos. Cualquier duda que te surja, escribinos: para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  },
+  {
+    "title": "Preguntale a tus documentos (NotebookLM)",
+    "topic": "papeles-datos",
+    "published_at": "2026-09-01",
+    "doc": {
+      "modo": "deep-dive",
+      "eyebrow": "GUÍA DE IA PARA TU NEGOCIO",
+      "titulo": "Dejá de buscar en veinte PDF: preguntale directo a tus documentos",
+      "subtitulo": "Se llama NotebookLM, es gratis, y contesta únicamente con los papeles que vos le diste. Además te muestra el renglón exacto de dónde lo sacó.",
+      "lectura": "6 min de lectura",
+      "intro": "Son las cuatro de la tarde, un cliente te pregunta algo puntual y vos sabés que la respuesta está escrita en algún lado: en el pliego de doscientas páginas, en la circular que mandó el proveedor, en el contrato que firmaron el año pasado. Sabés que está. Lo que no sabés es en qué archivo ni en qué página. Y ahí se te van quince minutos, o se los llevás a alguien de tu equipo que estaba haciendo otra cosa.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "Qué es, en palabras simples",
+          "parrafos": [
+            "**Es un cuaderno donde subís tus propios documentos y después le hacés preguntas a ellos.** No busca en internet ni contesta de memoria: lee lo que vos le diste —las listas de precios, los manuales, los contratos, las circulares— y responde con eso y nada más.",
+            "**Pensalo como un empleado que se leyó todos los papeles del negocio y se acuerda de en qué página está cada cosa.** Le preguntás con tus palabras, te contesta en dos renglones y te señala el párrafo exacto del documento donde lo encontró. Ese señalamiento es lo que cambia todo: no tenés que creerle, podés mirar.",
+            "Es de Google, se usa desde el navegador y no hay nada que instalar."
+          ]
+        },
+        {
+          "tipo": "herramienta",
+          "nombre": "NotebookLM",
+          "precio": "Gratis con tu cuenta de Google",
+          "que": "Un cuaderno donde subís tus documentos y les hacés preguntas en tus palabras.",
+          "como": "Entrás a notebooklm.google.com, creás un cuaderno, arrastrás los archivos y preguntás.",
+          "para": "Listas de precios, manuales, fichas técnicas, contratos, pliegos, reglamentos y circulares: todo lo que hoy buscás abriendo PDF de a uno."
+        },
+        {
+          "tipo": "comparacion",
+          "titulo": "En qué se diferencia de un chat común",
+          "antes": {
+            "titulo": "Un chat común",
+            "items": [
+              "Responde con todo lo que leyó en internet",
+              "Cuando no tiene el dato, lo completa",
+              "No conoce tus precios ni tus contratos",
+              "Le adjuntás el documento cada vez que abrís una charla",
+              "Te da la respuesta, no el renglón"
+            ]
+          },
+          "despues": {
+            "titulo": "Un cuaderno con tus documentos",
+            "items": [
+              "Responde solo con los documentos que subiste",
+              "Si no está ahí, te avisa que no está",
+              "Conoce exactamente lo que vos cargaste",
+              "Los documentos quedan guardados, listos para la próxima",
+              "Cada respuesta viene con el fragmento del que salió"
+            ]
+          }
+        },
+        {
+          "tipo": "seccion",
+          "icono": "cohete",
+          "titulo": "Para qué te sirve en tu negocio",
+          "parrafos": [
+            "**Sirve para cualquier pregunta cuya respuesta ya está escrita, pero desparramada.** Ese es el punto: no le pedís que sepa, le pedís que encuentre y te lo explique.",
+            "En una distribuidora, un vendedor nuevo pregunta cuál es el mínimo de compra para el interior y qué flete se cobra, y sale la respuesta con la circular donde está escrito. En una inmobiliaria, en vez de releer el reglamento del edificio buscás qué dice sobre alquiler temporario y te lleva al artículo. En una constructora, un pliego de doscientas páginas se vuelve una charla de cinco minutos: plazos, penalidades, qué documentación hay que presentar.",
+            "En un e-commerce o una tienda tecnológica, los manuales y las garantías de treinta proveedores dejan de ser treinta PDF y pasan a ser un solo lugar donde preguntar si ese modelo tiene garantía por uno o por dos años. En un estudio profesional, lo mismo con las resoluciones y el manual interno de procedimientos.",
+            "**Y hay algo que se subestima: el cuaderno se puede compartir con tu equipo.** Cada uno entra con su cuenta de Google y consulta por su cuenta, sin pasar por vos. La pregunta que te hacían cinco veces por semana se la contesta el cuaderno."
+          ]
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo armar el tuyo en diez minutos",
+          "pasos": [
+            {
+              "t": "Entrá y creá el cuaderno",
+              "d": "Andá a notebooklm.google.com y entrá con la cuenta de Google que ya usás. Le das a «Crear» y ponele un nombre por tema: «Listas de precios», «Contratos de alquiler», «Pliego obra norte»."
+            },
+            {
+              "t": "Arrastrá entre cinco y diez documentos del mismo tema",
+              "d": "Acepta PDF, documentos de Google, páginas web, texto pegado y hasta audios. Si tenés un Word, guardalo como PDF y listo. Un cuaderno por tema funciona mucho mejor que uno solo con todo adentro."
+            },
+            {
+              "t": "Hacé la primera pregunta con tus palabras",
+              "d": "Tal como se la harías a alguien de tu equipo: «¿Qué descuento le corresponde a un cliente mayorista que compra más de cien unidades?». No hace falta ninguna fórmula especial."
+            },
+            {
+              "t": "Hacé clic en el numerito que aparece en la respuesta",
+              "d": "Te abre el párrafo exacto del documento del que salió. Ese es el chequeo, y te lleva un segundo. Si la cita dice lo mismo que la respuesta, podés usarla tranquilo."
+            }
+          ]
+        },
+        {
+          "tipo": "claves",
+          "icono": "chat",
+          "titulo": "Preguntas para copiar tal cual",
+          "items": [
+            "«¿Qué dice el contrato sobre la actualización del precio? Citame el artículo.»",
+            "«Armame una lista de todo lo que aparezca sobre plazos de entrega.»",
+            "«Resumime en cinco puntos qué obligaciones asumimos nosotros en este pliego.»",
+            "«¿Qué diferencias hay entre la lista de precios de este proveedor y la del otro?»",
+            "«Si un cliente pregunta por la garantía de este equipo, ¿qué le contesto según el manual?»",
+            "«¿Esto está en los documentos que te di o lo estás suponiendo?»"
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "dato",
+          "titulo": "También te lo cuenta en voz alta",
+          "texto": "Tiene una función que arma un resumen conversado de tus documentos —dos voces charlando sobre lo que subiste, en español— para escuchar mientras manejás. No reemplaza leer el pliego, pero llegás a la reunión sabiendo de qué se trata, y eso a veces es toda la diferencia."
+        },
+        {
+          "tipo": "seccion",
+          "icono": "aviso",
+          "titulo": "Qué subir y qué dejar afuera",
+          "parrafos": [
+            "**Subí lo que consultás seguido y está desparramado:** listas de precios y condiciones comerciales, manuales y fichas técnicas, contratos y reglamentos, pliegos, tu manual de procedimientos, las respuestas que tu equipo repite todos los días.",
+            "**Dejá afuera los datos personales de tus clientes y de tu gente:** documentos, teléfonos, direcciones, datos bancarios, legajos del personal. Google aclara que no usa lo que subís para entrenar sus modelos, y aun así la regla sana es la de siempre: a una herramienta de un tercero no le subas lo que no querrías que saliera de tu oficina. Si el documento sirve igual sin esos datos, borralos antes de subirlo."
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "El error más común",
+          "texto": "Tener dos versiones del mismo documento en el mismo cuaderno. Si está la lista de precios vieja y la nueva, la respuesta va a mezclar las dos y no tenés forma de darte cuenta a simple vista. La regla es una sola: un cuaderno por tema, y cada documento en su única versión vigente. Cuando actualizás la lista, borrás la anterior del cuaderno antes de subir la nueva."
+        },
+        {
+          "tipo": "cita",
+          "texto": "La diferencia no es que sepa más. Es que solo puede contestarte con lo tuyo, y te muestra de dónde lo sacó.",
+          "autor": ""
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "Elegí el documento que más veces abriste este mes —la lista de precios, el pliego, el contrato modelo— y subilo solo a un cuaderno. Hacele las tres preguntas que tu equipo te hace siempre. Son diez minutos. Si las tres salen bien, ya sabés qué otros papeles merecen estar ahí adentro."
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "Lo bueno de esta herramienta no es que sea inteligente: es que trabaja encerrada con tus documentos. Por eso el margen para inventar es mucho más chico que en un chat común, y por eso vale la pena empezar por acá cuando lo que necesitás es una respuesta que después vas a repetirle a un cliente. Con un cuaderno bien armado alcanza para notar la diferencia. Cualquier duda que te surja, escribinos: para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  },
+  {
+    "title": "Dejá de explicarle tu negocio en cada charla",
+    "topic": "primeros-pasos",
+    "published_at": "2026-09-07",
+    "doc": {
+      "modo": "deep-dive",
+      "eyebrow": "GUÍA DE IA PARA TU NEGOCIO",
+      "titulo": "Dejá de explicarle tu negocio en cada charla",
+      "subtitulo": "Dentro de ChatGPT podés armar un proyecto con las instrucciones de tu negocio escritas una sola vez. Todas las charlas que abras ahí adentro ya las conocen.",
+      "lectura": "6 min de lectura",
+      "intro": "Abrís un chat nuevo y arrancás de cero: le contás otra vez a qué se dedica la empresa, a quién le vendés, que las entregas al interior salen los martes, que a los clientes los tratás de usted. Escribís cinco renglones de contexto antes de llegar a lo que en realidad necesitabas. Y mañana, cuando abras otra charla, los volvés a escribir. Eso se arregla en quince minutos y no se vuelve a hacer nunca más.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "Qué es, en palabras simples",
+          "parrafos": [
+            "**Es una carpeta de charlas que tiene sus propias instrucciones escritas.** Vos escribís una vez cómo es tu negocio y cómo querés que te conteste; después, cada charla que abrís dentro de esa carpeta ya arranca sabiendo todo eso. No hay que repetirlo ni hay que acordarse.",
+            "**Pensalo como la ficha de inducción del empleado nuevo.** A la persona que entra a trabajar se la explicás bien una vez —qué vendemos, a quién, cómo atendemos, qué nunca hacemos— y a partir de ahí trabaja sola. Con un chat suelto, en cambio, es como si todas las mañanas entrara un empleado distinto que no sabe nada del negocio.",
+            "En ChatGPT esta carpeta se llama **Proyecto** y está también en la cuenta gratuita. Se usa desde el navegador o desde el celular, y no hay nada que instalar."
+          ]
+        },
+        {
+          "tipo": "herramienta",
+          "nombre": "Proyectos de ChatGPT",
+          "precio": "Gratis con tu cuenta",
+          "que": "Una carpeta de charlas con instrucciones fijas y archivos de referencia adentro.",
+          "como": "En el panel de la izquierda tocás «Proyectos», creás uno, le escribís las instrucciones y trabajás ahí adentro.",
+          "para": "Respuestas a clientes, textos de venta, presupuestos, posventa: cualquier tarea que le pedís seguido y siempre con el mismo contexto."
+        },
+        {
+          "tipo": "comparacion",
+          "titulo": "La diferencia en el día a día",
+          "antes": {
+            "titulo": "Un chat suelto",
+            "items": [
+              "Explicás quién sos y qué vendés en cada charla",
+              "La respuesta sale genérica, sirve para cualquier negocio",
+              "Lo que corregís se pierde cuando cerrás la charla",
+              "Le adjuntás la lista de precios una y otra vez",
+              "Cada persona del equipo obtiene un resultado distinto"
+            ]
+          },
+          "despues": {
+            "titulo": "Un proyecto con instrucciones",
+            "items": [
+              "Ya sabe a qué te dedicás y cómo hablás",
+              "La respuesta sale con tus condiciones y tu tono",
+              "Lo que corregís una vez queda escrito para siempre",
+              "Los archivos de referencia viven adentro del proyecto",
+              "Todos parten de la misma ficha"
+            ]
+          }
+        },
+        {
+          "tipo": "seccion",
+          "icono": "cohete",
+          "titulo": "Para qué te sirve en tu negocio",
+          "parrafos": [
+            "**Sirve para toda tarea que repetís con el mismo contexto.** Ahí es donde el contexto escrito una vez te ahorra escribirlo cincuenta.",
+            "En una distribuidora, un proyecto «Respuestas a clientes» con las condiciones de venta, los mínimos por zona y los plazos de entrega hace que un vendedor nuevo redacte la respuesta a un mayorista sin tener que pasar por vos. En una inmobiliaria, un proyecto «Publicaciones» con el tono de la marca y con qué se dice y qué no de una propiedad hace que todos los avisos salgan parejos, los escriba quien los escriba.",
+            "En un e-commerce, un proyecto «Posventa» con la política de cambios y los plazos reales convierte la respuesta a un reclamo en algo que se revisa en treinta segundos en vez de improvisarse. En una constructora o un estudio profesional, un proyecto «Propuestas» con tu modelo de presupuesto y las condiciones que siempre van adentro te devuelve un borrador con la estructura de siempre, no con la que se le ocurrió a la máquina.",
+            "**Lo que estás haciendo, en realidad, es poner por escrito el criterio del negocio.** Ese criterio hoy vive en tu cabeza y se lo explicás de a pedazos a cada persona que entra. Escribirlo una vez sirve mucho más allá de la herramienta."
+          ]
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo armarlo en quince minutos",
+          "pasos": [
+            {
+              "t": "Creá el proyecto y ponele el nombre de una tarea",
+              "d": "En el panel izquierdo de ChatGPT, «Proyectos» y después «Nuevo proyecto». Nombralo por función —«Respuestas a clientes», «Presupuestos», «Textos para redes»— y no por tema general."
+            },
+            {
+              "t": "Escribí la ficha del negocio en las instrucciones",
+              "d": "Adentro del proyecto hay un campo de instrucciones. Contestá ahí, con tus palabras, las seis preguntas de la lista de abajo. Media carilla alcanza y sobra."
+            },
+            {
+              "t": "Subí dos o tres archivos de referencia",
+              "d": "La lista de precios vigente, el machete de respuestas frecuentes, un presupuesto bien hecho que quieras usar de molde. Quedan guardados adentro del proyecto y no hay que adjuntarlos nunca más."
+            },
+            {
+              "t": "Probalo con una tarea real y corregí la ficha, no el chat",
+              "d": "La primera respuesta casi nunca sale redonda. Cuando algo no te guste, en vez de aclararlo en la charla, agregá ese renglón a las instrucciones. Esa es toda la diferencia: lo corregís una vez y queda corregido para siempre."
+            }
+          ]
+        },
+        {
+          "tipo": "claves",
+          "icono": "check",
+          "titulo": "La ficha del negocio: las seis líneas que no pueden faltar",
+          "items": [
+            "**A qué nos dedicamos**, en una frase, como se lo dirías a alguien que recién entra.",
+            "**A quién le vendemos**: el cliente típico, si es mayorista o particular, qué le importa.",
+            "**Cómo hablamos**: de vos o de usted, cortito o detallado, formal o cercano.",
+            "**Los datos fijos que se repiten**: plazos, zonas de entrega, formas de pago, condiciones comerciales.",
+            "**Qué nunca hacer**: no inventar precios, no prometer fechas, no usar tal palabra, no cerrar sin ofrecer una alternativa.",
+            "**Cómo quiero las respuestas**: largo máximo, si va con títulos o corrida, y que pregunte cuando le falte un dato en vez de suponerlo."
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "dato",
+          "titulo": "La ficha es tuya y se copia",
+          "texto": "Eso que escribiste no queda atrapado en ChatGPT. Si mañana usás otra herramienta, buscá lo mismo con otro nombre —en Gemini son los Gems, en Claude son los Proyectos— y pegás la misma ficha. Y a la persona de tu equipo que quiera armar el suyo se la pasás por mensaje: en dos minutos está trabajando con el mismo criterio que vos."
+        },
+        {
+          "tipo": "seccion",
+          "icono": "aviso",
+          "titulo": "Qué poner adentro y qué dejar afuera",
+          "parrafos": [
+            "**Poné lo que explicás siempre y no cambia todos los días:** cómo trabajan, qué venden, condiciones comerciales, tono, el machete de respuestas, un par de textos modelo que hayan salido bien.",
+            "**Dejá afuera los datos personales de tus clientes y de tu gente:** documentos, teléfonos, direcciones, datos bancarios, legajos. La regla es la de siempre: a una herramienta de un tercero no le subas lo que no querrías que saliera de tu oficina. Un presupuesto sirve igual de molde con el nombre del cliente borrado.",
+            "**Y revisá la ficha cuando cambie algo del negocio.** Si actualizaste la lista de precios o cambió un plazo de entrega, reemplazá el archivo viejo por el nuevo. Un proyecto con la lista del año pasado adentro contesta con toda seguridad un precio que ya no existe."
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "El error más común",
+          "texto": "Escribir instrucciones que no dicen nada. «Sé profesional», «escribí bien» o «que sea amable» no le sirven, porque cada uno entiende otra cosa. Lo que funciona es lo concreto: «respuestas de menos de ocho renglones», «tratamos de usted», «nunca damos un precio que no esté en la lista adjunta», «si falta un dato, preguntalo antes de responder». Si una instrucción tuya podría estar en la ficha de cualquier otro negocio, todavía no es una instrucción."
+        },
+        {
+          "tipo": "cita",
+          "texto": "El chat no se acuerda de vos de una charla a la otra. Lo único que se acuerda es lo que vos dejaste escrito.",
+          "autor": ""
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "Pensá cuál es la tarea que más veces le pediste a la IA este mes. Abrí un proyecto solo para esa —una, no tres— y escribí media carilla contestando las seis preguntas de la ficha. Después pedile la tarea como se la pedirías a alguien de tu equipo, sin explicarle nada. La diferencia con lo que venías recibiendo se nota en la primera respuesta."
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "No hace falta armar diez proyectos ni escribir un manual. Con uno solo, el de la tarea que más repetís, ya vas a notar el cambio: dejás de explicar y empezás a pedir. Y cada corrección, en lugar de perderse al cerrar la charla, queda. Cualquier duda que te surja mientras lo armás, escribinos: para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  },
+  {
+    "title": "De la reunión a la minuta, sin tomar notas",
+    "topic": "papeles-datos",
+    "published_at": "2026-09-25",
+    "doc": {
+      "modo": "deep-dive",
+      "eyebrow": "GUÍA DE IA PARA TU NEGOCIO",
+      "titulo": "De la reunión a la minuta, sin tomar notas",
+      "subtitulo": "Grabás con el celular, la IA lo pasa a texto y te devuelve lo que se decidió, quién hace cada cosa y para cuándo.",
+      "lectura": "7 min de lectura",
+      "intro": "Salís de la reunión con el proveedor seguro de que quedó todo claro. A los tres días nadie se acuerda si la entrega era el martes o el jueves, quién tenía que mandar la cotización ni qué precio se había hablado. Tus notas están en una libreta, a medias, porque mientras escribías no podías escuchar. Hay una forma de estar en la reunión con la cabeza en la reunión y salir igual con todo por escrito.",
+      "bloques": [
+        {
+          "tipo": "seccion",
+          "icono": "idea",
+          "titulo": "Qué es, en palabras simples",
+          "parrafos": [
+            "**Son dos pasos que la IA hace uno atrás del otro.** Primero transcribe: pasa a texto, palabra por palabra, todo lo que se dijo. Después arma la minuta: de ese texto largo saca solo lo que importa —qué se decidió, quién hace cada cosa, para cuándo y qué quedó sin resolver.",
+            "**Pensalo como tener en la mesa a alguien que anota todo sin perderse una palabra** y que después te pasa en limpio lo que hay que hacer. Vos mirás a la persona que tenés enfrente, preguntás y negociás; de anotar se ocupa otro.",
+            "**No tiene que ser una videollamada.** La reunión en la oficina, en el depósito o en la obra se graba con la grabadora que ya trae tu celular. No hay nada que comprar."
+          ]
+        },
+        {
+          "tipo": "herramienta",
+          "nombre": "NotebookLM",
+          "precio": "Gratis con tu cuenta de Google",
+          "que": "Una herramienta de Google que trabaja solo con lo que vos le subís. Acepta audios: le das la grabación de la reunión y la pasa a texto.",
+          "como": "Creás un cuaderno «Reuniones», subís la grabación como una fuente más y le pedís la minuta con el pedido que está más abajo.",
+          "para": "Reuniones presenciales con tu equipo, con proveedores o con clientes, y tenerlas todas guardadas en un solo lugar para consultarlas después."
+        },
+        {
+          "tipo": "seccion",
+          "icono": "cohete",
+          "titulo": "Para qué te sirve en tu negocio",
+          "parrafos": [
+            "**Sirve en toda reunión donde se acuerda algo que después alguien tiene que cumplir.** Y eso son casi todas.",
+            "En una constructora, la reunión de obra con el capataz y el proveedor de materiales termina con la lista de lo que falta pedir, quién lo pide y qué día tiene que estar en obra. En una distribuidora, la reunión de los lunes con los vendedores queda con cada cliente a visitar y cada promoción a ofrecer, con nombre y apellido al lado.",
+            "En una inmobiliaria, la primera charla con un propietario que pone en venta queda con el precio que pretende, las condiciones que puso y los papeles que le falta traer.",
+            "**Lo que cambia no es solo el tiempo que te ahorrás escribiendo.** Es que todos se van con la misma versión de lo que se habló, y cuando alguien dice «yo entendí otra cosa», está escrito."
+          ]
+        },
+        {
+          "tipo": "comparacion",
+          "titulo": "La diferencia en la próxima reunión",
+          "antes": {
+            "titulo": "Tomando notas a mano",
+            "items": [
+              "Mirás la libreta en vez de mirar a la persona",
+              "La minuta queda para después, y después no llega",
+              "Cada uno se va con su propia versión de lo acordado",
+              "El precio que se dijo de palabra no queda en ningún lado"
+            ]
+          },
+          "despues": {
+            "titulo": "Grabando y pidiendo la minuta",
+            "items": [
+              "Estás en la charla, preguntando y negociando",
+              "La minuta está lista un rato después de cortar",
+              "Todos reciben el mismo texto, con tareas y fechas",
+              "Los números acordados quedan por escrito"
+            ]
+          }
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo hacerlo en tu próxima reunión",
+          "pasos": [
+            {
+              "t": "Avisá y poné a grabar",
+              "d": "Al empezar, decí «lo grabo así no tomo notas». Dejá el celular en el medio de la mesa, lejos del aire acondicionado. Si cada uno se presenta al arrancar —«soy Marta, de compras»—, la minuta va a poder ponerles nombre a las tareas."
+            },
+            {
+              "t": "Antes de cortar, decí los acuerdos en voz alta",
+              "d": "En los últimos dos minutos: «Entonces quedamos así: Marta manda la cotización el jueves y nosotros confirmamos la entrega el lunes». Es la parte más valiosa de toda la grabación, porque es exactamente lo que va a ir a la minuta."
+            },
+            {
+              "t": "Subí el audio a NotebookLM",
+              "d": "Pasá la grabación a la compu como pasarías cualquier foto: por WhatsApp a vos mismo, por Drive o por mail. Entrá a notebooklm.google.com, creá un cuaderno «Reuniones» y subí el audio como una fuente más, igual que un PDF. En un par de minutos lo pasa a texto."
+            },
+            {
+              "t": "Pedile la minuta, revisala y mandala",
+              "d": "Si en el cuaderno ya hay otras reuniones, dejá marcada solo la de hoy en la lista de fuentes. Pegale el pedido de abajo, revisá lo que te devuelve y mandáselo a todos los que estuvieron, ese mismo día."
+            }
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "dato",
+          "titulo": "El pedido de la minuta, para copiar tal cual",
+          "texto": "«Con la grabación de esta reunión, armá una minuta con cuatro partes. 1) Qué se decidió. 2) Las tareas, cada una con quién la hace y para cuándo. 3) Los números que se acordaron (precios, cantidades, plazos) tal como se dijeron. 4) Lo que quedó sin resolver. Si no queda claro quién hace algo o para cuándo, marcalo como pendiente en vez de suponerlo. Escribila corta, para mandar por mail.»"
+        },
+        {
+          "tipo": "seccion",
+          "icono": "check",
+          "titulo": "Antes de mandarla, revisá tres cosas",
+          "parrafos": [
+            "**La transcripción es muy buena, pero no es perfecta.** Se equivoca en lo mismo que cualquiera que escucha una grabación con ruido de fondo.",
+            "**Los números.** «Quince» y «cincuenta» suenan parecido en una mesa con ruido. Y un precio mal escrito en una minuta que recibieron todos es peor que no tener minuta.",
+            "**Quién hace cada cosa.** A veces pone una frase en boca de quien no la dijo. Fijate que cada tarea tenga el responsable correcto: es lo primero que cada uno va a buscar.",
+            "**Las fechas.** «El jueves», leído dentro de una semana, ya no se sabe cuál es. Cambialo por la fecha exacta antes de mandarla.",
+            "Si algo no te cierra, preguntale de dónde lo sacó: NotebookLM te muestra en qué parte de la transcripción se basa."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "chat",
+          "titulo": "¿Y si la reunión es por videollamada?",
+          "parrafos": [
+            "**Es todavía más fácil.** Google Meet, Zoom y Microsoft Teams tienen su propio asistente que toma notas y te deja el resumen al terminar; que venga incluido depende de tu plan. Fijate si dentro de la llamada aparece un botón para tomar notas o resumir con IA.",
+            "**Si tu plan no lo trae, no cambies de plan por esto.** Poné el sonido de la compu por el parlante —no con auriculares, porque así el celular no escucha a los demás—, dejá el celular grabando al lado y seguí los mismos pasos de arriba."
+          ]
+        },
+        {
+          "tipo": "seccion",
+          "icono": "aviso",
+          "titulo": "Dos reglas antes de apretar «grabar»",
+          "parrafos": [
+            "**Avisá siempre.** A nadie le gusta enterarse después de que lo grabaron, y la confianza con un cliente o un proveedor vale más que cualquier minuta. Decirlo lleva cinco segundos.",
+            "**Hay charlas que no se graban.** Un sueldo, un problema personal de alguien del equipo, un tema de salud, una negociación delicada: lo que no le darías a la IA por escrito, tampoco se lo des en audio. Para esas, la libreta de siempre."
+          ]
+        },
+        {
+          "tipo": "tip",
+          "estilo": "aviso",
+          "titulo": "El error más común",
+          "texto": "Pedirle «resumime la reunión». Te devuelve tres párrafos prolijos que cuentan de qué se habló, y ninguna tarea con nombre ni fecha. Un resumen dice de qué se charló; una minuta dice qué pasa ahora y quién se hace cargo. Si lo que te devolvió no se puede reenviar tal cual, volvé a pedirla con las cuatro partes."
+        },
+        {
+          "tipo": "tip",
+          "estilo": "dato",
+          "titulo": "Todas tus reuniones, en un solo lugar",
+          "texto": "Si subís cada grabación al mismo cuaderno, más adelante le podés preguntar «¿qué plazo nos había dado el proveedor de aberturas?» o «¿qué condiciones puso el propietario de la casa de la calle Mitre?», y te contesta mostrándote la parte de la reunión donde se dijo."
+        },
+        {
+          "tipo": "cita",
+          "texto": "Una reunión sin minuta es una charla. Con minuta, es un acuerdo.",
+          "autor": ""
+        },
+        {
+          "tipo": "tip",
+          "estilo": "accion",
+          "titulo": "Probá esto esta semana",
+          "texto": "Elegí una sola reunión de esta semana —la de los lunes con tu equipo, la visita de un proveedor, la de obra— y grabala con el celular. Antes de cortar, decí en voz alta lo que quedó acordado. Subí el audio a NotebookLM, pedile la minuta con el pedido de arriba, revisala y mandásela a todos los que estuvieron ese mismo día. La próxima vez que alguien diga «yo entendí otra cosa», la respuesta ya va a estar en su mail."
+        }
+      ],
+      "cierre": {
+        "titulo": "Para cerrar",
+        "texto": "No hace falta grabar todas las reuniones desde mañana. Empezá por la que más acuerdos deja y fijate si la minuta se parece a lo que vos te llevaste en la cabeza. Cualquier duda que te surja mientras lo probás, escribinos: para eso estamos.",
+        "firma": "Equipo SK Optimal"
+      }
+    }
+  }
+]
