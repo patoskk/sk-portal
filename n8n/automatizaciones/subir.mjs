@@ -80,6 +80,9 @@ const sello = new Date().toISOString().replace(/[:.]/g, "-");
 
 for (const k of CLAVES) {
   const nombre = C.workflows[k];
+  // Primero por id (ids.json): así un workflow RENOMBRADO en config.json se actualiza en su lugar en vez de
+  // crear uno nuevo y dejar el viejo corriendo con el nombre anterior (el resumen se renombró el 30/09).
+  if (ids.workflows[k] && todos.some((w) => w.id === ids.workflows[k])) continue;
   const existente = porNombre.get(nombre);
   if (existente) { ids.workflows[k] = existente.id; continue; }
   const wf = construir(ids).find((w) => w.name === nombre);

@@ -326,21 +326,20 @@ function wfBot(ids) {
   return { name: W, nodes: b.nodos, connections: b.con, settings: SETTINGS(ids) };
 }
 
-// ── W4: Novedades — resumen del mes ──────────────────────────────────────────────────────────────────
+// ── W4: Novedades — resumen cada dos semanas ─────────────────────────────────────────────────────────
 function wfResumen(ids) {
   const W = C.workflows.resumen;
   const b = armar(W, ids);
   b.semanal("Miércoles 10:00", [0, 0], 3, 10);
   b.webhookPrueba("Prueba (webhook)", [0, 1], "sk-novedades-resumen-prueba");
-  b.code("¿Primer miércoles?", [1, 0], "primer-miercoles.js");
+  b.code("¿Toca esta semana?", [1, 0], "toca-resumen.js");
   b.si("¿Correr?", [2, 0], "$json.correr === true");
-  b.portal("Portal: resumen", [3, 0], "POST", "/api/automation/updates/digest",
-    "{ prueba: $('¿Primer miércoles?').first().json.prueba, period: $('¿Primer miércoles?').first().json.period || undefined }");
+  b.portal("Portal: resumen", [3, 0], "POST", "/api/automation/updates/digest", "{ prueba: $('¿Toca esta semana?').first().json.prueba }");
   b.code("Mensaje resumen", [4, 0], "mensaje-resumen.js");
   b.mensaje("Telegram: resumen", [5, 0], b.chatPato, "={{ $json.texto }}");
-  b.une("Miércoles 10:00", "¿Primer miércoles?");
-  b.une("Prueba (webhook)", "¿Primer miércoles?");
-  b.cadena("¿Primer miércoles?", "¿Correr?");
+  b.une("Miércoles 10:00", "¿Toca esta semana?");
+  b.une("Prueba (webhook)", "¿Toca esta semana?");
+  b.cadena("¿Toca esta semana?", "¿Correr?");
   b.une("¿Correr?", "Portal: resumen", 0);
   b.cadena("Portal: resumen", "Mensaje resumen", "Telegram: resumen");
   return { name: W, nodes: b.nodos, connections: b.con, settings: SETTINGS(ids) };

@@ -1,4 +1,4 @@
-// Render del resumen mensual de novedades ("lo que le hicimos a tu agente en septiembre"). Función PURA,
+// Render del resumen de novedades, cada dos semanas ("lo que le fuimos haciendo a tu agente"). Función PURA,
 // igual que lessonEmail.ts, y con sus MISMAS reglas de estética por la misma razón: tiene que parecer un
 // mail que escribió Pato, no una campaña, para caer en la bandeja Principal. Sin imágenes, una columna a
 // ancho completo, un solo link como texto, parte text/plain, sin tracking. Leé los comentarios de
@@ -16,7 +16,6 @@ export interface DigestItem {
 
 export interface DigestEmailInput {
   greetingName: string;
-  monthLabel: string; // "septiembre"
   items: DigestItem[];
   updatesUrl: string; // https://portal.skoptimal.com/novedades
   fromName: string;
@@ -30,9 +29,12 @@ const GRUPOS: { kind: UpdateKind; titulo: string }[] = [
   { kind: "arreglo", titulo: "Arreglos" },
 ];
 
-/** Minúscula y sin palabras de campaña: mismo criterio que defaultSubject() de lessonEmail.ts. */
-export function digestSubject(monthLabel: string): string {
-  return `lo que le hicimos a tu agente en ${monthLabel}`;
+/**
+ * Minúscula y sin palabras de campaña: mismo criterio que defaultSubject() de lessonEmail.ts. Sin fecha ni
+ * mes a propósito: el resumen junta todo lo publicado desde el anterior, que puede venir de más de dos semanas.
+ */
+export function digestSubject(): string {
+  return "lo que le fuimos haciendo a tu agente";
 }
 
 function esc(s: string): string {
@@ -44,8 +46,8 @@ export function renderDigestEmail(i: DigestEmailInput): { html: string; text: st
   const n = i.items.length;
   const intro =
     n === 1
-      ? `Te cuento lo que le hicimos a tu agente en ${i.monthLabel}.`
-      : `Te cuento las ${n} cosas que le hicimos a tu agente en ${i.monthLabel}.`;
+      ? "Te cuento lo último que le hicimos a tu agente."
+      : `Te cuento las ${n} cosas que le hicimos a tu agente estas últimas semanas.`;
   const preheader = i.items[0]?.title ?? intro;
 
   const bloques = GRUPOS.map((g) => {
@@ -73,7 +75,7 @@ export function renderDigestEmail(i: DigestEmailInput): { html: string; text: st
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(digestSubject(i.monthLabel))}</title>
+<title>${esc(digestSubject())}</title>
 </head>
 <body style="margin:0;padding:0;background:#ffffff;">
 <div style="display:none;font-size:0;line-height:0;max-height:0;overflow:hidden;opacity:0;color:transparent;">${esc(preheader)}</div>

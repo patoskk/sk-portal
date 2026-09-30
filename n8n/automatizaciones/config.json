@@ -11,6 +11,9 @@
   "temas_bajo_umbral": 6,
   "mail_desde_hora": 9,
   "mail_hasta_hora": 21,
+  "_resumen": "El resumen de novedades sale un miércoles sí y otro no (Pato, 30/09): el primero es el ancla y después cada 14 días.",
+  "resumen_ancla": "2026-10-07",
+  "resumen_cada_dias": 14,
   "credenciales": {
     "telegram": "Vigilante Telegram",
     "anthropic": "Anthropic SK Optimal",
@@ -21,7 +24,7 @@
     "temas": "SK — Lecciones: temas del lunes",
     "bot": "SK — Bot de Pato",
     "escribir": "SK — Lecciones: escribir y publicar",
-    "resumen": "SK — Novedades: resumen del mes",
+    "resumen": "SK — Novedades: resumen quincenal",
     "errores": "SK — Avisarme si algo falla",
     "aviso": "SK — Aviso de lección nueva",
     "recordatorio_viejo": "Recordatorio Lecciones"

@@ -2,9 +2,9 @@
 // Protegida por NOTIFY_SECRET (Bearer), igual que /api/cron/*. Esta ruta está
 // EXCLUIDA del middleware; si no, el POST de n8n se come un 307 al login.
 //
-// El mismo workflow de Gmail manda los avisos de lección y el resumen mensual de novedades. Lo que
+// El mismo workflow de Gmail manda los avisos de lección y el resumen de novedades (cada dos semanas). Lo que
 // distingue uno de otro es la referencia que viaja en `lesson_id` (ver lib/notify/send.ts):
-// un uuid = lesson_notifications; `digest:YYYY-MM` = update_digests.
+// un uuid = lesson_notifications; `digest:YYYY-MM-DD` = update_digests.
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { DIGEST_REF_PREFIX } from "@/lib/notify/send";

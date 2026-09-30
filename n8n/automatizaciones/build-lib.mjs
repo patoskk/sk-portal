@@ -61,6 +61,8 @@ export function datos() {
       temas_bajo_umbral: c.temas_bajo_umbral,
       mail_desde_hora: c.mail_desde_hora,
       mail_hasta_hora: c.mail_hasta_hora,
+      resumen_ancla: c.resumen_ancla,
+      resumen_cada_dias: c.resumen_cada_dias,
     },
     TEMAS: temas,
     CATEGORIAS: cats,

@@ -61,7 +61,7 @@ seccion("Inyección y compilación");
 const ARCHIVOS = [
   "elegir-temas.js", "ruteo-bot.js", "tema.js", "contexto.js", "armar-investigacion.js", "leer-investigacion.js",
   "armar-escritura.js", "leer-escritura.js", "validar-leccion.js", "armar-revision.js", "render-leccion.js",
-  "decidir-horario.js", "mensaje-final.js", "mensaje-rechazo.js", "mensaje-error.js", "mensaje-resumen.js", "primer-miercoles.js",
+  "decidir-horario.js", "mensaje-final.js", "mensaje-rechazo.js", "mensaje-error.js", "mensaje-resumen.js", "toca-resumen.js",
   "archivo-leccion.js",
 ];
 for (const a of ARCHIVOS) {
@@ -311,14 +311,21 @@ seccion("Mensajes");
   ok(/No se publicó nada/.test(e1.texto), "un error antes de publicar lo dice");
   const e2 = (await correr("mensaje-error.js", { input: [{ workflow: { name: "SK — Lecciones: escribir y publicar" }, execution: { lastNodeExecuted: "Portal: avisar", error: { message: "502" } } }] }))[0].json;
   ok(/YA estaba publicada/.test(e2.texto), "un error después de publicar no dice que no se publicó");
-  const rs = (await correr("mensaje-resumen.js", { input: [{ periodo: "2026-09", periodo_label: "septiembre", enviados: [{ clientName: "CGG", count: 2 }], salteados: [{ clientName: "Brilla", reason: "sin novedades" }] }] }))[0].json;
-  ok(/septiembre/.test(rs.texto) && /CGG: 2/.test(rs.texto) && /Brilla/.test(rs.texto), "el resumen dice a quién le llegó");
-  const pm = async (iso) => (await correr("primer-miercoles.js", { input: [{}], ahora: iso }))[0].json.correr;
-  ok((await pm("2026-10-07T13:00:00Z")) === true && (await pm("2026-10-14T13:00:00Z")) === false, "solo el primer miércoles del mes");
-  const pw = (await correr("primer-miercoles.js", { input: [{ headers: {}, body: { period: "2026-09" } }] }))[0].json;
-  ok(pw.correr && pw.prueba && pw.period === "2026-09", "el webhook de prueba puede pedir un mes");
-  const pw2 = (await correr("primer-miercoles.js", { input: [{ headers: {}, body: { period: "x; drop" } }] }))[0].json;
-  ok(pw2.period === null, "un período mal escrito no pasa");
+  const rs = (await correr("mensaje-resumen.js", { input: [{ periodo: "2026-10-07", enviados: [{ clientName: "CGG", count: 2 }], salteados: [{ clientName: "Brilla", reason: "sin novedades nuevas" }] }] }))[0].json;
+  ok(/dos semanas/.test(rs.texto) && /CGG: 2/.test(rs.texto) && /Brilla/.test(rs.texto), "el resumen dice a quién le llegó y a quién no");
+  const rv = (await correr("mensaje-resumen.js", { input: [{ periodo: "2026-10-21", enviados: [], salteados: [{ clientName: "Brilla", reason: "sin novedades nuevas" }] }] }))[0].json;
+  ok(/no salió ningún mail/.test(rv.texto), "si nadie tuvo novedades, lo dice");
+
+  // cada dos semanas desde el miércoles 07/10 (Pato, 30/09): a las 10 AR = 13 UTC
+  const toca = async (iso) => (await correr("toca-resumen.js", { input: [{}], ahora: iso }))[0].json.correr;
+  ok((await toca("2026-10-07T13:00:00Z")) === true, "el 07/10 (el primero) toca");
+  ok((await toca("2026-10-14T13:00:00Z")) === false, "el 14/10 no toca");
+  ok((await toca("2026-10-21T13:00:00Z")) === true, "el 21/10 toca");
+  ok((await toca("2026-11-04T13:00:00Z")) === true && (await toca("2026-11-11T13:00:00Z")) === false, "y sigue un miércoles sí y otro no (04/11 sí, 11/11 no)");
+  ok((await toca("2026-09-30T13:00:00Z")) === false, "antes del primero no toca");
+  ok((await toca("2027-01-13T13:00:00Z")) === true, "cruza el año sin correrse (13/01/2027)");
+  const pw = (await correr("toca-resumen.js", { input: [{ headers: {}, body: {} }] }))[0].json;
+  ok(pw.correr && pw.prueba, "el webhook de prueba corre siempre, en prueba");
 }
 
 console.log(`\n${fallas ? "✗" : "✓"} ${pasadas} bien, ${fallas} mal\n`);
