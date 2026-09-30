@@ -22,6 +22,8 @@ for (const u of usos) {
     (u.cache_read_input_tokens || 0) * P.cache_lectura + (u.cache_creation_input_tokens || 0) * P.cache_escritura) / 1e6;
   busquedas += u.server_tool_use?.web_search_requests || 0;
 }
+usd += busquedas * (P.busqueda || 0);
+// + el borrador del mail, que redacta el portal con Sonnet 5 (~USD 0,01): no pasa por n8n y no se mide acá.
 
 const lineas = [];
 lineas.push(prueba ? '[PRUEBA] Quedó en el panel de demostración: ningún cliente la ve, y vos tampoco desde /lecciones. Leela en el archivo adjunto.' : 'Publicada:');

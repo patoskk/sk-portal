@@ -1,8 +1,12 @@
 // Nodo "Armar revisión" — la segunda lectura, hecha por otro Claude con el mismo método.
 //
 // Es la "revisión doble" que Pato pide para todo entregable, pasada a máquina porque la lección sale sin
-// que él la lea. Usa el MISMO system que la escritura (lo lee de la caché) y recibe lo que marcó el
-// validador. La instrucción más importante es la última: no reescribir lo que ya está bien.
+// que él la lea. Usa el MISMO system que la escritura y recibe lo que marcó el validador, las notas de
+// investigación y la lista de lo publicado. La instrucción más importante es la última: no reescribir lo
+// que ya está bien.
+//
+// La lista de lo publicado está porque sin ella, en la primera prueba (29/09), la revisión borró dos
+// menciones a lecciones anteriores "porque no se pueden verificar": el escritor las tenía y ella no.
 
 const CONFIG = /*@CONFIG*/null;
 
@@ -32,6 +36,10 @@ const partes = [
   'No cambies lo que ya está bien: una revisión que reescribe todo pierde la voz.',
 ];
 if (esc.notas) partes.push('', 'Las notas de investigación que tuvo el redactor:', '<notas>', esc.notas, '</notas>');
+if (Array.isArray(esc.publicados) && esc.publicados.length) {
+  partes.push('', 'Las lecciones ya publicadas en el portal (si la lección menciona alguna por su nombre, es correcto: dejala):');
+  esc.publicados.forEach((t) => partes.push(`- ${t}`));
+}
 partes.push(
   '',
   'La lección:',

@@ -1,8 +1,12 @@
 // Nodo "Armar escritura" — el pedido a Claude que escribe la lección.
 //
-// El system prompt es el MISMO para escribir y para revisar (armar-revision.js lo toma de acá): así la
-// revisión, que sale minutos después, lee el método completo desde la caché en vez de pagarlo de nuevo.
-// Por eso la tarea concreta ("escribí" / "revisá") va en el mensaje, no en el system.
+// El system prompt es el MISMO para escribir y para revisar (armar-revision.js lo toma de acá): los dos
+// trabajan con el mismo método, y la tarea concreta ("escribí" / "revisá") va en el mensaje.
+//
+// SIN CACHÉ, medido (29/09, ejecución 129572): la idea era que la revisión leyera el system de la caché,
+// pero el schema de salida estructurada entra en el prefijo y el de la revisión es otro. Resultado: las dos
+// llamadas ESCRIBIERON caché (14.171 y 14.442 tokens, a 1,25x) y ninguna la leyó. Con una lección por semana
+// tampoco hay otra llamada dentro de los 5 minutos que la aproveche. La caché solo sumaba un 25%.
 //
 // El método, el contrato y el ejemplo vienen de la skill nutricion-ia (build-lib.mjs los inyecta).
 // Las REGLAS de abajo son las que después controla validar-leccion.js: si se cambia una, se cambian las dos.
@@ -97,12 +101,13 @@ return [{
     system: SYSTEM,
     schema: SCHEMA,
     notas: investigacion ? investigacion.notas : '',
+    publicados,
     body: {
       model: CONFIG.modelo,
       max_tokens: 32000,
       thinking: { type: 'adaptive' },
       output_config: { effort: 'high', format: { type: 'json_schema', schema: SCHEMA } },
-      system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }],
+      system: [{ type: 'text', text: SYSTEM }],
       messages: [{ role: 'user', content: partes.join('\n') }],
     },
   },

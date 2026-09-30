@@ -232,7 +232,8 @@ seccion("Pedidos a Claude");
   const publicadas = { publicados: LECCIONES.map((l) => ({ title: l.title })) };
   const sinInv = (await correr("armar-escritura.js", { nodos: { Tema: [{ tema }], "Portal: publicadas": [publicadas] } }))[0].json;
   const b = sinInv.body;
-  ok(b.system[0].cache_control && b.system[0].text.includes("La columna vertebral"), "el system trae el método de la skill y va cacheado");
+  ok(b.system[0].text.includes("La columna vertebral"), "el system trae el método de la skill");
+  ok(!b.system[0].cache_control, "sin caché: medido el 29/09, el schema distinto la invalida y solo sumaba un 25%");
   ok(b.output_config.format.schema.properties.bloques.items.anyOf.length === 7, "el schema tiene los 7 tipos de bloque");
   ok(!("temperature" in b) && b.thinking.type === "adaptive", "sin temperature y con razonamiento adaptativo (Opus 5.5 rechaza lo demás)");
   ok(b.messages[0].content.includes("De la reunión a la minuta") && !b.messages[0].content.includes("<notas>"), "manda las publicadas y, sin investigación, no inventa notas");
@@ -242,8 +243,9 @@ seccion("Pedidos a Claude");
 
   const v1 = { doc: BUENA, problemas: ["tiene un vulgarismo"], avisos: ["tiene 9 rayas"] };
   const rev = (await correr("armar-revision.js", { input: [v1], nodos: { "Armar escritura": [conInv] } }))[0].json.body;
-  ok(rev.system === conInv.body.system, "la revisión usa EXACTAMENTE el mismo system (así lo lee de la caché)");
+  ok(rev.system === conInv.body.system, "la revisión usa el mismo system (el mismo método)");
   ok(rev.messages[0].content.includes("problema: tiene un vulgarismo") && rev.messages[0].content.includes("Paso 1"), "la revisión recibe lo que marcó el validador y las notas");
+  ok(rev.messages[0].content.includes("- De la reunión a la minuta"), "la revisión recibe lo publicado (sin eso borró menciones legítimas, 29/09)");
   ok(rev.output_config.format.schema.properties.documento === conInv.schema || JSON.stringify(rev.output_config.format.schema.properties.documento) === JSON.stringify(conInv.schema), "la revisión devuelve el documento con el mismo schema");
 }
 
@@ -313,6 +315,10 @@ seccion("Mensajes");
   ok(/septiembre/.test(rs.texto) && /CGG: 2/.test(rs.texto) && /Brilla/.test(rs.texto), "el resumen dice a quién le llegó");
   const pm = async (iso) => (await correr("primer-miercoles.js", { input: [{}], ahora: iso }))[0].json.correr;
   ok((await pm("2026-10-07T13:00:00Z")) === true && (await pm("2026-10-14T13:00:00Z")) === false, "solo el primer miércoles del mes");
+  const pw = (await correr("primer-miercoles.js", { input: [{ headers: {}, body: { period: "2026-09" } }] }))[0].json;
+  ok(pw.correr && pw.prueba && pw.period === "2026-09", "el webhook de prueba puede pedir un mes");
+  const pw2 = (await correr("primer-miercoles.js", { input: [{ headers: {}, body: { period: "x; drop" } }] }))[0].json;
+  ok(pw2.period === null, "un período mal escrito no pasa");
 }
 
 console.log(`\n${fallas ? "✗" : "✓"} ${pasadas} bien, ${fallas} mal\n`);

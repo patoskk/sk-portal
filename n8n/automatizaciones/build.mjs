@@ -334,7 +334,8 @@ function wfResumen(ids) {
   b.webhookPrueba("Prueba (webhook)", [0, 1], "sk-novedades-resumen-prueba");
   b.code("¿Primer miércoles?", [1, 0], "primer-miercoles.js");
   b.si("¿Correr?", [2, 0], "$json.correr === true");
-  b.portal("Portal: resumen", [3, 0], "POST", "/api/automation/updates/digest", "{ prueba: $('¿Primer miércoles?').first().json.prueba }");
+  b.portal("Portal: resumen", [3, 0], "POST", "/api/automation/updates/digest",
+    "{ prueba: $('¿Primer miércoles?').first().json.prueba, period: $('¿Primer miércoles?').first().json.period || undefined }");
   b.code("Mensaje resumen", [4, 0], "mensaje-resumen.js");
   b.mensaje("Telegram: resumen", [5, 0], b.chatPato, "={{ $json.texto }}");
   b.une("Miércoles 10:00", "¿Primer miércoles?");
