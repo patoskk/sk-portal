@@ -7,8 +7,9 @@
 import type { Metadata } from "next";
 import { getDashboardData } from "@/lib/data/dashboard";
 import { isAdmin } from "@/lib/data/role";
-import { ActivityBars, ActivityLine, HBarChart, UsageDonut } from "@/components/Charts";
+import { ActivityBars, ActivityLine, HBarChart, UsageBars } from "@/components/Charts";
 import { AutoPrint } from "@/components/AutoPrint";
+import { Logo } from "@/components/Logo";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Reporte" };
@@ -36,11 +37,12 @@ export default async function ReportePage({
     <main className="report">
       <header className="report-head">
         <div>
-          <div className="wordmark">
-            <span className="sk">SK</span> <span className="op">OPTIMAL</span>
-          </div>
+          <Logo height={26} />
+          {d.clientName ? (
+            <div className="page-eyebrow" style={{ marginTop: "var(--sp-4)" }}>{d.clientName}</div>
+          ) : null}
           <h1 className="report-title">
-            {d.clientName ? `${d.clientName} — ` : ""}tu agente de IA, en números
+            Tu agente de IA, <em>en números</em>
           </h1>
           <p className="report-period">
             Período del {fmtDate(from)} al {fmtDate(to)}
@@ -73,13 +75,13 @@ export default async function ReportePage({
 
       <section className="report-grid">
         <Block title="Uso de herramientas" note={d.insight?.usage}>
-          <UsageDonut data={d.tools} />
+          <UsageBars data={d.tools} />
         </Block>
         <Block title="Calidad de las respuestas" note={d.insight?.misses}>
           <div className="ministat-grid">
             <div>
               <div className="ministat-value">{d.msgsPerConv}</div>
-              <div className="stat-label">Mensajes por charla</div>
+              <div className="stat-label">Mensajes por conversación</div>
             </div>
             <div>
               <div className="ministat-value" style={d.quality.errors ? { color: "var(--warn)" } : undefined}>

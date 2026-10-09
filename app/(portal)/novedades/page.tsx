@@ -15,7 +15,7 @@ const MES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct
 const KIND_UI: Record<UpdateKind, { label: string; tone: BadgeTone }> = {
   nuevo: { label: "Nuevo", tone: "solid" },
   mejora: { label: "Mejora", tone: "accent" },
-  arreglo: { label: "Arreglo", tone: "gold" },
+  arreglo: { label: "Arreglo", tone: "neutral" },
 };
 
 export default async function NovedadesPage() {
@@ -27,8 +27,8 @@ export default async function NovedadesPage() {
       <SeenMarker latest={updates[0]?.published_at ?? null} />
 
       <div className="page-head">
-        <h1 className="page-title">Novedades de tu agente</h1>
-        <p className="page-sub">Lo que le fuimos sumando, mejorando y arreglando. De lo más nuevo a lo más viejo.</p>
+        <h1 className="page-title">Novedades de <em>tu agente</em></h1>
+        <p className="page-sub">Lo que le sumamos, mejoramos y corregimos a tu agente, del cambio más reciente al más antiguo.</p>
       </div>
 
       {updates.length === 0 ? (

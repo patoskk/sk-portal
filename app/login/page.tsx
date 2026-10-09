@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/Logo";
 
 // Mensajes de Supabase auth traducidos (el público es no técnico).
 function traducirError(msg: string): string {
@@ -71,17 +72,18 @@ export default function LoginPage() {
     padding: "11px 13px",
     border: "1px solid var(--line)",
     borderRadius: 10,
-    fontSize: 14,
+    fontSize: 15,
     marginBottom: 12,
     background: "var(--card)",
     color: "var(--ink)",
   } as const;
 
+  // verde del logo con texto noche: la regla de la marca para un botón lleno
   const btn = {
     width: "100%",
     padding: "11px 13px",
-    background: "var(--accent)",
-    color: "#fff",
+    background: "var(--accent-solid)",
+    color: "var(--on-accent)",
     border: 0,
     borderRadius: 10,
     fontWeight: 700,
@@ -95,9 +97,8 @@ export default function LoginPage() {
         placeItems: "center",
         minHeight: "100dvh",
         padding: 24,
-        // fondo con un respiro de marca, sin competir con la tarjeta
-        background:
-          "radial-gradient(900px 500px at 15% -10%, var(--tint), transparent 60%), radial-gradient(700px 420px at 110% 110%, var(--tint), transparent 55%)",
+        // fondo plano: la marca no usa degradés ni resplandores
+        background: "var(--paper)",
       }}
     >
       {/* width 100% + maxWidth: en un grid auto, maxWidth:"100%" no clampa y desborda en mobile */}
@@ -105,8 +106,8 @@ export default function LoginPage() {
         className="card"
         style={{ width: "100%", maxWidth: 380, minHeight: 320, borderTop: "3px solid var(--accent)" }}
       >
-        <div className="wordmark" style={{ marginBottom: 18 }}>
-          <span className="sk">SK</span> <span className="op">OPTIMAL</span>
+        <div style={{ marginBottom: 22 }}>
+          <Logo height={30} />
         </div>
 
         {loading && mode === "login" ? (
@@ -119,11 +120,11 @@ export default function LoginPage() {
             <div style={{ fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>
               Ingresando<span className="dots" />
             </div>
-            <div style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>Preparando tu portal…</div>
+            <div style={{ fontSize: 13.5, color: "var(--ink-soft)" }}>Preparando tu portal…</div>
           </div>
         ) : mode === "reset-sent" ? (
           <>
-            <h1 style={{ fontSize: 22, margin: "0 0 4px" }}>Revisá tu correo</h1>
+            <h1 style={{ fontSize: 26, margin: "0 0 4px" }}>Revisá tu correo</h1>
             <p style={{ color: "var(--ink-soft)", marginTop: 0 }}>
               Si <strong>{email}</strong> está registrado, te enviamos un enlace para crear una contraseña nueva.
             </p>
@@ -133,22 +134,22 @@ export default function LoginPage() {
           </>
         ) : mode === "reset" ? (
           <>
-            <h1 style={{ fontSize: 22, margin: "0 0 4px" }}>Recuperar contraseña</h1>
+            <h1 style={{ fontSize: 26, margin: "0 0 4px" }}>Recuperar contraseña</h1>
             <p style={{ color: "var(--ink-soft)", marginTop: 0 }}>Te enviamos un enlace a tu correo.</p>
             <form onSubmit={onReset}>
               <input type="email" required placeholder="tu@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} style={field} autoComplete="email" />
               <button type="submit" className="btn-primary" style={btn} disabled={loading}>
                 {loading ? "Enviando…" : "Enviarme el enlace"}
               </button>
-              {error && <p style={{ color: "var(--warn)", marginBottom: 0 }}>{error}</p>}
+              {error && <p style={{ color: "var(--warn-ink)", marginBottom: 0 }}>{error}</p>}
             </form>
-            <button type="button" onClick={() => { setMode("login"); setError(null); }} style={{ background: "none", border: 0, padding: 0, marginTop: 14, color: "var(--ink-soft)", fontSize: 13, cursor: "pointer" }}>
+            <button type="button" onClick={() => { setMode("login"); setError(null); }} style={{ background: "none", border: 0, padding: 0, marginTop: 14, color: "var(--ink-soft)", fontSize: 14, cursor: "pointer" }}>
               ← Volver al ingreso
             </button>
           </>
         ) : (
           <>
-            <h1 style={{ fontSize: 22, margin: "0 0 4px" }}>Tu portal de métricas</h1>
+            <h1 style={{ fontSize: 26, margin: "0 0 4px" }}>Tu portal de <em>métricas</em></h1>
             <p style={{ color: "var(--ink-soft)", marginTop: 0 }}>Ingresá con tu correo y contraseña.</p>
             <form onSubmit={onSubmit}>
               <input type="email" required placeholder="tu@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} style={field} autoComplete="email" />
@@ -156,9 +157,9 @@ export default function LoginPage() {
               <button type="submit" className="btn-primary" style={btn}>
                 Ingresar
               </button>
-              {error && <p style={{ color: "var(--warn)", marginBottom: 0 }}>{error}</p>}
+              {error && <p style={{ color: "var(--warn-ink)", marginBottom: 0 }}>{error}</p>}
             </form>
-            <button type="button" onClick={() => { setMode("reset"); setError(null); }} style={{ background: "none", border: 0, padding: 0, marginTop: 14, color: "var(--accent-dark)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            <button type="button" onClick={() => { setMode("reset"); setError(null); }} style={{ background: "none", border: 0, padding: 0, marginTop: 14, color: "var(--accent-dark)", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
               ¿Olvidaste tu contraseña?
             </button>
           </>
@@ -168,7 +169,7 @@ export default function LoginPage() {
             margin: "22px 0 0",
             paddingTop: 14,
             borderTop: "1px solid var(--line)",
-            fontSize: 11.5,
+            fontSize: 12.5,
             color: "var(--ink-soft)",
             textAlign: "center",
           }}

@@ -5,6 +5,7 @@
 // SDK oficial (retries automáticos en 429/5xx) + structured outputs:
 // el JSON de salida está garantizado por schema, sin parseo por regex.
 import Anthropic from "@anthropic-ai/sdk";
+import { REGISTRO_MARCA } from "@/lib/brandVoice";
 
 export const INSIGHTS_MODEL = "claude-sonnet-5"; // semanal/barato; "claude-opus-4-8" para máxima calidad
 
@@ -32,7 +33,9 @@ const SYSTEM =
   "- title: 3 a 6 palabras, sin emojis, sin dos puntos.\n" +
   "- text de cada oportunidad: UNA o DOS frases cortas (máx ~25 palabras). Dato clave + acción.\n" +
   "- cada *_insight: UNA frase corta (máx ~20 palabras) sobre ese aspecto; si no aplica, dejá string vacío.\n" +
-  "- opportunities: entre 3 y 5.";
+  "- opportunities: entre 3 y 5.\n\n" +
+  // lo lee el dueño en su Panel sin que nadie lo revise antes
+  REGISTRO_MARCA;
 
 // Schema del JSON de salida (structured outputs): mismo shape que InsightOut.
 const OUTPUT_SCHEMA = {

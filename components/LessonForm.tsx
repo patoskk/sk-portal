@@ -159,8 +159,8 @@ export function LessonForm() {
         disabled={busy}
         className="btn-primary"
         style={{
-          background: "var(--accent)",
-          color: "#fff",
+          background: "var(--accent-solid)",
+          color: "var(--on-accent)",
           border: 0,
           borderRadius: 9,
           padding: "11px 20px",
@@ -172,7 +172,7 @@ export function LessonForm() {
       </button>
 
       {msg && (
-        <p style={{ marginBottom: 0, color: msg.ok ? "var(--accent-dark)" : "var(--warn)" }}>{msg.text}</p>
+        <p style={{ marginBottom: 0, color: msg.ok ? "var(--accent-dark)" : "var(--warn-ink)" }}>{msg.text}</p>
       )}
     </form>
 

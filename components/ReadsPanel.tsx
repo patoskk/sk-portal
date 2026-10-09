@@ -23,7 +23,7 @@ export function ReadsPanel({ rows }: { rows: ClientReads[] }) {
           <li key={r.clientId} className="reads-row">
             <div className="reads-head">
               <span className="reads-name">{r.name}</span>
-              <span className="reads-count" style={frio ? { color: "var(--warn)" } : undefined}>
+              <span className="reads-count" style={frio ? { color: "var(--warn-ink)" } : undefined}>
                 {r.read} de {r.total}
               </span>
             </div>

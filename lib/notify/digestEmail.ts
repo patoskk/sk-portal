@@ -46,8 +46,8 @@ export function renderDigestEmail(i: DigestEmailInput): { html: string; text: st
   const n = i.items.length;
   const intro =
     n === 1
-      ? "Te cuento lo último que le hicimos a tu agente."
-      : `Te cuento las ${n} cosas que le hicimos a tu agente estas últimas semanas.`;
+      ? "Te cuento el último cambio que hicimos en tu agente."
+      : `Te cuento los ${n} cambios que hicimos en tu agente estas últimas semanas.`;
   const preheader = i.items[0]?.title ?? intro;
 
   const bloques = GRUPOS.map((g) => {
@@ -93,17 +93,17 @@ ${bloques}
             <a href="${esc(i.updatesUrl)}" style="color:${BRAND.accentDark};font-weight:700;text-decoration:underline;">Verlo en el portal &rarr;</a>
           </p>
 
-          <p style="${p}">Si notás algo raro o se te ocurre algo que le cambiarías, respondeme este mail.</p>
+          <p style="${p}">Si notás algo fuera de lugar o hay algo que te gustaría cambiar, respondeme este mail.</p>
 
           <p style="margin:24px 0 2px;font-size:15px;color:${BRAND.ink};">${esc(i.fromName)}</p>
-          <p style="margin:0;font-size:12px;letter-spacing:1.2px;font-weight:700;">
-            <span style="color:${BRAND.ink};">SK</span> <span style="color:${BRAND.accent};">OPTIMAL</span>
+          <p style="margin:0;font-size:14px;font-weight:800;">
+            <span style="color:${BRAND.ink};">SK</span> <span style="color:${BRAND.accent};">Optimal</span>
           </p>
 
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
             <tr><td style="padding:22px 0 0;border-top:1px solid ${BRAND.line};">
               <p style="margin:12px 0 0;font-size:11.5px;line-height:1.6;color:${BRAND.inkSoft};">
-                Te llega porque sos cliente de SK Optimal. Si no querés estos avisos, respondeme y te saco.
+                Te llega porque sos cliente de SK Optimal. Si no querés estos avisos, respondeme y te doy de baja.
               </p>
             </td></tr>
           </table>
@@ -128,12 +128,12 @@ ${bloques}
     "",
     `Verlo en el portal: ${i.updatesUrl}`,
     "",
-    "Si notás algo raro o se te ocurre algo que le cambiarías, respondeme este mail.",
+    "Si notás algo fuera de lugar o hay algo que te gustaría cambiar, respondeme este mail.",
     "",
     i.fromName,
     "SK Optimal",
     "",
-    "Te llega porque sos cliente de SK Optimal. Si no querés estos avisos, respondeme y te saco.",
+    "Te llega porque sos cliente de SK Optimal. Si no querés estos avisos, respondeme y te doy de baja.",
   ].join("\n");
 
   return { html, text };

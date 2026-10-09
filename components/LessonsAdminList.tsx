@@ -83,7 +83,7 @@ export function LessonsAdminList({ lessons }: { lessons: L[] }) {
 
   return (
     <>
-    {errMsg ? <p style={{ color: "var(--warn)", fontSize: 12.5, marginTop: 0 }}>{errMsg}</p> : null}
+    {errMsg ? <p style={{ color: "var(--warn-ink)", fontSize: 12.5, marginTop: 0 }}>{errMsg}</p> : null}
     <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 12 }}>
       {lessons.map((l) => (
         <li key={l.id} style={{ borderBottom: "1px solid var(--line)", paddingBottom: 12 }}>
@@ -145,7 +145,7 @@ export function LessonsAdminList({ lessons }: { lessons: L[] }) {
                 >
                   {l.notified_at ? "Reenviar aviso" : "Avisar por mail"}
                 </button>
-                <button onClick={() => remove(l.id)} disabled={busy} style={{ ...link, color: "var(--warn)" }}>Eliminar</button>
+                <button onClick={() => remove(l.id)} disabled={busy} style={{ ...link, color: "var(--warn-ink)" }}>Eliminar</button>
               </div>
               {notifying === l.id ? (
                 <NotifyPanel

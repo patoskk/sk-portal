@@ -5,6 +5,7 @@
 // (JSON garantizado por schema, sin parseo por regex) y thinking desactivado.
 import Anthropic from "@anthropic-ai/sdk";
 import { docFromHtml, docToText } from "@/lib/lessons/docText";
+import { REGISTRO_MARCA } from "@/lib/brandVoice";
 
 export const DRAFT_MODEL = "claude-sonnet-5";
 
@@ -33,7 +34,9 @@ const SYSTEM =
   "Tienen que decir un RESULTADO concreto que se lleva ('vas a poder revisar en 5 minutos qué le " +
   "preguntaron a tu agente y no supo responder'), no una opinión ('es muy útil', 'está buenísima'). " +
   "Si la lección es específica de un caso, que uno de los bullets diga para quién es.\n" +
-  "- No repitas el título dentro de intro, summary ni why: el mail ya lo muestra aparte.";
+  "- No repitas el título dentro de intro, summary ni why: el mail ya lo muestra aparte.\n\n" +
+  // la lección de los lunes sale con este texto tal cual, sin lectura humana
+  REGISTRO_MARCA;
 
 // OJO: structured outputs NO soporta restricciones de cantidad en arrays
 // (minItems distinto de 0/1 y maxItems dan 400 invalid_request_error).

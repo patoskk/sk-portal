@@ -1,14 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-// Se descarga en build y se sirve desde nuestro dominio: sin CDN en runtime y
-// sin salto de layout al cargar (fallback ajustado por next/font).
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
+// La letra de la marca (carruseles/assets/marca/marca.json) son los mismos .woff2
+// de las skills, en public/fuentes, declarados con @font-face en globals.css. No
+// van por next/font a propósito: la lección se lee en un iframe aislado que
+// también los necesita (ver lib/lessonEmbed.ts y next.config.mjs), y así hay UNA
+// sola copia. Se precargan las dos que se ven primero: el texto y los títulos.
+const PRECARGA = ["/fuentes/alegreya-sans-400.woff2", "/fuentes/alegreya-800.woff2"];
 
 export const metadata: Metadata = {
   title: {
@@ -31,9 +29,12 @@ d.dataset.sidebar=localStorage.getItem('sidebar')||'full';}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={inter.variable} suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: PREPAINT }} />
+        {PRECARGA.map((href) => (
+          <link key={href} rel="preload" href={href} as="font" type="font/woff2" crossOrigin="anonymous" />
+        ))}
       </head>
       <body>{children}</body>
     </html>

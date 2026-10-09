@@ -13,7 +13,7 @@ export default function BeneficiosPage() {
   return (
     <main className="page" id="contenido">
       <div className="page-head">
-        <h1 className="page-title">Beneficios de ser cliente</h1>
+        <h1 className="page-title">Beneficios de <em>ser cliente</em></h1>
         <p className="page-sub" style={{ maxWidth: 720 }}>
           Servicios y ventajas reservados a las empresas que ya trabajan con nosotros.
         </p>

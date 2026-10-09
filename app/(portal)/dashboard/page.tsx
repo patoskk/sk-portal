@@ -8,7 +8,7 @@ import { PrintLink } from "@/components/PrintLink";
 import { InfoHint } from "@/components/InfoHint";
 import Link from "next/link";
 import { ArrowRight, Lightbulb, Flag } from "lucide-react";
-import { ActivityBars, ActivityLine, HBarChart, Sparkline, UsageDonut } from "@/components/Charts";
+import { ActivityBars, ActivityLine, HBarChart, Sparkline, UsageBars } from "@/components/Charts";
 import { Card, CardHeader } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
@@ -31,10 +31,10 @@ function fmtDate(iso: string): string {
 
 // Qué significa cada métrica, para alguien que no es técnico.
 const AYUDA: Record<string, string> = {
-  Conversaciones: "Charlas distintas que tuvo el agente. Si una persona escribe tres veces en el día, es una sola.",
-  "Mensajes de clientes": "Cuántos mensajes escribieron las personas. Mide el trabajo que se ahorró tu equipo.",
-  "Acciones del agente": "Veces que el agente consultó precios, stock, promociones o cargó un pedido.",
-  "Mensajes por charla": "Cuántos mensajes hacen falta, en promedio, para resolver una consulta. Menos suele ser mejor.",
+  Conversaciones: "Conversaciones distintas que atendió el agente. Si una persona escribe tres veces en el mismo día, cuenta como una.",
+  "Mensajes de clientes": "Cuántos mensajes escribieron tus clientes. Es trabajo que tu equipo no tuvo que responder.",
+  "Acciones del agente": "Veces que el agente consultó tu información (precios, stock, agenda) o registró un pedido o un turno.",
+  "Mensajes por conversación": "Cuántos mensajes hacen falta, en promedio, para resolver una consulta. Menos suele ser mejor.",
   Errores: "Consultas donde algo falló y el agente no pudo responder.",
   "Consultas sin resultado": "Le preguntaron por algo que no encontró. Suelen ser ventas que se pierden.",
 };
@@ -79,7 +79,7 @@ export default async function DashboardPage({
       <div className="page-head-row">
         <div>
           {d.clientName ? <div className="page-eyebrow">{d.clientName}</div> : null}
-          <h1 className="page-title">Tu agente de IA, en números</h1>
+          <h1 className="page-title">Tu agente de IA, <em>en números</em></h1>
           <p className="page-sub" style={{ fontSize: "var(--fs-md)" }}>
             {fmtDate(from)} – {fmtDate(to)}
             {d.lastSyncedAt ? (
@@ -142,15 +142,15 @@ export default async function DashboardPage({
 
       <section className="panel-grid">
         <Card>
-          <CardHeader as="h3" title="Uso de herramientas" hint="Qué le pide la gente al agente." />
-          <UsageDonut data={d.tools} />
+          <CardHeader as="h3" title="Uso de herramientas" hint="Qué le piden tus clientes al agente." />
+          <UsageBars data={d.tools} />
           {d.insight?.usage ? <p className="card-note">{d.insight.usage}</p> : null}
         </Card>
 
         <Card className="quality-card">
-          <CardHeader as="h3" title="Calidad de las respuestas" hint="Dónde el agente todavía se traba." />
+          <CardHeader as="h3" title="Calidad de las respuestas" hint="Lo que el agente no pudo resolver. Lo revisamos para corregirlo." />
           <div className="ministat-stack">
-            <MiniStat value={d.msgsPerConv} label="Mensajes por charla" />
+            <MiniStat value={d.msgsPerConv} label="Mensajes por conversación" />
             <MiniStat value={d.quality.errors} label="Errores" warn={d.quality.errors > 0} />
             <MiniStat value={d.quality.noResult} label="Consultas sin resultado" warn={d.quality.noResult > 0} />
           </div>
@@ -168,7 +168,7 @@ export default async function DashboardPage({
           {d.insight?.activity ? <p className="card-note">{d.insight.activity}</p> : null}
         </Card>
         <Card className="span-2">
-          <CardHeader as="h3" title="Actividad por hora" hint="La hora pico va en teal pleno." />
+          <CardHeader as="h3" title="Actividad por hora" hint="La hora pico va resaltada en verde." />
           <ActivityBars data={d.activityHour} />
         </Card>
       </section>
@@ -182,7 +182,7 @@ export default async function DashboardPage({
             <div>
               <h2 className="section-title">Oportunidades de mejora</h2>
               <p className="section-sub">
-                Ordenadas por lo que más mueve la aguja · análisis del {fmtDate(d.insight.periodStart)} al{" "}
+                Ordenadas por impacto · análisis del {fmtDate(d.insight.periodStart)} al{" "}
                 {fmtDate(d.insight.periodEnd)}
               </p>
             </div>

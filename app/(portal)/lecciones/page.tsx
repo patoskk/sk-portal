@@ -13,7 +13,7 @@ export default async function LeccionesPage() {
   return (
     <main className="page" id="contenido">
       <div className="page-head">
-        <h1 className="page-title">Lecciones de IA</h1>
+        <h1 className="page-title">Lecciones de <em>IA</em></h1>
         <p className="page-sub">
           Material que preparamos para que aproveches al máximo la inteligencia artificial en tu negocio.
         </p>

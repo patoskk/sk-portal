@@ -157,7 +157,7 @@ export function NotifyPanel({ lessonId, lessonTitle, yaAvisado, onClose }: Props
           : `va al mail personal de ${destinatarios} dueño${destinatarios === 1 ? "" : "s"}`}
       </p>
       {salteados.length ? (
-        <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "var(--warn)" }}>
+        <p style={{ margin: "0 0 14px", fontSize: 12.5, color: "var(--warn-ink)" }}>
           No les llega: {salteados.map((s) => `${s.clientName} (${s.reason})`).join(" · ")}.
           {salteados.some((s) => s.reason.includes("mail del dueño"))
             ? " Cargalo arriba, en Clientes."
@@ -222,8 +222,8 @@ export function NotifyPanel({ lessonId, lessonTitle, yaAvisado, onClose }: Props
                 padding: "10px 18px",
                 borderRadius: 9,
                 border: 0,
-                background: "var(--accent)",
-                color: "#fff",
+                background: "var(--accent-solid)",
+                color: "var(--on-accent)",
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: "pointer",
@@ -238,7 +238,7 @@ export function NotifyPanel({ lessonId, lessonTitle, yaAvisado, onClose }: Props
           </div>
 
           {msg ? (
-            <p style={{ marginBottom: 0, fontSize: 13, color: msg.ok ? "var(--accent-dark)" : "var(--warn)" }}>
+            <p style={{ marginBottom: 0, fontSize: 13, color: msg.ok ? "var(--accent-dark)" : "var(--warn-ink)" }}>
               {msg.text}
             </p>
           ) : null}
@@ -248,13 +248,13 @@ export function NotifyPanel({ lessonId, lessonTitle, yaAvisado, onClose }: Props
           <label style={label}>Vista previa (así le llega)</label>
           <iframe
             title="Vista previa del mail"
-            srcDoc={html || "<p style='font-family:sans-serif;color:#5C6B66;padding:16px;'>Escribí el aviso para ver la vista previa.</p>"}
+            srcDoc={html || "<p style='font-family:sans-serif;color:#5B6770;padding:16px;'>Escribí el aviso para ver la vista previa.</p>"}
             style={{
               width: "100%",
               height: 520,
               border: "1px solid var(--line)",
               borderRadius: 10,
-              background: "#fff",
+              background: "#FFFFFF",
             }}
           />
         </div>

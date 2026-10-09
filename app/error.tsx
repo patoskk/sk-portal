@@ -12,12 +12,13 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   return (
     <main style={{ display: "grid", placeItems: "center", minHeight: "100dvh", padding: 24 }}>
       <div className="card" style={{ width: "100%", maxWidth: 460, textAlign: "center" }}>
-        <div className="empty-icon" style={{ margin: "0 auto 12px", color: "var(--warn)", background: "rgba(178,91,78,.12)" }}>
+        <div className="empty-icon" style={{ margin: "0 auto 12px", color: "var(--warn-ink)", background: "var(--warn-soft)" }}>
           <AlertTriangle size={22} strokeWidth={1.9} />
         </div>
-        <h1 style={{ fontSize: 20, margin: "0 0 6px" }}>Algo se rompió de nuestro lado</h1>
+        <h1 style={{ fontSize: 24, margin: "0 0 6px" }}>No pudimos cargar esta página</h1>
         <p style={{ color: "var(--ink-soft)", margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.5 }}>
-          No es nada que hayas hecho mal. Probá de nuevo; si sigue pasando, avisanos y lo miramos.
+          Es un problema de nuestro lado, no algo que hayas hecho. Intentá de nuevo; si continúa,
+          avisanos y lo resolvemos.
         </p>
         <div className="row" style={{ justifyContent: "center" }}>
           <button className="btn btn-solid" onClick={reset}>

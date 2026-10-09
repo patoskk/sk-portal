@@ -46,7 +46,7 @@ export function CardHeader({
 
 /* --------------------------------------------------------------- Badge */
 
-export type BadgeTone = "accent" | "solid" | "gold" | "warn" | "neutral";
+export type BadgeTone = "accent" | "solid" | "warn" | "neutral";
 
 export function Badge({ tone = "accent", children }: { tone?: BadgeTone; children: ReactNode }) {
   return <span className={`badge badge-${tone}`}>{children}</span>;

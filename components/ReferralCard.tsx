@@ -1,53 +1,30 @@
-// Sección "Recomendá y ganá" — programa de referidos (estático, al final del dashboard).
+// Programa de referidos (estático, al final de /beneficios). Bloque verde
+// profundo plano: sigue al de Consultoría (noche) sin repetir el mismo fondo.
 // El número de contacto vive en lib/contact.ts.
+import { ArrowRight } from "lucide-react";
 import { waLink as wa } from "@/lib/contact";
 
 export function ReferralCard() {
   const waLink = wa("¡Hola! Quiero recomendar a alguien para el servicio de SK Optimal.");
 
   return (
-    <section
-      style={{
-        marginTop: 22,
-        borderRadius: 16,
-        padding: "26px 28px",
-        background: "linear-gradient(135deg, var(--accent-dark), var(--accent))",
-        color: "#fff",
-        boxShadow: "var(--shadow)",
-      }}
-    >
-      <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.4, opacity: 0.9 }}>
-        RECOMENDÁ Y GANÁ
+    <section className="offer offer-referral">
+      <div className="offer-top">
+        <span className="offer-eyebrow">Programa de referidos</span>
       </div>
-      <h2 style={{ margin: "8px 0 10px", fontSize: 24, lineHeight: 1.15 }}>
-        Recomendá SK Optimal y obtené beneficios.
+      <h2 className="offer-title">
+        Recomendá SK Optimal y obtené <em>beneficios</em>.
       </h2>
-      <p style={{ margin: "0 0 10px", fontSize: 15, lineHeight: 1.6, maxWidth: 640, opacity: 0.95 }}>
-        Si recomendás a alguien y contrata el servicio:{" "}
-        <strong>vos te llevás 50% de descuento en tu fee mensual durante 2 meses</strong> y tu
-        referido arranca con <strong>20% off en su instalación inicial</strong>.
+      <p className="offer-text">
+        Si recomendás a alguien y contrata el servicio,{" "}
+        <strong>tenés un 50% de descuento en tu cuota mensual durante 2 meses</strong>, y la persona
+        que recomendaste <strong>empieza con un 20% de descuento en la implementación</strong>.
       </p>
-      <p style={{ margin: "0 0 18px", fontSize: 13.5, lineHeight: 1.5, maxWidth: 640, opacity: 0.9 }}>
-        Sin límite: <strong>cada vez</strong> que conseguís un referido y contrata, volvés a sumar el
-        beneficio. Recomendá a todos los que quieras.
+      <p className="offer-note">
+        Sin límite: <strong>cada</strong> recomendación que contrata vuelve a sumar el beneficio.
       </p>
-      <a
-        href={waLink}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="referral-cta"
-        style={{
-          display: "inline-block",
-          background: "#fff",
-          color: "var(--accent-dark)",
-          fontWeight: 700,
-          fontSize: 14,
-          padding: "11px 20px",
-          borderRadius: 10,
-          textDecoration: "none",
-        }}
-      >
-        Quiero recomendar →
+      <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn btn-solid offer-cta">
+        Quiero recomendar <ArrowRight size={16} strokeWidth={2.2} />
       </a>
     </section>
   );

@@ -224,11 +224,11 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
           <div style={{ fontSize: 14, fontWeight: 600 }}>{c.name}</div>
           <div style={{ fontSize: 12.5, color: "var(--ink-soft)", marginTop: 2 }}>
             {c.rubro || "—"} · tabla: <code>{c.table_name ?? "?"}</code> ·{" "}
-            <span style={{ color: syncBadge(c.last_synced_at).stale ? "var(--warn)" : "var(--ink-soft)" }}>
+            <span style={{ color: syncBadge(c.last_synced_at).stale ? "var(--warn-ink)" : "var(--ink-soft)" }}>
               {syncBadge(c.last_synced_at).text}
             </span>{" "}
             ·{" "}
-            <span style={{ color: dataBadge(c.last_data_at).dead ? "var(--warn)" : "var(--ink-soft)" }}>
+            <span style={{ color: dataBadge(c.last_data_at).dead ? "var(--warn-ink)" : "var(--ink-soft)" }}>
               {dataBadge(c.last_data_at).text}
             </span>
             {c.metrics_from ? (
@@ -240,7 +240,7 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
             {toolsBadge(c.last_tool_event_at, c.last_data_at) ? (
               <>
                 {" · "}
-                <span style={{ color: "var(--warn)" }}>
+                <span style={{ color: "var(--warn-ink)" }}>
                   {toolsBadge(c.last_tool_event_at, c.last_data_at)!.text}
                 </span>
               </>
@@ -272,7 +272,7 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
               </div>
             </div>
           ) : (
-            <div style={{ fontSize: 12.5, marginTop: 4, color: c.contact_email ? "var(--ink-soft)" : "var(--warn)" }}>
+            <div style={{ fontSize: 12.5, marginTop: 4, color: c.contact_email ? "var(--ink-soft)" : "var(--warn-ink)" }}>
               {c.contact_email
                 ? `Avisos → ${c.contact_name || "(sin nombre)"} · ${c.contact_email}${c.notify_lessons ? "" : " · avisos apagados"}`
                 : "⚠ Sin mail del dueño: no recibe avisos de lecciones"}
@@ -310,13 +310,13 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
                     setNombreConfirm("");
                     setMsg((m) => ({ ...m, [c.id]: "" }));
                   }}
-                  style={{ ...linkBtn, color: "var(--warn)" }}
+                  style={{ ...linkBtn, color: "var(--warn-ink)" }}
                 >
                   Eliminar cliente
                 </button>
               </>
             )}
-            {msg[c.id] ? <span style={{ fontSize: 12, color: "var(--warn)" }}>{msg[c.id]}</span> : null}
+            {msg[c.id] ? <span style={{ fontSize: 12, color: "var(--warn-ink)" }}>{msg[c.id]}</span> : null}
           </div>
 
           {/* Zona de riesgo. Los dos flujos bajan el respaldo ANTES de borrar. */}
@@ -348,7 +348,7 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
                     <button
                       onClick={() => borrarMetricas(c)}
                       disabled={busy === c.id}
-                      style={{ ...linkBtn, color: "var(--warn)" }}
+                      style={{ ...linkBtn, color: "var(--warn-ink)" }}
                     >
                       {busy === c.id ? "Borrando…" : "Bajar respaldo y borrar"}
                     </button>
@@ -359,7 +359,7 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
                 </>
               ) : (
                 <>
-                  <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4, color: "var(--warn)" }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4, color: "var(--warn-ink)" }}>
                     Eliminar {c.name} del portal
                   </div>
                   <p style={{ fontSize: 12.5, color: "var(--ink-soft)", margin: "0 0 10px" }}>
@@ -379,7 +379,7 @@ export function ClientsAdminList({ clients }: { clients: C[] }) {
                       disabled={busy === c.id || nombreConfirm.trim() !== c.name.trim()}
                       style={{
                         ...linkBtn,
-                        color: nombreConfirm.trim() === c.name.trim() ? "var(--warn)" : "var(--ink-soft)",
+                        color: nombreConfirm.trim() === c.name.trim() ? "var(--warn-ink)" : "var(--ink-soft)",
                         cursor: nombreConfirm.trim() === c.name.trim() ? "pointer" : "not-allowed",
                       }}
                     >

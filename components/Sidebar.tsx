@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { NOVEDADES_SEEN_KEY } from "@/components/SeenMarker";
+import { Logo } from "@/components/Logo";
 
 type NavLink = {
   href: string;
@@ -117,7 +118,7 @@ export function Sidebar({
         >
           <Menu size={20} strokeWidth={1.75} />
         </button>
-        <Wordmark />
+        <Logo height={24} />
       </div>
 
       {drawer ? <div className="drawer-backdrop" onClick={() => setDrawer(false)} /> : null}
@@ -125,7 +126,8 @@ export function Sidebar({
       <aside className={`sidebar${drawer ? " is-open" : ""}`} aria-label="Navegación principal">
         <div className="sidebar-head">
           <Link href="/dashboard" className="sidebar-brand" aria-label="SK Optimal — ir al panel">
-            <Wordmark rail={rail} />
+            {/* en modo rail solo entra el isotipo: el nombre no cabe en 76px */}
+            {rail ? <Logo mark height={30} /> : <Logo height={27} />}
           </Link>
           <button
             className="icon-btn sidebar-collapse"
@@ -165,21 +167,6 @@ export function Sidebar({
         </div>
       </aside>
     </>
-  );
-}
-
-function Wordmark({ rail }: { rail?: boolean }) {
-  // en modo rail solo queda "SK": "OPTIMAL" no entra en 76px
-  return (
-    <span className="wordmark">
-      <span className="sk">SK</span>
-      {rail ? null : (
-        <>
-          {" "}
-          <span className="op">OPTIMAL</span>
-        </>
-      )}
-    </span>
   );
 }
 

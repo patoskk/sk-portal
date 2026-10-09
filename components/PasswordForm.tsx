@@ -72,7 +72,7 @@ export function PasswordForm() {
           </span>
         ) : null}
       </div>
-      {error ? <p style={{ color: "var(--warn)", margin: 0, fontSize: "var(--fs-md)" }}>{error}</p> : null}
+      {error ? <p style={{ color: "var(--warn-ink)", margin: 0, fontSize: "var(--fs-md)" }}>{error}</p> : null}
     </form>
   );
 }

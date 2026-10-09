@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/Logo";
 
 // Crear contraseña nueva (llega acá desde el enlace del correo, ya con sesión).
 export default function UpdatePasswordPage() {
@@ -43,7 +44,7 @@ export default function UpdatePasswordPage() {
     padding: "11px 13px",
     border: "1px solid var(--line)",
     borderRadius: 10,
-    fontSize: 14,
+    fontSize: 15,
     marginBottom: 12,
     background: "var(--card)",
     color: "var(--ink)",
@@ -52,10 +53,10 @@ export default function UpdatePasswordPage() {
   return (
     <main style={{ display: "grid", placeItems: "center", minHeight: "100dvh", padding: 24 }}>
       <div className="card" style={{ width: "100%", maxWidth: 380 }}>
-        <div className="wordmark" style={{ marginBottom: 18 }}>
-          <span className="sk">SK</span> <span className="op">OPTIMAL</span>
+        <div style={{ marginBottom: 22 }}>
+          <Logo height={30} />
         </div>
-        <h1 style={{ fontSize: 22, margin: "0 0 4px" }}>Creá tu contraseña nueva</h1>
+        <h1 style={{ fontSize: 26, margin: "0 0 4px" }}>Creá tu contraseña nueva</h1>
         <p style={{ color: "var(--ink-soft)", marginTop: 0 }}>Mínimo 8 caracteres.</p>
         <form onSubmit={onSubmit}>
           <input type="password" required placeholder="contraseña nueva" value={password} onChange={(e) => setPassword(e.target.value)} style={field} autoComplete="new-password" />
@@ -64,11 +65,11 @@ export default function UpdatePasswordPage() {
             type="submit"
             className="btn-primary"
             disabled={loading}
-            style={{ width: "100%", padding: "11px 13px", background: "var(--accent)", color: "#fff", border: 0, borderRadius: 10, fontWeight: 700, cursor: "pointer" }}
+            style={{ width: "100%", padding: "11px 13px", background: "var(--accent-solid)", color: "var(--on-accent)", border: 0, borderRadius: 10, fontWeight: 700, cursor: "pointer" }}
           >
             {loading ? "Guardando…" : "Guardar e ingresar"}
           </button>
-          {error && <p style={{ color: "var(--warn)", marginBottom: 0 }}>{error}</p>}
+          {error && <p style={{ color: "var(--warn-ink)", marginBottom: 0 }}>{error}</p>}
         </form>
       </div>
     </main>

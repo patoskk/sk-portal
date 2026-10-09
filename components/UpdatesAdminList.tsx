@@ -14,7 +14,7 @@ function fmtCorta(iso: string): string {
 const TONE: Record<Update["kind"], { label: string; tone: BadgeTone }> = {
   nuevo: { label: "Nuevo", tone: "solid" },
   mejora: { label: "Mejora", tone: "accent" },
-  arreglo: { label: "Arreglo", tone: "gold" },
+  arreglo: { label: "Arreglo", tone: "neutral" },
 };
 
 export function UpdatesAdminList({
@@ -45,7 +45,7 @@ export function UpdatesAdminList({
 
   return (
     <div className="stack" style={{ gap: 10 }}>
-      {err ? <p style={{ color: "var(--warn)", margin: 0, fontSize: "var(--fs-md)" }}>{err}</p> : null}
+      {err ? <p style={{ color: "var(--warn-ink)", margin: 0, fontSize: "var(--fs-md)" }}>{err}</p> : null}
       {updates.map((u) => (
         <div key={u.id} className="admin-row">
           <div style={{ minWidth: 0, flex: 1 }}>

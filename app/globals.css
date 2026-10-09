@@ -1,27 +1,56 @@
-/* SK Optimal — portal del cliente. Tokens de marca sincronizados con
-   metrics-pdf-report/assets/web.css (:root). No inventar colores. */
+/* SK Optimal — portal del cliente. Paleta "Noche" + Alegreya (decisión de Pato,
+   25/09/2026). La fuente única es ~/.claude/skills/carruseles/assets/marca/marca.json:
+   acá no se inventa ningún color, y `node carruseles/scripts/marca-check.mjs`
+   avisa si alguno de estos archivos se sale de esa lista. */
+
+/* Alegreya Sans (texto y números) + Alegreya (títulos). Los .woff2 viven en
+   public/fuentes: los usa también la lección embebida (lib/lessonEmbed.ts). */
+@font-face { font-family: "Alegreya Sans"; font-weight: 400; font-style: normal; font-display: swap; src: url("/fuentes/alegreya-sans-400.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya Sans"; font-weight: 500; font-style: normal; font-display: swap; src: url("/fuentes/alegreya-sans-500.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya Sans"; font-weight: 700; font-style: normal; font-display: swap; src: url("/fuentes/alegreya-sans-700.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya Sans"; font-weight: 800; font-style: normal; font-display: swap; src: url("/fuentes/alegreya-sans-800.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya"; font-weight: 700; font-style: normal; font-display: swap; src: url("/fuentes/alegreya-700.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya"; font-weight: 800; font-style: normal; font-display: swap; src: url("/fuentes/alegreya-800.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya"; font-weight: 700; font-style: italic; font-display: swap; src: url("/fuentes/alegreya-700-italic.woff2") format("woff2"); }
+
 :root {
-  --paper: #F2F4F3;
+  --paper: #F2F4F5;       /* niebla */
   --card: #FFFFFF;
-  --accent: #3DA08C;
-  --accent-dark: #2C7C6C;
-  --accent-soft: #8FC9BD;
-  --tint: #EAF3EF;
-  --ink: #16221F;
-  --ink-soft: #5C6B66;
-  --line: #E4E2DD;
-  --gold: #C2A36B;
-  --grey: #C9C9C4;
-  --warn: #B25B4E; /* serie de pérdida / quiebres */
-  --hover: #EEF0EF; /* fondo de hover neutro (sidebar, filas) */
-  /* Relleno teal para botones y píldoras. Texto blanco sobre --accent (#3DA08C)
-     da 3,2:1 — abajo del mínimo legible; con --accent-dark llega a 5:1.
-     En oscuro el teal es claro, así que el texto va en tinta. */
-  --accent-solid: #2C7C6C;
-  --on-accent: #FFFFFF;
-  --shadow: 0 1px 2px rgba(22, 34, 31, .04), 0 6px 24px rgba(22, 34, 31, .06);
-  --shadow-hi: 0 2px 6px rgba(22, 34, 31, .06), 0 14px 40px rgba(22, 34, 31, .10);
-  --sans: var(--font-inter), "Segoe UI", "Helvetica Neue", "Lato", Arial, sans-serif;
+  /* El verde del logo es relleno y acento (barras, puntos, bordes, botones);
+     NUNCA texto sobre claro: da 2,3 a 1. El texto verde va en --accent-dark. */
+  --accent: #4AB39F;
+  --accent-dark: #1E7565; /* verde texto: 5,6 a 1 sobre blanco */
+  --accent-soft: #4AB39F; /* borde de hover / foco */
+  --tint: #E4F2EF;        /* verde suave: fondo de lo activo o destacado */
+  --ink: #0A1218;         /* noche */
+  --ink-soft: #5B6770;
+  --muted: #8C99A3;       /* gris medio: íconos de ayuda, detalles */
+  --line: #E3E7EA;
+  /* La alerta es SOLO error o pérdida, nunca adorno. El texto de alerta chico
+     va en --warn-ink sobre --warn-soft (5,7 a 1); --warn queda para números
+     grandes y gráficos. */
+  --warn: #B25B4E;
+  --warn-ink: #8A3F33;
+  --warn-soft: #F1DEDA;
+  --hover: #F2F4F5;       /* fondo de hover neutro (sidebar, filas) */
+  /* Botón y píldora llenos: verde del logo con texto NOCHE (regla de la marca).
+     Blanco sobre este verde no llega al mínimo legible. */
+  --accent-solid: #4AB39F;
+  --on-accent: #0A1218;
+  /* Verde profundo: la tarjeta que tiene que pegar (el evento clave del Panel) y
+     el bloque de referidos. Es fondo plano, en los dos temas. */
+  --deep: #0E3A33;
+  --on-deep: #FFFFFF;
+  --on-deep-soft: #C9D2D8;
+  /* bloque oscuro sobre una página clara (Consultoría) */
+  --inverse: #0A1218;
+  --inverse-line: #0A1218;
+  /* gráficos: la serie de fondo, contra la que resalta el verde */
+  --chart-soft: #D5DBDF;
+  --shadow: 0 1px 2px rgba(10, 18, 24, .04), 0 6px 24px rgba(10, 18, 24, .06);
+  --shadow-hi: 0 2px 6px rgba(10, 18, 24, .06), 0 14px 40px rgba(10, 18, 24, .10);
+  --sans: "Alegreya Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --serif: "Alegreya", Georgia, "Times New Roman", serif;
   --maxw: 1160px; /* pantalla, no A4 — el sidebar ya come ancho */
 
   /* Escala. Antes cada componente inventaba su número (12.5 / 13.5 / 14.5,
@@ -37,14 +66,16 @@
   --sp-5: 24px;
   --sp-6: 32px;
   --sp-7: 48px;
-  --fs-xs: 11px;
-  --fs-sm: 12px;
-  --fs-md: 13px;
-  --fs-base: 14px;
-  --fs-lg: 16px;
-  --fs-xl: 20px;
-  --fs-2xl: 26px;
-  --fs-3xl: 32px;
+  /* Un escalón más que con Inter: Alegreya Sans es más angosta y de ojo más
+     chico, y a 12px las etiquetas de las métricas se leían apretadas. */
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 14px;
+  --fs-base: 15px;
+  --fs-lg: 17px;
+  --fs-xl: 22px;
+  --fs-2xl: 28px;
+  --fs-3xl: 34px;
 
   --sidebar-w: 250px;
 }
@@ -52,29 +83,50 @@
 /* Barra contraída: solo íconos. La variable maneja la grilla entera. */
 :root[data-sidebar="rail"] { --sidebar-w: 76px; }
 
-/* Tema oscuro — mantiene el acento teal, invierte fondo/texto */
+/* Tema oscuro = la noche de la marca: fondo noche, superficies noche 2. Sobre
+   oscuro el verde del logo SÍ va como texto (7 a 1). */
 :root[data-theme="dark"] {
-  --paper: #0F1715;
-  --card: #172420;
-  --accent: #46B49C;
-  --accent-dark: #6FCBB6;
-  --accent-soft: #2C7C6C;
-  --tint: #1A2A25;
-  --ink: #E9F1ED;
-  --ink-soft: #9FB2AC;
-  --line: #26332E;
-  --gold: #C2A36B;
-  --grey: #6B756F;
-  --warn: #CC7E71;
-  --hover: #1E2C27;
-  --accent-solid: #46B49C;
-  --on-accent: #0F1715;
+  --paper: #0A1218;
+  --card: #131E26;
+  --accent: #4AB39F;
+  --accent-dark: #4AB39F;
+  --accent-soft: #1E7565;
+  --tint: #0E3A33;
+  --ink: #FFFFFF;
+  --ink-soft: #C9D2D8;
+  --muted: #8C99A3;
+  --line: #243039;
+  --warn: #B25B4E;
+  --warn-ink: #F1DEDA;
+  --warn-soft: rgba(178, 91, 78, .22);
+  --hover: rgba(255, 255, 255, .06);
+  --accent-solid: #4AB39F;
+  --on-accent: #0A1218;
+  /* sobre la página noche, el bloque "invertido" es la superficie noche 2 con borde */
+  --inverse: #131E26;
+  --inverse-line: #243039;
+  --chart-soft: #5B6770; /* gris contra el verde: ΔE 19 también con daltonismo (el gris medio daba 2,8) */
   --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 24px rgba(0, 0, 0, .35);
   --shadow-hi: 0 2px 6px rgba(0, 0, 0, .35), 0 14px 40px rgba(0, 0, 0, .5);
 }
+/* Los controles nativos (el calendario de las fechas) también en oscuro. SOLO los
+   controles, nunca la raíz: si la página declara un esquema oscuro y la lección
+   embebida no, el navegador le pone al iframe un fondo opaco blanco y su texto
+   claro desaparece. */
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea { color-scheme: dark; }
 html { background: var(--paper); }
 
 * { box-sizing: border-box; }
+/* Los controles no heredan la letra: el navegador les resetea el `font` entero,
+   así que las fechas salían en la del sistema y, ya en Alegreya, con los números
+   "de texto". Se recuperan la familia, los números parejos y el ajuste de ojo. */
+input, select, textarea, button {
+  font-family: inherit;
+  font-variant-numeric: lining-nums;
+  font-size-adjust: inherit;
+}
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
@@ -84,14 +136,38 @@ body {
   font-size: var(--fs-base);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  /* Alegreya trae los números "de texto" (con ascendentes y descendentes) por
+     defecto: en un panel de métricas un 136 tiene que leerse parejo. */
+  font-variant-numeric: lining-nums;
+  /* Alegreya Sans tiene el ojo (la altura de la x) más chico que la letra que
+     había antes: esto la lleva al mismo tamaño aparente sin tocar cada número
+     de la escala. */
+  font-size-adjust: 0.5;
 }
 
-.wordmark { font-size: 15px; font-weight: 800; letter-spacing: .5px; white-space: nowrap; }
-.wordmark .sk { color: var(--ink); }
-.wordmark .op { color: var(--accent); }
+/* Títulos en Alegreya (la de serifa); todo lo demás —números incluidos— en
+   Alegreya Sans, que en un panel se lee más rápido. La palabra resaltada va en
+   itálica verde, como en carruseles y en la web. */
+h1, h2, h3, .serif {
+  font-family: var(--serif);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+h1 em, h2 em, .serif em {
+  font-style: italic;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+
+/* Logo oficial (public/marca): una versión por fondo y el CSS muestra la que va. */
+.logo { display: inline-flex; align-items: center; line-height: 0; }
+.logo img { display: block; height: 100%; width: auto; }
+.logo-on-dark { display: none !important; }
+:root[data-theme="dark"] .logo-on-light { display: none !important; }
+:root[data-theme="dark"] .logo-on-dark { display: block !important; }
 
 /* Los números de métrica no deben bailar al cambiar de valor */
-.tnum, .kpi-value, .stat-value { font-variant-numeric: tabular-nums; }
+.tnum, .kpi-value, .stat-value { font-variant-numeric: lining-nums tabular-nums; }
 
 /* =====================================================================
    Shell: sidebar fijo + contenido
@@ -164,7 +240,7 @@ body {
   padding: 0 var(--sp-3);
   border-radius: var(--r-md);
   color: var(--ink-soft);
-  font-size: 13.5px;
+  font-size: 14.5px;
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
@@ -241,7 +317,7 @@ body {
    ===================================================================== */
 .page { max-width: var(--maxw); margin: 0 auto; padding: var(--sp-6) var(--sp-6) 64px; }
 .page-head { margin-bottom: var(--sp-5); }
-.page-title { font-size: var(--fs-3xl); margin: 0 0 var(--sp-2); letter-spacing: -.6px; line-height: 1.2; }
+.page-title { font-size: var(--fs-3xl); font-weight: 800; margin: 0 0 var(--sp-2); line-height: 1.15; }
 .page-sub { color: var(--ink-soft); margin: 0; font-size: var(--fs-base); }
 .page-eyebrow {
   font-size: var(--fs-sm);
@@ -264,7 +340,7 @@ body {
 .panel-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-3); }
 .span-2 { grid-column: 1 / -1; }
 
-/* Los tres indicadores de calidad van APILADOS al lado del donut, repartidos en
+/* Los tres indicadores de calidad van APILADOS al lado del uso de herramientas, repartidos en
    el alto: en fila quedaban tres números chicos arriba y media tarjeta vacía. */
 .quality-card { display: flex; flex-direction: column; }
 .ministat-stack {
@@ -283,27 +359,32 @@ body {
 }
 /* con dos eventos clave (pedidos + turnos) las destacadas comparten la fila */
 .hero-grid:has(.hero-kpi + .hero-kpi) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+/* El evento clave va en verde profundo, plano, en los dos temas: es el único
+   número que le cambia el día al dueño y la paleta reserva el profundo para la
+   pantalla que tiene que pegar. Es la ÚNICA tarjeta de ese color en el Panel. */
 .hero-kpi { display: flex; flex-direction: column; padding: var(--sp-5); }
+.card.hero-kpi { background: var(--deep); border-color: var(--deep); color: var(--on-deep); }
 .hero-kpi-label {
   font-size: var(--fs-sm); font-weight: 700; letter-spacing: 1.2px;
-  text-transform: uppercase; color: var(--ink-soft); margin-bottom: var(--sp-2);
+  text-transform: uppercase; color: var(--on-deep-soft); margin-bottom: var(--sp-2);
 }
 .hero-kpi-value {
-  font-size: 46px; font-weight: 800; line-height: 1;
-  letter-spacing: -1.6px; color: var(--accent-dark);
-  font-variant-numeric: tabular-nums;
+  font-size: 50px; font-weight: 800; line-height: 1;
+  letter-spacing: -1px; color: var(--on-deep);
+  font-variant-numeric: lining-nums tabular-nums;
 }
-.hero-kpi-rate { margin: var(--sp-3) 0 var(--sp-2); font-size: var(--fs-md); color: var(--ink-soft); }
+.hero-kpi-rate { margin: var(--sp-3) 0 var(--sp-2); font-size: var(--fs-md); color: var(--on-deep-soft); }
 .bar-track { height: 8px; border-radius: var(--r-pill); background: var(--line); overflow: hidden; }
 .bar-fill { height: 100%; border-radius: var(--r-pill); background: var(--accent); }
+.hero-kpi .bar-track { background: rgba(255, 255, 255, .14); }
 
 .stat-col { display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); gap: var(--sp-3); }
 .stat-tile { padding: var(--sp-4) 18px; display: flex; flex-direction: column; justify-content: center; }
-.stat-value { font-size: 25px; font-weight: 800; color: var(--ink); letter-spacing: -.5px; line-height: 1.1; }
+.stat-value { font-size: 26px; font-weight: 800; color: var(--ink); line-height: 1.1; }
 .stat-label { font-size: var(--fs-sm); color: var(--ink-soft); display: flex; align-items: center; gap: 5px; }
 
 .ministat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-3); }
-.ministat-value { font-size: 24px; font-weight: 800; color: var(--ink); letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
+.ministat-value { font-size: 26px; font-weight: 800; color: var(--ink); font-variant-numeric: lining-nums tabular-nums; }
 
 /* pill de variación vs. el período anterior */
 .delta {
@@ -311,14 +392,18 @@ body {
   border-radius: var(--r-pill); white-space: nowrap;
   color: var(--accent-dark); background: var(--tint);
 }
-.delta-down { color: var(--warn); background: rgba(178, 91, 78, .12); }
+.delta-down { color: var(--warn-ink); background: var(--warn-soft); }
 .delta-flat { color: var(--ink-soft); background: var(--hover); }
+/* sobre el verde profundo: el verde del logo como texto (4,8 a 1) */
+.hero-kpi .delta { color: var(--accent); background: rgba(74, 179, 159, .16); }
+.hero-kpi .delta-down { color: #F1DEDA; background: rgba(178, 91, 78, .32); }
+.hero-kpi .delta-flat { color: var(--on-deep-soft); background: rgba(255, 255, 255, .08); }
 
 /* --- ayuda por métrica --- */
 .hint { position: relative; display: inline-flex; }
 .hint-btn {
   display: inline-flex; padding: 0; border: 0; background: transparent;
-  color: var(--grey); cursor: help; line-height: 0;
+  color: var(--muted); cursor: help; line-height: 0;
 }
 .hint-btn:hover { color: var(--accent-dark); }
 .hint-bubble {
@@ -340,7 +425,7 @@ body {
   width: 36px; height: 36px; border-radius: var(--r-md);
   background: var(--tint); color: var(--accent-dark);
 }
-.section-title { margin: 0; font-size: var(--fs-xl); letter-spacing: -.3px; }
+.section-title { margin: 0; font-size: var(--fs-xl); }
 .section-sub { margin: 2px 0 0; font-size: var(--fs-md); color: var(--ink-soft); }
 .opps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .opp {
@@ -356,8 +441,8 @@ body {
   background: var(--tint); color: var(--accent-dark);
   font-size: var(--fs-md); font-weight: 800; font-variant-numeric: tabular-nums;
 }
-.opp-title { margin: 2px 0 3px; font-size: 15px; letter-spacing: -.1px; }
-.opp-text { margin: 0; font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
+.opp-title { margin: 2px 0 3px; font-size: 16px; }
+.opp-text { margin: 0; font-size: 14.5px; color: var(--ink-soft); line-height: 1.55; }
 
 .next-step { display: flex; gap: var(--sp-3); align-items: flex-start; margin-top: var(--sp-4); }
 
@@ -368,7 +453,7 @@ body {
   border-radius: var(--r-md); background: var(--card);
   border: 1px solid var(--line); box-shadow: var(--shadow);
   color: var(--ink); text-decoration: none;
-  font-size: 13.5px; line-height: 1.45;
+  font-size: 14.5px; line-height: 1.45;
 }
 /* --- Lecciones: barra de progreso + buscador --- */
 .lessons-bar {
@@ -405,7 +490,7 @@ body {
   width: 32px; height: 32px; border-radius: var(--r-sm);
   background: var(--tint); color: var(--accent-dark);
 }
-.starter-title { margin: 0; font-size: var(--fs-lg); letter-spacing: -.2px; }
+.starter-title { margin: 0; font-size: var(--fs-lg); }
 .starter-sub { margin: 2px 0 0; font-size: var(--fs-md); color: var(--ink-soft); line-height: 1.45; }
 .starter-list { list-style: none; margin: 0; padding: 0; }
 .starter-list > li + li { border-top: 1px solid var(--line); }
@@ -461,15 +546,15 @@ body {
   background: var(--card); border: 2.5px solid var(--accent);
 }
 .tl-dot-nuevo { background: var(--accent); }
-.tl-dot-arreglo { border-color: var(--gold); }
+.tl-dot-arreglo { border-color: var(--muted); }
 .tl-card {
   margin: 0 0 var(--sp-3) var(--sp-4);
   padding: var(--sp-4) 18px;
   border: 1px solid var(--line); border-radius: var(--r-md);
   background: var(--card); box-shadow: var(--shadow);
 }
-.tl-title { margin: 0; font-size: 15px; letter-spacing: -.1px; }
-.tl-text { margin: 5px 0 0; font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
+.tl-title { margin: 0; font-size: 16px; }
+.tl-text { margin: 5px 0 0; font-size: 14.5px; color: var(--ink-soft); line-height: 1.55; }
 
 /* fila del panel admin (novedades publicadas) */
 .admin-row {
@@ -517,7 +602,7 @@ body {
   font-size: var(--fs-xs); font-weight: 700; letter-spacing: .6px;
   text-transform: uppercase; color: var(--ink-soft);
 }
-.reader-nav-title { font-size: 13.5px; font-weight: 600; }
+.reader-nav-title { font-size: 14.5px; font-weight: 600; }
 .lesson-row {
   display: flex; align-items: center; gap: 20px;
   background: var(--card); border: 1px solid var(--line);
@@ -529,12 +614,12 @@ body {
   transform: translateY(-2px); box-shadow: var(--shadow-hi); border-color: var(--accent-soft);
 }
 .lesson-num {
-  flex: none; font-size: 22px; font-weight: 800; letter-spacing: -.5px;
-  color: var(--accent); font-variant-numeric: tabular-nums;
+  flex: none; font-size: 22px; font-weight: 800;
+  color: var(--accent-dark); font-variant-numeric: lining-nums tabular-nums;
   min-width: 44px; line-height: 1;
 }
 .lesson-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
-.lesson-title { margin: 0; font-size: 17px; letter-spacing: -.2px; }
+.lesson-title { margin: 0; font-size: 18px; }
 .lesson-summary { margin: 0; color: var(--ink-soft); font-size: var(--fs-base); line-height: 1.45; }
 .lesson-meta { margin: 0; color: var(--ink-soft); font-size: var(--fs-sm); opacity: .85; }
 .lesson-topic { color: var(--accent-dark); font-weight: 700; opacity: .9; }
@@ -586,7 +671,7 @@ body {
   .sidebar-collapse { display: none; }
   .drawer-backdrop {
     display: block; position: fixed; inset: 0;
-    background: rgba(22, 34, 31, .45);
+    background: rgba(10, 18, 24, .5);
     z-index: 35;
   }
   /* en mobile el cajón siempre va completo, aunque quedó guardado en rail */
@@ -654,7 +739,7 @@ body {
   display: flex; align-items: flex-start; justify-content: space-between;
   gap: var(--sp-3); margin-bottom: var(--sp-4);
 }
-.card-title { margin: 0; font-size: var(--fs-lg); letter-spacing: -.2px; line-height: 1.3; }
+.card-title { margin: 0; font-size: var(--fs-lg); line-height: 1.3; }
 .card-hint { margin: 3px 0 0; font-size: var(--fs-md); color: var(--ink-soft); line-height: 1.45; }
 .card-note { color: var(--ink-soft); font-size: var(--fs-md); margin: var(--sp-3) 0 0; line-height: 1.5; }
 .stack { display: flex; flex-direction: column; gap: var(--sp-4); }
@@ -672,8 +757,7 @@ body {
 }
 .badge-accent { background: var(--tint); color: var(--accent-dark); }
 .badge-solid { background: var(--accent-solid); color: var(--on-accent); }
-.badge-gold { background: rgba(194, 163, 107, .16); color: var(--gold); }
-.badge-warn { background: rgba(178, 91, 78, .13); color: var(--warn); }
+.badge-warn { background: var(--warn-soft); color: var(--warn-ink); }
 .badge-neutral { background: var(--hover); color: var(--ink-soft); }
 
 .btn {
@@ -682,7 +766,7 @@ body {
   border: 1px solid transparent;
   border-radius: var(--r-sm);
   font-family: inherit;
-  font-size: 13.5px;
+  font-size: 14.5px;
   font-weight: 600;
   line-height: 1.2;
   text-decoration: none;
@@ -696,8 +780,8 @@ body {
 .btn-outline:not(:disabled):hover { border-color: var(--accent-soft); background: var(--tint); }
 .btn-ghost { background: transparent; color: var(--ink-soft); }
 .btn-ghost:not(:disabled):hover { background: var(--hover); color: var(--ink); }
-.btn-danger { background: transparent; border-color: var(--line); color: var(--warn); }
-.btn-danger:not(:disabled):hover { border-color: var(--warn); background: rgba(178, 91, 78, .08); }
+.btn-danger { background: transparent; border-color: var(--line); color: var(--warn-ink); }
+.btn-danger:not(:disabled):hover { border-color: var(--warn); background: var(--warn-soft); }
 .btn-sm { padding: 6px var(--sp-3); font-size: var(--fs-md); }
 
 .field { display: flex; flex-direction: column; gap: 5px; }
@@ -710,15 +794,18 @@ body {
   background: var(--card);
   color: var(--ink);
   font-family: inherit;
-  font-size: 13.5px;
+  font-size: 14.5px;
 }
 .input:disabled { background: var(--hover); color: var(--ink-soft); }
 
 /* dato de solo lectura (perfil, cuenta) */
 .datalist { display: grid; grid-template-columns: max-content 1fr; gap: 10px var(--sp-5); align-items: baseline; }
 .datalist dt { font-size: var(--fs-md); color: var(--ink-soft); }
-.datalist dd { margin: 0; font-size: 13.5px; font-weight: 600; overflow-wrap: anywhere; }
+.datalist dd { margin: 0; font-size: 14.5px; font-weight: 600; overflow-wrap: anywhere; }
 @media (max-width: 560px) {
+  /* el botón de la derecha ("Pedir un cambio") baja: al lado dejaba el texto
+     en una columna de tres palabras */
+  .card-head { flex-direction: column; }
   .datalist { grid-template-columns: 1fr; gap: 2px var(--sp-3); }
   .datalist dd { margin-bottom: 10px; }
 }
@@ -744,7 +831,7 @@ body {
   padding: 7px var(--sp-3);
   border: 0; border-radius: var(--r-sm);
   background: transparent; color: var(--ink-soft);
-  font-family: inherit; font-size: 13px; font-weight: 600;
+  font-family: inherit; font-size: 14px; font-weight: 600;
   cursor: pointer;
   transition: background-color .14s ease, color .14s ease;
 }
@@ -757,7 +844,6 @@ body {
 .btn-primary:hover {
   filter: brightness(1.06);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(61, 160, 140, .35);
 }
 .btn-primary:active { transform: translateY(0); }
 
@@ -778,19 +864,49 @@ body {
 .beneficios-hint { transition: border-color .16s ease, transform .16s ease; }
 .beneficios-hint:hover { border-color: var(--accent-soft); transform: translateY(-1px); }
 
+/* --- Beneficios: dos bloques planos de la paleta, uno noche y uno profundo ---
+   Siempre texto claro, en los dos temas. Sobre oscuro el verde del logo sí va
+   como texto; el secundario es el gris para fondos oscuros (#C9D2D8). */
+.offer {
+  margin-top: 22px;
+  padding: 30px 28px;
+  border-radius: var(--r-lg);
+  border: 1px solid transparent;
+  color: #FFFFFF;
+}
+.offer-consulting { background: var(--inverse); border-color: var(--inverse-line); }
+.offer-referral { background: var(--deep); border-color: var(--deep); }
+.offer-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.offer-eyebrow {
+  font-size: var(--fs-sm); font-weight: 700; letter-spacing: 1.4px;
+  text-transform: uppercase; color: var(--accent);
+}
+.offer-tag {
+  font-size: var(--fs-xs); font-weight: 700; letter-spacing: .8px; text-transform: uppercase;
+  color: var(--accent); border: 1px solid rgba(74, 179, 159, .45);
+  border-radius: var(--r-pill); padding: 2px 9px;
+}
+.offer-title { margin: 12px 0 10px; font-size: 28px; line-height: 1.15; color: #FFFFFF; }
+.offer-title em { color: var(--accent); }
+.offer-text { margin: 0 0 20px; font-size: 16px; line-height: 1.6; max-width: 740px; color: #C9D2D8; }
+.offer-text strong, .offer-note strong { color: #FFFFFF; }
+.offer-note { margin: 20px 0 18px; font-size: 14.5px; line-height: 1.55; max-width: 680px; color: #C9D2D8; }
+.offer-referral .offer-text { margin-bottom: 10px; }
+.offer-referral .offer-note { margin-top: 0; }
+.offer-small { font-size: var(--fs-md); color: #C9D2D8; }
+.offer-cta { font-size: 15px; padding: 11px 20px; }
 /* grilla de servicios de la sección Consultoría */
 .consulting-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.offer-tile {
+  padding: 14px 16px; border-radius: var(--r-md);
+  background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .09);
+}
+.offer-tile-title { display: flex; align-items: center; gap: 9px; font-size: 15.5px; font-weight: 700; margin-bottom: 3px; }
+.offer-tile-text { font-size: 14px; line-height: 1.5; color: #C9D2D8; }
 @media (max-width: 760px) {
   .consulting-grid { grid-template-columns: 1fr; }
-}
-
-/* CTA de referidos */
-.referral-cta {
-  transition: transform .12s ease, box-shadow .12s ease;
-}
-.referral-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, .22);
+  .offer { padding: 22px 18px; }
+  .offer-title { font-size: 24px; }
 }
 
 /* accesibilidad: foco visible al navegar con teclado */
@@ -808,7 +924,7 @@ select:focus-visible, textarea:focus-visible {
 }
 .skel {
   border-radius: var(--r-sm);
-  background: linear-gradient(90deg, var(--line) 25%, var(--tint) 50%, var(--line) 75%);
+  background: linear-gradient(90deg, var(--line) 25%, var(--hover) 50%, var(--line) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -848,12 +964,15 @@ select:focus-visible, textarea:focus-visible {
    estas reglas ganan — y como usan variables, siguen el tema y la impresión
    solas. Antes el color venía de JS (el tema al momento de renderizar) y al
    imprimir salía en gris casi blanco sobre papel. */
-.recharts-cartesian-axis-tick-value,
-.recharts-polar-angle-axis-tick-value,
-.donut-unit { fill: var(--ink-soft); }
+.recharts-cartesian-axis-tick-value { fill: var(--ink-soft); }
 .recharts-label,
-.recharts-text.recharts-label,
-.donut-total { fill: var(--ink); }
+.recharts-text.recharts-label { fill: var(--ink); }
+/* barras que no son la hora pico: gris claro en claro, gris en oscuro */
+.bar-soft { fill: var(--chart-soft); }
+
+/* total arriba del ranking de herramientas (antes iba en el centro del donut) */
+.usage-total { margin: 0 0 var(--sp-2); font-size: var(--fs-md); color: var(--ink-soft); }
+.usage-total-value { font-size: 22px; font-weight: 800; color: var(--ink); margin-right: 4px; font-variant-numeric: lining-nums tabular-nums; }
 
 /* =====================================================================
    /reporte — maqueta A4 para "Guardar como PDF"
@@ -864,7 +983,8 @@ select:focus-visible, textarea:focus-visible {
   padding-bottom: var(--sp-4); margin-bottom: var(--sp-5);
   border-bottom: 2px solid var(--accent);
 }
-.report-title { font-size: 25px; margin: var(--sp-3) 0 4px; letter-spacing: -.4px; line-height: 1.25; }
+.report-title { font-size: 26px; font-weight: 800; margin: var(--sp-3) 0 4px; line-height: 1.2; }
+.page-eyebrow + .report-title { margin-top: 0; }
 .report-period { margin: 0; color: var(--ink-soft); font-size: var(--fs-md); }
 .report-kpis {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -873,7 +993,7 @@ select:focus-visible, textarea:focus-visible {
 .report-kpi { padding: var(--sp-3) var(--sp-4); border: 1px solid var(--line); border-radius: var(--r-md); }
 .report-kpi-value {
   font-size: 28px; font-weight: 800; color: var(--accent-dark);
-  letter-spacing: -.8px; line-height: 1.15; font-variant-numeric: tabular-nums;
+  line-height: 1.15; font-variant-numeric: lining-nums tabular-nums;
 }
 .report-kpi-label { font-size: var(--fs-sm); color: var(--ink-soft); }
 .report-kpi-sub { font-size: var(--fs-xs); color: var(--ink-soft); margin-top: 2px; }
@@ -896,15 +1016,21 @@ select:focus-visible, textarea:focus-visible {
      tinta y se lee mal. Se fuerzan los tokens de :root aunque el navegador
      tenga data-theme="dark". */
   :root, :root[data-theme="dark"] {
-    --paper: #FFFFFF; --card: #FFFFFF; --tint: #EAF3EF;
-    --ink: #16221F; --ink-soft: #5C6B66; --line: #D8DCDA;
-    --accent: #3DA08C; --accent-dark: #2C7C6C; --accent-soft: #8FC9BD;
-    --warn: #B25B4E; --accent-solid: #2C7C6C; --on-accent: #FFFFFF;
+    --paper: #FFFFFF; --card: #FFFFFF; --tint: #E4F2EF;
+    --ink: #0A1218; --ink-soft: #5B6770; --line: #E3E7EA; --muted: #8C99A3;
+    --accent: #4AB39F; --accent-dark: #1E7565; --accent-soft: #4AB39F;
+    --warn: #B25B4E; --warn-ink: #8A3F33; --warn-soft: #F1DEDA;
+    --accent-solid: #4AB39F; --on-accent: #0A1218; --chart-soft: #D5DBDF;
     --shadow: none; --shadow-hi: none;
   }
+  /* el logo también: en papel va siempre la versión para fondo claro. Con el
+     mismo selector que la regla del tema oscuro, que si no gana por especificidad
+     y en papel sale el "SK" blanco, invisible. */
+  :root .logo-on-dark, :root[data-theme="dark"] .logo-on-dark { display: none !important; }
+  :root .logo-on-light, :root[data-theme="dark"] .logo-on-light { display: block !important; }
   @page { size: A4; margin: 14mm 12mm; }
   html, body { background: #fff; }
-  /* sin esto Chrome descarta TODOS los fondos: el donut y las barras salen en blanco */
+  /* sin esto Chrome descarta TODOS los fondos: las barras y los bloques salen en blanco */
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .no-print, .sidebar, .mobilebar, .skip-link, .drawer-backdrop { display: none !important; }
   .report { max-width: none; padding: 0; }

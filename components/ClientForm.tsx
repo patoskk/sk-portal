@@ -199,13 +199,13 @@ export function ClientForm() {
         type="submit"
         disabled={busy}
         className="btn-primary"
-        style={{ background: "var(--accent)", color: "#fff", border: 0, borderRadius: 9, padding: "11px 20px", fontWeight: 700, cursor: "pointer" }}
+        style={{ background: "var(--accent-solid)", color: "var(--on-accent)", border: 0, borderRadius: 9, padding: "11px 20px", fontWeight: 700, cursor: "pointer" }}
       >
         {busy ? "Creando…" : "Crear cliente"}
       </button>
 
       {result && (
-        <pre style={{ marginBottom: 0, marginTop: 12, whiteSpace: "pre-wrap", fontSize: 13, color: result.ok ? "var(--accent-dark)" : "var(--warn)", fontFamily: "var(--sans)" }}>
+        <pre style={{ marginBottom: 0, marginTop: 12, whiteSpace: "pre-wrap", fontSize: 13, color: result.ok ? "var(--accent-dark)" : "var(--warn-ink)", fontFamily: "var(--sans)" }}>
           {result.text}
         </pre>
       )}

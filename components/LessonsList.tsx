@@ -163,7 +163,7 @@ function Ruta({ lessons }: { lessons: Lesson[] }) {
         <div>
           <h2 className="starter-title">Empezá por acá</h2>
           <p className="starter-sub">
-            Si estás arrancando, estas tres en este orden. Después seguí por el tema que más te sirva.
+            Si recién empezás, leé estas tres en este orden. Después seguí por el tema que más te sirva.
           </p>
         </div>
       </div>

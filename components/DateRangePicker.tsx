@@ -54,7 +54,7 @@ export function DateRangePicker({ from, to }: { from: string; to: string }) {
     padding: "8px 10px",
     border: "1px solid var(--line)",
     borderRadius: 8,
-    fontSize: 13,
+    fontSize: 14,
     color: "var(--ink)",
     background: "var(--card)",
     flex: "1 1 130px",
@@ -87,7 +87,7 @@ export function DateRangePicker({ from, to }: { from: string; to: string }) {
               style={{
                 padding: "8px 12px",
                 border: 0,
-                fontSize: 12.5,
+                fontSize: 14,
                 cursor: "pointer",
                 whiteSpace: "nowrap",
                 background: active ? "var(--tint)" : "transparent",

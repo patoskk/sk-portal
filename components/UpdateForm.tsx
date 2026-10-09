@@ -99,7 +99,7 @@ export function UpdateForm({ clients }: { clients: ClienteOpt[] }) {
         </Button>
         {msg ? <span style={{ color: "var(--accent-dark)", fontSize: "var(--fs-md)", fontWeight: 600 }}>{msg}</span> : null}
       </div>
-      {err ? <p style={{ color: "var(--warn)", margin: 0, fontSize: "var(--fs-md)" }}>{err}</p> : null}
+      {err ? <p style={{ color: "var(--warn-ink)", margin: 0, fontSize: "var(--fs-md)" }}>{err}</p> : null}
     </form>
   );
 }

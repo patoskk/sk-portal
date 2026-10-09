@@ -127,14 +127,14 @@ export function renderLessonEmail(i: LessonEmailInput): LessonEmail {
 
           <!-- firma de persona + wordmark de texto (no imagen) -->
           <p style="margin:24px 0 2px;font-size:15px;color:${BRAND.ink};">${esc(i.fromName)}</p>
-          <p style="margin:0;font-size:12px;letter-spacing:1.2px;font-weight:700;">
-            <span style="color:${BRAND.ink};">SK</span> <span style="color:${BRAND.accent};">OPTIMAL</span>
+          <p style="margin:0;font-size:14px;font-weight:800;">
+            <span style="color:${BRAND.ink};">SK</span> <span style="color:${BRAND.accent};">Optimal</span>
           </p>
 
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
             <tr><td style="padding:22px 0 0;border-top:1px solid ${BRAND.line};">
               <p style="margin:12px 0 0;font-size:11.5px;line-height:1.6;color:${BRAND.inkSoft};">
-                Te llega porque sos cliente de SK Optimal. Si no querés estos avisos, respondeme y te saco.
+                Te llega porque sos cliente de SK Optimal. Si no querés estos avisos, respondeme y te doy de baja.
               </p>
             </td></tr>
           </table>
@@ -167,7 +167,7 @@ export function renderLessonEmail(i: LessonEmailInput): LessonEmail {
     i.fromName,
     "SK Optimal",
     "",
-    "Te llega porque sos cliente de SK Optimal. Si no querés estos avisos, respondeme y te saco.",
+    "Te llega porque sos cliente de SK Optimal. Si no querés estos avisos, respondeme y te doy de baja.",
   ]
     .filter((l, idx, arr) => !(l === "" && arr[idx - 1] === ""))
     .join("\n");
