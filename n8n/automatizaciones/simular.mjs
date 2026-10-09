@@ -10,7 +10,7 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { AQUI, codigo, datos } from "./build-lib.mjs";
+import { AQUI, codigo, datos, leerCodigo } from "./build-lib.mjs";
 
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
 let fallas = 0;
@@ -139,6 +139,51 @@ for (const [nombre, t] of Object.entries({
 })) {
   const v = await validar(conTexto(t));
   ok(v.ok, `"${nombre}" es legítimo y lo rechaza: ${v.problemas.join(" | ")}`);
+}
+
+seccion("Validador — el registro de marca avisa, no frena");
+{
+  const registro = (v) => v.avisos.some((a) => /registro de marca/.test(a));
+  for (const [nombre, t] of Object.entries({
+    arranca: "Así arranca el día en el depósito.",
+    "arrancá (con tilde)": "Arrancá por la consulta más repetida.",
+    andando: "Una vez que lo tenés andando, no lo tocás más.",
+    abasto: "El equipo no da abasto con los mensajes.",
+    "pegado al celular": "Nadie quiere vivir pegado al celular.",
+    "cuánto sale": "Antes de probarla, mirá cuánto sale.",
+    plata: "Es plata que se pierde todos los días.",
+  })) {
+    const v = await validar(conTexto(t));
+    ok(v.ok && registro(v), `"${nombre}" tiene que dar un aviso del registro y NO frenar la lección: ok=${v.ok} avisos=${v.avisos.join(" | ")}`);
+  }
+  // lo legítimo se prueba sobre una lección publicada SIN nada fuera del registro: BUENA dice "arranca"
+  let limpia = null;
+  for (const l of LECCIONES) if (!limpia && !registro(await validar(l.doc))) limpia = l.doc;
+  ok(limpia !== null, "no hay ninguna lección publicada sin avisos del registro para probar lo legítimo");
+  for (const [nombre, t] of Object.entries({
+    "planta (no es plata)": "La planta de producción trabaja de noche.",
+    "empieza": "Así empieza el día en el depósito.",
+  })) {
+    const d = clon(limpia);
+    const b = d.bloques.find((x) => x.tipo === "seccion");
+    b.parrafos[0] += " " + t;
+    ok(!registro(await validar(d)), `"${nombre}" no es coloquial y da aviso del registro`);
+  }
+  // informativo, no falla: cuántas de las publicadas antes del 07/10 habrían recibido el aviso
+  const marcadas = [];
+  for (const l of LECCIONES) {
+    const a = (await validar(l.doc)).avisos.find((x) => /registro de marca/.test(x));
+    if (a) marcadas.push(`${l.title}: ${a.replace(/^fuera del registro de marca: /, "")}`);
+  }
+  console.log(`  · publicadas con algo fuera del registro (solo aviso): ${marcadas.length}/${LECCIONES.length}`);
+  marcadas.forEach((m) => console.log(`      ${m}`));
+}
+{
+  // la escritura y la revisión reciben la tabla del registro desde voz-pato.md (no una copia)
+  ok(typeof D.REGISTRO === "string" && D.REGISTRO.startsWith("### El registro de marca") && /\| *arranca/.test(D.REGISTRO),
+    "build-lib no trajo la sección \"El registro de marca\" de voz-pato.md");
+  const esc = leerCodigo("armar-escritura.js");
+  ok(/\/\*@REGISTRO\*\/null/.test(esc) && /REGISTRO_BLOQUE,/.test(esc), "armar-escritura.js no le pasa el registro al system");
 }
 
 // ── 2. Elegir temas ──────────────────────────────────────────────────────────────────────────────────

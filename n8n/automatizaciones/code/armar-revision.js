@@ -32,6 +32,7 @@ const partes = [
   '5. ¿Suena a una persona que enseña, o a folleto? Sacá el relleno y las promesas grandes.',
   '6. ¿Vende algo, aunque sea de costado? Sacalo.',
   '7. Rayas, signos de exclamación, vulgarismos, fechas, precios exactos, ejemplos de comercio de barrio.',
+  '8. El registro de marca: lo coloquial de charla que la tabla de <registro_de_marca> reemplaza ("arranca", "andando", "no da abasto", "plata"...). Cambiá la palabra, no la frase entera.',
   '',
   'No cambies lo que ya está bien: una revisión que reescribe todo pierde la voz.',
 ];

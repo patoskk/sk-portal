@@ -15,6 +15,7 @@ const CONFIG = /*@CONFIG*/null;
 const CATEGORIAS = /*@CATEGORIAS*/null;
 const ICONOS = /*@ICONOS*/null;
 const FRAMEWORK = /*@FRAMEWORK*/null;
+const REGISTRO = /*@REGISTRO*/null; // la tabla del registro de marca, de ideas-contenido/reference/voz-pato.md
 const CONTRATO = /*@CONTRATO*/null;
 const EJEMPLO_DEEP = /*@EJEMPLO_DEEP*/null;
 const EJEMPLO_DIGEST = /*@EJEMPLO_DIGEST*/null;
@@ -35,6 +36,7 @@ const REGLAS = `REGLAS QUE NO SE NEGOCIAN (si se rompe una, la lección no se pu
 - Atemporal: sin fechas, sin años, sin "semana del", sin "este mes". "Esta semana" para la acción sí vale.
 - Sin emojis y sin signos de exclamación.
 - Sin vulgarismos ni vocabulario callejero. Nunca "el tipo" o "un tipo" para hablar de una persona (se dice el dueño, el cliente, la persona), ni "loco", "che", "quilombo", "guita", "flaco", "pibe", "boludo".
+- Registro de marca: profesional y cercano a la vez (ver <registro_de_marca>). Se mantienen el voseo y la calidez; lo que no va escrito es lo coloquial de charla: "empieza" y no "arranca", "funcionando" y no "andando", "está saturado" y no "no da abasto", "pendiente del celular" y no "pegado al celular", "ventas" o "facturación" y no "plata".
 - Los ejemplos son del mundo del lector: distribuidoras, mayoristas, inmobiliarias, tiendas online, constructoras, tiendas de tecnología, estudios profesionales. Nunca un almacén, un kiosco, una despensa ni una verdulería.
 - Sin precios exactos ni montos: "gratis", "tiene versión gratis" o "plan pago". Los precios cambian y la lección tiene que seguir siendo cierta.
 - No afirmes un paso, un botón, un menú o una función de una herramienta que no esté en las notas de investigación (cuando las hay). Si no estás seguro, describilo en general ("en el menú, buscá la opción para compartir").
@@ -45,10 +47,19 @@ const REGLAS = `REGLAS QUE NO SE NEGOCIAN (si se rompe una, la lección no se pu
 - Íconos: solo ${ICONOS.join(', ')}.
 - No pongas "eyebrow": lo agrega el sistema.`;
 
+// En la tabla hay filas pensadas para la web y la venta (la inversión, el examen del agente, el equipo):
+// en una lección no se vende, así que lo que se toma de ella es el criterio de vocabulario.
+const REGISTRO_BLOQUE = `<registro_de_marca>
+Cómo escribe SK Optimal todo lo que sale con su logo. Aplicá el criterio de esta tabla al vocabulario de la lección; las filas que hablan de la venta o del servicio de SK no aplican, porque una lección no vende.
+
+${REGISTRO}
+</registro_de_marca>`;
+
 const SYSTEM = [
   'Trabajás en las lecciones de IA que SK Optimal (agencia de agentes de IA y automatizaciones de Argentina) publica cada semana en el portal de sus clientes. Los lectores son dueños de negocios establecidos, de más de 35 años y no técnicos, que ya son clientes. Cada lección se publica y se les avisa por mail sin que nadie la lea antes, así que tiene que salir lista.',
   'A veces te toca escribir una lección nueva y a veces revisar la que escribió otro redactor: la tarea concreta está en el mensaje.',
   REGLAS,
+  REGISTRO_BLOQUE,
   `<metodo>\n${FRAMEWORK}\n</metodo>`,
   `<contrato>\n${CONTRATO}\n</contrato>`,
   `<ejemplo_deep_dive>\nUna lección real ya publicada y aprobada. Copiá el nivel, no el tema.\n${JSON.stringify(EJEMPLO_DEEP)}\n</ejemplo_deep_dive>`,

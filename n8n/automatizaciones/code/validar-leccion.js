@@ -98,6 +98,23 @@ else if (exclamaciones > 0) avisos.push(`tiene ${exclamaciones} signo(s) de excl
 const rayas = cuenta(/—/g);
 if (rayas > 8) avisos.push(`tiene ${rayas} rayas (—): cambiá la mayoría por punto o coma`);
 
+// El registro de marca (regla de Pato del 07/10/2026; la tabla vive en ideas-contenido/reference/voz-pato.md
+// y armar-escritura.js se la pasa al escritor): lo coloquial de charla que, escrito con el logo, baja el
+// nivel. Es AVISO y no problema a propósito: no es vulgar, y frenar la lección del lunes por un "arranca"
+// la deja sin salir; la revisión lo recibe y cambia la palabra. Solo van las formas que no tienen otro
+// sentido en una lección. (?!\p{L}) y no \b al final, por la tilde de "arrancá".
+const COLOQUIAL = [
+  [/\barranc(a|an|ar|á|ás|ó|amos|ando|aste)(?!\p{L})/iu, '"arranca" (va "empieza")'],
+  [/\bandando(?!\p{L})/iu, '"andando" (va "funcionando")'],
+  [/\bno da(n)? abasto(?!\p{L})/iu, '"no da abasto" (va "está saturado")'],
+  [/\bpegad[oa]s? al (celular|tel[eé]fono)(?!\p{L})/iu, '"pegado al celular" (va "pendiente del celular")'],
+  [/\bcu[aá]nto (te )?sale(?!\p{L})/iu, '"cuánto sale" (va "cuánto cuesta")'],
+  [/\bdesenchuf/iu, '"desenchufar" (va "desconectar")'],
+  [/\bplata(?!\p{L})/iu, '"plata" (va "ventas", "facturación" o "dinero")'],
+];
+const coloquiales = COLOQUIAL.filter(([re]) => re.test(todo)).map(([, m]) => m);
+if (coloquiales.length) avisos.push(`fuera del registro de marca: ${coloquiales.join(', ')}`);
+
 for (const b of bloques) {
   if (b && b.tipo === 'herramienta' && /\d/.test(String(b.precio || ''))) problemas.push(`la herramienta "${b.nombre}" tiene un precio con números`);
 }

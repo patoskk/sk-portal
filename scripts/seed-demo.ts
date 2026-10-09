@@ -170,11 +170,11 @@ async function main() {
         text: "Es tu hora pico y concentra la mayor parte de los pedidos. Una promo enviada a esa hora rinde bastante más que a la mañana.",
       },
       {
-        title: "Seguí las charlas que quedaron a mitad de camino",
+        title: "Retomá las conversaciones que quedaron sin cerrar",
         text: "Varias personas preguntaron precio y no cerraron. Un mensaje al día siguiente recupera cerca de una de cada cuatro.",
       },
     ],
-    funnel_insight: "Tres de cada diez charlas terminan en pedido y la tendencia viene en alza.",
+    funnel_insight: "Tres de cada diez conversaciones terminan en pedido y la tendencia viene en alza.",
     products_insight: "La yerba encabeza el ranking cuatro semanas seguidas. Es el producto para poner en promo.",
     usage_insight: "Ocho de cada diez consultas son precio o stock: es lo que más tiempo le sacaba a tu equipo.",
     activity_insight: "La actividad crece todas las semanas y los sábados a la mañana ya mueven como un día hábil.",
@@ -205,11 +205,11 @@ async function main() {
   const t = (k: string) => ult30.reduce((s, r) => s + (Number(r[k]) || 0), 0);
   const conv = t("conversations");
   console.log("\n== 30 dias visibles ==");
-  console.log("  Pedidos: " + t("orders") + " (" + Math.round((100 * t("orders")) / conv) + "% de las charlas)");
+  console.log("  Pedidos: " + t("orders") + " (" + Math.round((100 * t("orders")) / conv) + "% de las conversaciones)");
   console.log("  Conversaciones: " + conv);
   console.log("  Mensajes de clientes: " + t("messages_human"));
   console.log("  Acciones del agente: " + t("tool_calls"));
-  console.log("  Mensajes por charla: " + Math.round((10 * (t("messages_human") + t("messages_agent"))) / conv) / 10);
+  console.log("  Mensajes por conversación: " + Math.round((10 * (t("messages_human") + t("messages_agent"))) / conv) / 10);
   console.log("  Errores: " + t("errors") + " - Consultas sin resultado: " + t("no_result"));
   console.log("\nEntra con " + DEMO_EMAIL + " o elegi 'Panel de demostracion' en Ver como cliente.");
 }

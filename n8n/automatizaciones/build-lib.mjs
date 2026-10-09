@@ -30,6 +30,22 @@ function categorias() {
   return out;
 }
 
+/**
+ * El registro de marca (regla de Pato del 07/10/2026: "high ticket, profesional, pero cercano"): la
+ * sección "El registro de marca" de ideas-contenido/reference/voz-pato.md, con su tabla de lo que no va
+ * escrito y lo que se dice. Se lee de ahí y no se copia, igual que el método: si la tabla cambia, la
+ * próxima subida la lleva. Falla fuerte si no la encuentra, para no subir una escritura sin registro.
+ */
+function registro() {
+  const voz = leer("C:/Users/tuli1/.claude/skills/ideas-contenido/reference/voz-pato.md");
+  const desde = voz.indexOf("### El registro de marca");
+  const hasta = voz.indexOf("\n---", desde);
+  if (desde < 0 || hasta < 0) throw new Error("no encontré la sección \"El registro de marca\" en voz-pato.md");
+  const seccion = voz.slice(desde, hasta).trim();
+  if ((seccion.match(/^\|/gm) || []).length < 8) throw new Error("la tabla del registro de marca vino incompleta");
+  return seccion;
+}
+
 /** Los íconos que la plantilla sabe dibujar: las claves del objeto ICONS de la propia plantilla. */
 function iconos(plantilla) {
   const bloque = plantilla.slice(plantilla.indexOf("const ICONS"), plantilla.indexOf("};", plantilla.indexOf("const ICONS")));
@@ -68,6 +84,7 @@ export function datos() {
     CATEGORIAS: cats,
     ICONOS: iconos(plantilla),
     FRAMEWORK: leer(join(SKILL, "reference", "educational-copy-framework.md")),
+    REGISTRO: registro(),
     CONTRATO: leer(join(SKILL, "reference", "document-schema.md")),
     EJEMPLO_DEEP: JSON.parse(leer(join(SKILL, "examples", "ejemplo-tutorial.json"))),
     EJEMPLO_DIGEST: JSON.parse(leer(join(SKILL, "examples", "ejemplo-digest.json"))),
